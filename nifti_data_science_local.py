@@ -8,19 +8,18 @@ from io import BytesIO
 import gzip
 from scipy import stats
 import math 
-from decouple import config
-
+import decouple
 
 # Define connection parameters
 params = {
-    "host": config('DB_HOST'),
-    "database": config('DB_NAME'),
-    "user": config('DB_USER'),
-    "password": config('DB_PASSWORD')
+    "host": decouple.config('DB_HOST'),
+    "database": decouple.config('DB_NAME'),
+    "user": decouple.config('DB_USER'),
+    "password": decouple.config('DB_PASSWORD')
 }
 conn = psycopg2.connect(**params)
-access_key = config('AWS_ACCESS_KEY_ID')
-secret_key = config('AWS_SECRET_ACCESS_KEY')
+access_key = decouple.config('AWS_ACCESS_KEY_ID')
+secret_key = decouple.config('AWS_SECRET_ACCESS_KEY')
 SESSION = boto3.session.Session()
 CLIENT = SESSION.client('s3',
                         region_name='nyc3',
