@@ -17,7 +17,7 @@ params = {
     "user": config('DB_USER'),
     "password": config('DB_PASSWORD')
 }
-print("hello world.")
+
 conn = psycopg2.connect(**params)
 access_key = config('AWS_ACCESS_KEY_ID')
 secret_key = config('AWS_SECRET_ACCESS_KEY')
