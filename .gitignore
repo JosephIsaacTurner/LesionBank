@@ -1,0 +1,45 @@
+# Environment variables
+.env
+
+# Python byte-compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Python virtual environment
+.Python
+venv/
+*.venv
+
+# Django specific
+db.sqlite3
+*.git
+media/
+
+# Backup files created by merge tools and diff programs
+*.orig
+
+# Other files that might appear during development
+*.swp
+*.swo
+*.swn
+*.DS_Store
+*.cache
+*.egg-info
+*.cover
+*.bak
+
+# JetBrains IDE
+.idea/
+
+# VS Code directories
+.vscode/
+
+# Other directories:
+lesion_bank/templates/lesion_bank/node_modules
+lesion_bank/templates/lesion_bank/public
+lesion_bank/templates/lesion_bank/src
+
+
+

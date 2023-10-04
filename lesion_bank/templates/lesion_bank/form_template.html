@@ -1,0 +1,27 @@
+{% extends "lesion_bank/genericHTML.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<form id="symptomForm" method="post">
+  {% csrf_token %}
+
+  <!-- Form for creating a new symptom -->
+  <h2 class="mt-3">New Symptom</h2>
+  {{ form|crispy }}
+
+  <!-- Formset for updating existing symptoms -->
+  <h2 class="mt-3">Update Existing Symptoms</h2>
+  {{ formset.management_form|crispy }}
+  {% for form in formset %}
+    {{ form|crispy }}
+  {% endfor %}
+
+</form>
+
+<div class="btn-group mt-3" role="group">
+  <button type="submit" form="symptomForm" class="btn btn-primary">Save</button>
+  <a href="{% url 'edit_metadata_list' %}" class="btn btn-secondary">Return to Lesion List</a>
+</div>
+
+{% endblock %}

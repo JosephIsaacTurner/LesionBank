@@ -1,0 +1,35 @@
+{% extends "lesion_bank/genericHTML.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+{{message}}
+
+<h4>Lesion Tracing Practice</h4>
+<hr>
+<p>This tool allows you to test your lesion tracing skills against
+    lesion traces that have already been validated.</p>
+<p> You will upload the .nii.gz file of your lesion trace, and the .nii.gz 
+    file for the validated trace. Upload both of these files, and our 
+    tool will automatically compare the similarity between the two.
+</p>
+<p>
+    Good traces will be highly similar to the validated traces.
+</p>
+<br><br>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.file_path.errors }}
+    <label for="{{ form.file_path.id_for_label }}" class="form-label">Practice lesion trace:</label>
+    <div class="input-group mb-3">
+        {{ form.file_path }}
+    </div>
+    {{ form.true_file_path.errors }}
+    <label for="{{ form.true_file_path.id_for_label }}" class="form-label">Validated lesion trace:</label>
+    <div class="input-group mb-3">
+        {{ form.true_file_path }}
+    </div>
+    <button class="btn btn-outline-secondary" type="submit">Upload</button>
+</form>
+
+{% endblock %}

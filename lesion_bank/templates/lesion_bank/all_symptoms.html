@@ -1,0 +1,40 @@
+{% extends "lesion_bank/base_papaya.html" %}
+{% load static %}
+{% block content %}
+
+
+<div class="row align-items-center">
+
+    <div class="input-group mb-3 input-group-lg">
+        <a href="{% url 'list' %}" class="btn btn-primary">Return to List</a>
+        <select id='selectMenu' class='form-select' aria-label='Select an option'>
+            {% for symptom in symptom_list %}
+            <option class="dropdown-item" url="{% url 'symptom_detail' symptom.symptom%}" value="{{symptom.symptom}}">{{symptom.symptom}} (n={{symptom.count}})</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-outline-secondary" type="button" onclick="setActionURL()" id="button-addon1">Select</button>
+    </div>
+    
+    
+    
+    <script>
+        const selectMenu = document.getElementById("selectMenu");
+        function setActionURL(e) {
+            const selectedOption = selectMenu.options[selectMenu.selectedIndex];
+            const redirectURL = selectedOption.getAttribute("url");
+            if (redirectURL) {
+                window.location.href = redirectURL;
+            }
+        }
+        // const symptomValue = "{{ symptom }}";  // Assuming you're setting this value somewhere
+        // for (let i = 0; i < selectMenu.options.length; i++) {
+        //     if (selectMenu.options[i].value === symptomValue) {
+        //         selectMenu.options[i].selected = true;
+        //     }
+        // }
+    </script>
+    <p>
+        All symptoms with a minimum of {{min_count}} case reports are displayed.
+    </p>
+</div>
+{% endblock %}

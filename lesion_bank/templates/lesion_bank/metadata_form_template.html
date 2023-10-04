@@ -1,0 +1,18 @@
+{% extends "lesion_bank/genericHTML.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<form id="mainForm" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form|crispy }}
+</form>
+
+<div class="btn-group mt-3" role="group">
+    <button type="submit" form="mainForm" class="btn btn-primary">Save</button>
+    <a href="{% url 'edit_metadata_list' %}" class="btn btn-secondary">Return to Lesion List</a>
+    <a href="{% url 'new_symptom' %}" class="btn btn-success">Add new symptom</a>
+</div>
+<br>
+<br>
+{% endblock %}

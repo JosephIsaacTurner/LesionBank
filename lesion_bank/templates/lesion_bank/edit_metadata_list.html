@@ -1,0 +1,154 @@
+
+
+{% extends "lesion_bank/genericHTML.html" %}
+{% block style%}
+<style>
+   .dtfh-floatingparenthead{
+    background-color:white!important;
+    /* z-index: 1000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 80 px !important; */
+   }
+   table.table-bordered.table-hover.dataTable.no-footer.fixedHeader-floating {
+    margin-top:0 !important;
+    margin-bottom:0 !important;
+    border-bottom: 1px solid black !important;
+   }
+
+
+</style>
+{% endblock %}
+{% block content %}
+<div style='float:right; margin:0px;padding:0px;' class="text-right mt-3">
+  {% if edit %}
+  <a href="{% url 'import_data' %}" class="btn btn-info d-inline-block mr-2">Import Data</a>
+  <a href="{% url 'new_symptom' %}" class="btn btn-success d-inline-block">Add/Modify Symptoms</a>
+  {% endif %}
+</div>
+<!-- Clearfix to ensure content below doesn't wrap around the floated element -->
+<div class="clearfix"></div>
+<br>
+<!-- Use Bootstrap's table-responsive for potential overflow -->
+<div class="table-responsive">
+  <table id="sortableTable" class="table table-bordered table-hover">
+    <thead id='tableHeader' class="thead-light">
+      <tr>
+        <th>Lesion ID</th>
+        <th>Author</th>
+        <th>Date</th>
+        <th>DOI</th>
+        <th>Age</th>
+        <th>Sex</th>
+        <th>Cause</th>
+        <th>Symptoms</th>
+        <th>Original Image</th> 
+        <th>Lesion Trace</th>
+        <th>Lesion Network</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for metadata in metadata_list %}
+        <tr>
+          <td>{{ metadata.lesion_id }}</td>
+          <td>{{ metadata.author }}</td>
+          <td>{{ metadata.publication_year }}</td>
+          <td>
+            {% if metadata.doi %}
+              <a target="_blank" href="{{metadata.doi}}">Link</a>
+            {% else %}
+              None
+            {% endif %}
+          </td>
+          <td>{{ metadata.patient_age }}</td>
+          <td>{{ metadata.patient_sex }}</td>
+          <td>{{ metadata.cause_of_lesion }}</td>
+          <td>
+            {% for symptom in metadata.symptoms.all %} <a target="_blank" href="{% url 'symptom_detail' symptom.symptom %}">{{ symptom.symptom }}</a>{% if not forloop.last %}, {% endif %}{% empty %}None{% endfor %}
+          </td>        
+          <td>
+            {% if metadata.original_image_1 %}
+                <a href="{{ MEDIA_URL }}{{ metadata.original_image_1 }}" target="_blank">Link</a>
+            {% else %}
+                None
+            {% endif %}
+        </td>
+        <td>
+            {% if metadata.tracing_file_name %}
+                <a href="{{ MEDIA_URL }}{{ metadata.tracing_file_name }}" download>Download</a>
+            {% else %}
+                None
+            {% endif %}
+        </td>
+        <td>
+            {% if metadata.network_file_name %}
+                <a href="{{ MEDIA_URL }}{{ metadata.network_file_name }}" download>Download</a>
+            {% else %}
+                None
+            {% endif %}
+        </td>
+                 
+        <td>
+          <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+              <a href="{% url 'cases_single' metadata.lesion_id %}" class="btn btn-sm btn-primary">View</a>
+              {% if edit %}
+              <a href="{% url 'edit_metadata' metadata.lesion_id %}" class="btn btn-sm btn-secondary">Edit</a>
+          {% endif %}
+          
+          </div>
+         </td>
+      
+      
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="12">No metadata to display</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-3">
+  {% if edit %}
+  <div class="btn-group mt-3" role="group">
+    <a href="{% url 'import_data' %}" class="btn btn-info d-inline-block mr-2">Import Data</a>
+    <a href="{% url 'new_symptom' %}" class="btn btn-success d-inline-block">Add New Symptom</a>
+
+  </div>
+  {% endif %}
+</div>
+<br>
+
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css">
+
+<!-- DataTables JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+
+<!-- FixedHeader JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+<!-- FixedHeader CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
+
+<!-- DataTables Bootstrap Integration -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap5.min.js"></script>
+
+
+<script>
+$(document).ready(function() {
+  $('#sortableTable').DataTable({
+      fixedHeader: true,  // Enables the fixed header
+      pageLength: -1,  // Display ALL rows by default
+      lengthMenu: [[10, 20, 35, 50, 100, -1], [10, 20, 35, 50, 100, "All"]],  // Dropdown options for the user
+      order: [[7, 'asc']]  // Sort by the 7th column (Symptoms) in ascending order by default
+  });
+});
+</script>
+
+{% endblock %}

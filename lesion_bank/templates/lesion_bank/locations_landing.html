@@ -1,0 +1,143 @@
+{% extends "lesion_bank/base_papaya.html" %}
+{% load static %}
+
+{% block style %}
+<style>
+    .dtfh-floatingparenthead{
+     background-color:white!important;
+     /* z-index: 1000 !important;
+     margin: 0 !important;
+     padding: 0 !important;
+     height: 80 px !important; */
+    }
+    table.table-hover.dataTable.no-footer.fixedHeader-floating {
+     margin-top:0 !important;
+     margin-bottom:0 !important;
+     border-bottom: 1px solid black !important;
+    }
+    .papaya-menu{
+        width: unset !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col col-sm-12">
+        <div style='padding: 10px;' class='input-group mb-3' id='searchBar'>
+            <span class="input-group-text">X</span>
+            <input type="text" class="form-control selectCoord search_bar" placeholder="X" id='searchX' aria-label="X">
+            <span class="input-group-text">Y</span>
+            <input type="text" class="form-control selectCoord search_bar"  placeholder="Y" id='searchY' aria-label="Y">
+            <span class="input-group-text">Z</span>
+            <input type="text" class="form-control selectCoord search_bar" placeholder="Z" id='searchZ' aria-label="Z">
+            <button class="btn btn-outline-secondary" type="button" id='searchS' onclick="searchLocation()" disabled>Search</button>
+        </div>
+        <script>
+            function searchLocation() {
+                const x = document.getElementById('searchX').value;
+                const y = document.getElementById('searchY').value;
+                const z = document.getElementById('searchZ').value;
+                const baseUrl = "{% url 'locations' '0_0_0' %}"; // using dummy values just to get the base path
+                const targetUrl = baseUrl.replace('0_0_0', `${x}_${y}_${z}`);
+                window.location.href = targetUrl;
+            }
+            document.addEventListener('DOMContentLoaded', function() {
+                const inputs = document.querySelectorAll('.selectCoord.search_bar');
+                const searchBtn = document.getElementById('searchS');
+
+                function checkInputs() {
+                    for (let input of inputs) {
+                        // Check if the input value is not empty and is an integer
+                        if (!input.value.trim() || isNaN(input.value) || !Number.isInteger(parseFloat(input.value))) {
+                            searchBtn.setAttribute('disabled', true);
+                            return;  // Exit the function if any input is invalid
+                        }
+                    }
+                    searchBtn.removeAttribute('disabled');
+                }
+
+                // Attach the event listener to each input field
+                inputs.forEach(input => {
+                    input.addEventListener('input', checkInputs);
+                });
+
+                // Initial check to handle the case if there are initial values
+                checkInputs();
+            });
+
+        </script>
+    </div>
+    <div class="col col-sm-7">
+        <div id="papaya-holder" class="papaya" data-params="params">
+        </div>
+        <div style='padding: 10px;' class='input-group mb-3' id='selectedCoordinate'>
+            <button id='questionButton1' type="button" data-bs-placement="bottom" class="btn btn-sm btn-primary bg-gradient" data-bs-toggle="popover" data-bs-title="Coordinate Navigator:" data-bs-content="Drag the crosshairs or enter a coordinate to navigate to a specific location in the visualizer.">
+                <i class="bi bi-question-circle"></i>
+            </button>
+            <span class="input-group-text bg-secondary bg-gradient">Navigator: </span>
+            <span class="input-group-text">X</span>
+            <input type="text" class="form-control selectCoord" placeholder="X" id='findX' aria-label="X" onchange="updateCoords()">
+            <span class="input-group-text">Y</span>
+            <input type="text" class="form-control selectCoord" placeholder="Y" id='findY' aria-label="Y" onchange="updateCoords()" >
+            <span class="input-group-text">Z</span>
+            <input type="text" class="form-control selectCoord" placeholder="Z" id='findZ' aria-label="Z" onchange="updateCoords()" >
+            <a class="btn btn-outline-secondary" type="button" id='findS' onclick="navigateToLocation()">Find what's here</a>
+        </div>
+        <script>
+            function navigateToLocation() {
+                const x = document.getElementById('findX').value;
+                const y = document.getElementById('findY').value;
+                const z = document.getElementById('findZ').value;
+                const baseUrl = "{% url 'locations' '0_0_0' %}"; // using dummy values just to get the base path
+                const targetUrl = baseUrl.replace('0_0_0', `${x}_${y}_${z}`);
+                window.location.href = targetUrl;
+            }
+        </script>
+    </div>
+    <div class="col col-sm-5">
+    </div>
+
+</div>
+{% endblock %}
+
+{% block script %}
+
+<script type="text/javascript">
+    var params = {};
+    params["images"] = [
+        "https://neurovault.org/static/images/GenericMNI.nii.gz"
+    ];
+    params["worldSpace"] = true;
+    params["expandable"] = true;
+    params["combineParametric"] = true;
+    params["showControls"] = false;
+    params["smoothDisplay"] = false;
+    params["allowScroll"] = false;
+</script>
+<script>
+    function getCurrentCoord(){
+        let viewer = papayaContainers[0].viewer;
+        return viewer.getWorldCoordinateAtIndex(Object.values(viewer.currentCoord)[0],Object.values(viewer.currentCoord)[1],Object.values(viewer.currentCoord)[2], new papaya.core.Coordinate());
+    }
+    function gotoCoord(x,y,z){
+        let viewer = papayaContainers[0].viewer;
+        viewer.gotoWorldCoordinate({'x':x,'y':y,'z':z});
+    }
+    function updateCoords() {
+        const x = document.getElementById('findX').value;
+        const y = document.getElementById('findY').value;
+        const z = document.getElementById('findZ').value;
+        gotoCoord(x, y, z);
+    }
+    document.querySelector('.papaya').addEventListener('mousemove', function() {
+        const coords = getCurrentCoord();
+        document.getElementById('findX').value = coords.x;
+        document.getElementById('findY').value = coords.y;
+        document.getElementById('findZ').value = coords.z;
+    });
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "lesion_bank/viewer_base.html" %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+      <br>
+      <h4 class="card-subtitle mb-2 text-muted"> Select a symptom to view lesion maps in our database:</h4>
+          <form method='_GET'>
+              <div class="input-group mb-3  input-group-lg">
+                  <select class='form-select' aria-label='Select an option' name='symptom'>
+                  {{dropdownList|safe}} 
+                  </select> 
+                  <button class="btn btn-outline-secondary" type="submit" id="button-addon1">Select</button>
+              </div>
+          </form>
+  </div>
+      <div class="card card-body">
+          <h3 class='card-subtitle mb-2 text-muted'>All Symptoms</h3>
+          {{symptomList|safe}}
+      </div>                               
+</div>
+{% endblock %}

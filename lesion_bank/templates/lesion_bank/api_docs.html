@@ -1,0 +1,157 @@
+{% extends "lesion_bank/genericHTML.html" %}
+
+{% block content %}
+   
+
+    <p>
+        Our free API allows for programatic access to our database. Depending on the parameters within the URL, different JSON responses containing desired information are returned. There are several different search types, explained below.
+    </p>
+
+    <h4>Location Search for Lesion Case Reports</h4>
+    <p>
+        Returns a JSON containing a list of dictionaries for lesion case reports/network maps that were lesioned within the specified distance from the target coordinate.
+    </p>
+    <p>
+        Requires five parameters:
+        <ul>
+            <li>type: Should be "case_report"</li>
+            <li>x: X coordinate value</li>
+            <li>y: Y coordinate value</li>
+            <li>z: Z coordinate value</li>
+            <li>dist: The max distance from the target coordinate for the returned results. Larger distances return more results.</li>
+        </ul>
+    </p>
+    <p>
+        Example URL: <a target="_blank" href="https://lesionbank.org/api/?type=case_report&x=10&y=10&z=10&dist=1">https://lesionbank.org/api/?type=case_report&x=10&y=10&z=10&dist=1</a>
+    </p>
+    <p>
+        Dictionary Keys:
+        <ul>
+            <li>nearest_coordinate: The nearest lesioned coordinate to the target coordinate</li>
+            <li>dist: Distance from the target coordinate in mm</li>
+            <li>lesion_id: A unique identifier for each lesion in our database. You may use this ID in the Lesion ID Lookup search type.</li>
+            <li>author: Name of the author who published the case report. Often contains the date of publication as well.</li>
+            <li>symptom: Symptom associated with lesion</li>
+            <li>peak_coordinate: The coordinate with the highest connectivity to the lesion. This is generally located inside the lesioned anatomy. Not necessarily located within the specified distance to the target coordinate.</li>
+            <li>tracing_file_name: Path to download the lesion tracing (map of lesion anatomy in NMI space)</li>
+            <li>network_file_name: Path to download the lesion network map of the lesion (if exists)</li>
+        </ul> 
+    </p>
+    <h4>Location Search for Correlated Lesion Network Maps</h4>
+    <p>
+        Very similar to the location search for lesion case reports, but instead of searching for case reports with lesions near the target coordinate, it searches for case reports with lesion network maps highly correlated with voxels near the target coordinate.  
+    </p>
+    <p></p>
+        Returns a JSON containing a large list of dictionaries ordered by functional connectivity to voxels within the specified the specified distance to the target coordinate.
+    </p>
+    <p>
+        Requires five parameters:
+        <ul>
+            <li>type: Should be "network_map"</li>
+            <li>x: X coordinate value</li>
+            <li>y: Y coordinate value</li>
+            <li>z: Z coordinate value</li>
+            <li>dist: The max distance from the target coordinate for returned results.</li>
+        </ul>
+    </p>
+    <p>
+        Example URL: <a target="_blank" href="https://lesionbank.org/api/?type=network_map&x=10&y=10&z=10&dist=1">https://lesionbank.org/api/?type=network_map&x=10&y=10&z=10&dist=1</a>
+    </p>
+    <p>
+        Dictionary Keys:
+        <ul>
+            <li>peak_coordinate_within_search_parameters: The coordinate with the highest connectivity within the specified distance to the target coordinate</li>
+            <li>anatomical_name: The anatomical name at the search coordinate.</li>
+            <li>t_stat: T statistic, analagous to the degree of functional connectivity between the lesion and the peak coordinate within the search parameters.</li>
+            <li>lesion_id: A unique identifier for each lesion in our database. You may use this ID in the Lesion ID Lookup search type.</li>
+            <li>author: Name of the author who published the case report. Often contains the date of publication as well.</li>
+            <li>symptom: Symptom associated with lesion</li>
+            <li>peak_coordinate: The coordinate with the highest connectivity to the lesion. This is generally located inside the lesioned anatomy. Not necessarily located within the specified distance to the target coordinate.</li>
+            <li>tracing_file_name: Path to download the lesion tracing (map of lesion anatomy in NMI space)</li>
+            <li>network_file_name: Path to download the lesion network map of the lesion (if exists)</li>
+        </ul> 
+    </p>
+    <h4>Symptom Search for Case Studies </h4>
+
+    <p>
+        Returns a JSON containing a list of dictionaries for lesion case reports/network maps that were associated with a specific symptom. 
+    </p>
+    <p>
+        Requires two parameters:
+        <ul>
+            <li>type: Should be "symptom"</li>
+            <li>symptom: The symptom of interest in your search (full list found here: <a href="../symptoms/">symptoms</a>) </li>
+        </ul>
+    </p>
+    <p>
+        Example URL: <a target="_blank" href="https://lesionbank.org/api/?type=symptom&symptom=REMsleepbehavior">https://lesionbank.org/api/?type=symptom&symptom=REMsleepbehavior</a>
+    </p>
+    <p>
+        Dictionary Keys:
+        <ul>
+            <li>lesion_id: A unique identifier for each lesion in our database. You may use this ID in the Lesion ID Lookup search type.</li>
+            <li>peak_coordinate: The coordinate with the highest connectivity to the lesion. This is generally located inside the lesioned anatomy.</li>
+            <li>anatomical_name: The anatomical name at the peak coordinate.</li>
+            <li>author: Name of the author who published the case report. Often contains the date of publication as well.</li>
+            <li>symptom: Symptom associated with lesion</li>
+            <li>tracing_file_name: Path to download the lesion tracing (map of lesion anatomy in NMI space)</li>
+            <li>network_file_name: Path to download the lesion network map of the lesion (if exists)</li>
+        </ul> 
+    </p>
+
+    <h4>Lesion ID Lookup</h4>
+
+    <p>
+        Returns a JSON containing a dictionary for the lesion case report/network map for the lesion_id. 
+    </p>
+    <p>
+        Requires two parameters:
+        <ul>
+            <li>type: Should be "lesion_id"</li>
+            <li>lesion_id: Unique identifier for the case study you are interested in. Full list of case studies found here: <a href="../cases/">cases</a>) </li>
+        </ul>
+    </p>
+    <p>
+        Example URL: <a target="_blank" href="https://lesionbank.org/api/?type=lesion_id&lesion_id=151">https://lesionbank.org/api/?type=lesion_id&lesion_id=151</a>
+    </p>
+    <p>
+        Dictionary Keys:
+        <ul>
+            <li>lesion_id: The unique identifier for each lesion in our database. Will be the same as the the ID you are Searching on.</li>
+            <li>peak_coordinate: The coordinate with the highest connectivity to the lesion. This is generally located inside the lesioned anatomy.</li>
+            <li>anatomical_name: The anatomical name at the peak coordinate.</li>
+            <li>author: Name of the author who published the case report. Often contains the date of publication as well.</li>
+            <li>symptom: Symptom associated with lesion</li>
+            <li>tracing_file_name: Path to download the lesion tracing (map of lesion anatomy in NMI space)</li>
+            <li>network_file_name: Path to download the lesion network map of the lesion (if exists)</li>
+        </ul> 
+    </p>
+
+    <h4>Atlas Search</h4>
+
+    <p>
+        Returns a JSON containing the anatomical name at a particular coordinate in NMI space. Currently uses the Harvard-Oxford atlas.
+    </p>
+    <p>
+        Requires four parameters:
+        <ul>
+            <li>type: Should be "atlas"</li>
+            <li>x: X coordinate value</li>
+            <li>y: Y coordinate value</li>
+            <li>z: Z coordinate value</li>
+        </ul>
+    </p>
+    <p>
+        Example URL: <a target="_blank" href="https://lesionbank.org/api/?type=atlas&x=15&y=9&z=-8">https://lesionbank.org/api/?type=atlas&x=15&y=9&z=-8</a>
+    </p>
+    <p>
+        Dictionary Keys:
+        <ul>
+            <li>anatomical_name: The anatomical name at the target coordinate.</li>
+        </ul> 
+    </p>
+
+
+
+{% endblock %}
+

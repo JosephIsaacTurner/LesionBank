@@ -1,0 +1,256 @@
+{% extends "lesion_bank/base_papaya.html" %}
+{% load static %}
+{% block content %}
+
+<div class="row align-items-center"> <!-- Add align-items-center to vertically align items in the row -->
+    <div class="col col-sm-9 my-auto"> <!-- Use my-auto to center content vertically within the column -->
+        <!-- <h4>#{{case_id}}: {{author}} ({{publication_year}})</h4> -->
+    </div>
+    <div class="col col-sm-3 btn-group" role="group"> <!-- Removed mt-3 as it's not needed anymore -->
+        <a href="{% url 'list' %}" class="btn btn-primary">Return to List</a>
+        <a href="{% url 'predict' %}" class="btn btn-success">New Prediction</a>
+    </div>
+</div>
+
+
+<hr>
+<div class="row">
+    <div class="col col-sm-7">
+        <div id="papaya-holder" class="papaya" data-params="params">
+        </div>
+        <div style='padding: 10px;' class='input-group mb-3' id='selectedCoordinate'>
+            <button id='questionButton1' type="button" data-bs-placement="bottom" class="btn btn-sm btn-primary bg-gradient" data-bs-toggle="popover" data-bs-title="Coordinate Navigator:" data-bs-content="Drag the crosshairs or enter a coordinate to navigate to a specific location in the visualizer.">
+                <i class="bi bi-question-circle"></i>
+            </button>
+            <span class="input-group-text bg-secondary bg-gradient">Navigator: </span>
+            <span class="input-group-text">X</span>
+            <input type="text" class="form-control selectCoord" placeholder="X" id='findX' aria-label="X" onchange="updateCoords()">
+            <span class="input-group-text">Y</span>
+            <input type="text" class="form-control selectCoord" placeholder="Y" id='findY' aria-label="Y" onchange="updateCoords()" >
+            <span class="input-group-text">Z</span>
+            <input type="text" class="form-control selectCoord" placeholder="Z" id='findZ' aria-label="Z" onchange="updateCoords()" >
+            <a class="btn btn-outline-secondary" type="button" id='findS' onclick="navigateToLocation()">Find what's here</a>
+        </div>
+        <script>
+            function navigateToLocation() {
+                const x = document.getElementById('findX').value;
+                const y = document.getElementById('findY').value;
+                const z = document.getElementById('findZ').value;
+                const baseUrl = "{% url 'locations' '0_0_0' %}"; // using dummy values just to get the base path
+                const targetUrl = baseUrl.replace('0_0_0', `${x}_${y}_${z}`);
+                window.location.href = targetUrl;
+            }
+        </script>
+    </div>
+    <div class="col col-sm-5">
+        <ul class="list-group">
+            <li class="list-group-item disabled">Legend:</li>
+            <li class="list-group-item"> <i url="{{ MEDIA_URL }}{{ file_path }}" style="color:#E63232; font-size: 22px; cursor: pointer;" class="bi bi-square-fill" onclick="newNewToggle('{{ MEDIA_URL }}{{ file_path }}', this)"></i> <a href="{{ MEDIA_URL }}{{ file_path }}"><i class="bi bi-download"></i></a>
+                Lesion Trace  
+            </li>
+        </ul>
+
+        <div id="collapseTwo" class="accordion-collapse show" aria-labelledby="headingTwo" data-bs-parent="#sensitivityAccordion">
+            <div class="accordion-body">
+                <p>
+                    <b>Likely Symptoms:</b> Symptoms were ranked by the percentage of lesion case studies that were functionally correlated (t>7 or t<-7) to the voxels within this lesion's trace. We also include symptom sensitivity maps as overlays for added vizualization.
+                </p>
+
+                <div class="table-responsive">
+                    <table id="sensitivityTable" class="table table-hover">
+                        <thead id='tableHeader' class="thead-light">
+                            <tr>
+                                <th>Toggle</th>
+                                <th>Symptom</th>
+                                <th>Percent Overlap</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in prediction_results %}
+                            <tr>
+                                <td>
+                                    <i url='{{ MEDIA_URL }}{{ row.sensitivity_parametric_path }}' id='toggle{{forloop.counter}}' style="color:#ff999e; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('{{ MEDIA_URL }}{{ row.sensitivity_parametric_path }}', this)"></i> 
+                                    <a href="{{ MEDIA_URL }}{{ row.sensitivity_parametric_path }}"><i class="bi bi-download"></i></a>                                  
+                                </td>
+                                <td>
+                                    <a target="_blank" href="{% url 'symptom_detail' row.symptom %}">{{ row.symptom }}</a>
+                                </td>
+                                <td>
+                                    {{row.average_overlap}}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+        <div class="col col-sm-12">
+            <div class="accordion" id="caseStudiesAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                            Similar Lesion Case Studies
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#caseStudiesAccordion">
+                        <div class="accordion-body"> 
+                            <div class="table-responsive">
+                                <p> 
+                                    Existing lesion case reports with high 
+                                    average functional connectivity to the lesion 
+                                    were found by averaging functional connectivity 
+                                    values across the lesioned indices.
+                                </p>
+                                <table id="sortableTable2" class="table table-hover">
+                                    <thead id='tableHeader' class="thead-light">
+                                        <tr>
+                                            <th>Lesion Trace</th>
+                                            <th>Lesion Network</th>
+                                            <th>Symptom</th>
+                                            <th>T value</th>
+                                            <th>Details</th>
+                                            <!-- <th>DOI</th> -->
+                                            <th>Publication Info</th>
+                                            <th>Age</th>
+                                            <th>Sex</th>
+                                            <th>Cause</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for case in similar_case_studies %}
+                                        <tr> 
+                                            <td>
+                                                <i url='{{ MEDIA_URL }}{{ case.tracing_file_name }}' id='2toggle{{forloop.counter}}' style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('{{ MEDIA_URL }}{{ case.tracing_file_name }}', this)"></i> 
+                                                <a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a>                                  
+                                            </td>
+                                            <td>
+                                                <i url='{{ MEDIA_URL }}{{ case.network_file_name }}' id='2toggle{{forloop.counter}}' style="color:#ff999e; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('{{ MEDIA_URL }}{{ case.network_file_name }}', this)"></i> 
+                                                <a href="{{ MEDIA_URL }}{{ case.network_file_name }}"><i class="bi bi-download"></i></a>                                  
+                                            </td>
+                                            <td>
+                                                <a target="_blank" href="{% url 'symptom_detail' case.symptom %}">{{ case.symptom }}</a>
+                                            </td>
+                                            <td>
+                                                {{case.value}}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                                    <!-- <button type="button" id="overlay{{ forloop.counter }}" author="{{case.author}}" year="{{case.publication_year}}" trace="{{case.tracing_file_name}}" network_map="{{case.network_file_name}}" class="btn btn-sm btn-outline-secondary add-overlay-button" onclick="addOverlay(this)">Add Overlay</button> -->
+                                                    <a target="_blank" href="{% url 'cases_single' case.lesion_id %}" class="btn btn-primary btn-sm">Full Details</a>
+                                                </div>
+                                                <!-- <a href="{% url 'cases_single' case.lesion_id %}" class="btn btn-primary btn-sm">View</a> -->
+                                            </td>
+                                            
+                                            <td> <a target="_blank" href="{{case.doi}}">{{case.author}} ({{case.publication_year}})</a></td>
+                                            <td>{{case.patient_age}}</td>
+                                            <td>{{case.patient_sex}}</td>
+                                            <td>{{case.cause_of_lesion}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br><br>
+        </div>
+        <br><br>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+
+    function newNewToggle(link, element){
+            if(params[link.split('/').pop()]){
+                let viewer = papayaContainers[0].viewer;
+                let overlays = viewer.screenVolumes;
+                let overlay_list = overlays.map(overlay => overlay.volume.urls[0]);
+                if(overlay_list.includes(link)){
+                    i = overlay_list.indexOf(link);
+                    viewer.toggleOverlay(i);
+                }
+                else{
+                    if(params[link.split('/').pop()].parametric = true){
+                        papaya.viewer.Viewer.MAX_OVERLAYS += 2;
+                    }
+                    else{
+                        papaya.viewer.Viewer.MAX_OVERLAYS +=1
+                    }
+                    viewer.loadOverlay([link],true,false,false);
+                }
+                if(element instanceof HTMLElement) {
+                    element.classList.toggle("bi-square-fill");
+                    element.classList.toggle("bi-square");
+                }
+            }
+    }
+    function loadFirstOverlay(){
+        setTimeout(() => {
+            let element = document.getElementById("toggle1");
+            let link = element.getAttribute('url')
+            newNewToggle(link, element);
+        }, 10);
+    }
+    var params = {};
+    params["images"] = [
+        "https://neurovault.org/static/images/GenericMNI.nii.gz",
+        "{{ MEDIA_URL }}{{ file_path }}"
+    ];
+    params["luts"] = [
+        {"name":"Lesion Trace", "data": [[0, 0.9, 0.2, 0.2], [1, 1, 0.2, 0.2]]},
+        {"name":"PuBu", "data":[[0,1,0.968627,0.984314],[0.05,0.92549,0.905882,0.94902],[0.1,0.815686,0.819608,0.901961],[0.15,0.65098,0.741176,0.858824],[0.2,0.454902,0.662745,0.811765],[0.25,0.211765,0.564706,0.752941],[0.3,0.0196078,0.439216,0.690196],[0.35,0.0156863,0.352941,0.552941],[.4,0.00784314,0.219608,0.345098],[1.0,0.00784314,0.219608,0.345098]]},
+        {"name":"OrRd", "data":[[0,1,0.968627,0.92549],[0.125,0.996078,0.909804,0.784314],[0.25,0.992157,0.831373,0.619608],[0.375,0.992157,0.733333,0.517647],[0.5,0.988235,0.552941,0.34902],[0.625,0.937255,0.396078,0.282353],[0.75,0.843137,0.188235,0.121569],[0.875,0.701961,0,0],[1,0.498039,0,0]]},
+        {"name":"PuBuNotParametric", "data":[[0,1,0.968627,0.984314],[0.125,0.92549,0.905882,0.94902],[0.25,0.815686,0.819608,0.901961],[0.375,0.65098,0.741176,0.858824],[0.5,0.454902,0.662745,0.811765],[0.625,0.211765,0.564706,0.752941],[0.75,0.0196078,0.439216,0.690196],[0.875,0.0156863,0.352941,0.552941],[1,0.00784314,0.219608,0.345098]]}
+    ]
+    params['{{file_path}}'.split('/').pop()] = {lut: "Lesion Trace", "alpha":1.0}
+    {% for case in similar_case_studies %}
+        params["{{case.tracing_file_name}}".split('/').pop()] = {lut: "Lesion Trace", "alpha":1.0};
+        params["{{case.network_file_name}}".split('/').pop()] = {'parametric': true, 'min': 25, 'max': 100, 'alpha': 0.6, lut: "OrRd", 'negative_lut':'PuBu', 'symmetric':false};
+    {% endfor %}
+    {% for row in prediction_results %}
+        params["{{ row.sensitivity_parametric_path }}".split('/').pop()] = {'min': 50, 'max': 100, 'alpha': 0.6, 'lut': "OrRd", 'negative_lut':'PuBuNotParametric', 'parametric':true, 'symmetric':true}
+    {% endfor %}
+    params["worldSpace"] = true;
+    params["expandable"] = true;
+    params["combineParametric"] = true;
+    params["showControls"] = false;
+    params["smoothDisplay"] = false;
+    params["allowScroll"] = false;
+    params["coordinate"] = ("{{ initial_coord }}".split('_')).map(Number);
+    // params["loadingComplete"] = loadFirstOverlay;
+
+</script>
+<script>
+    
+    function getCurrentCoord(){
+        let viewer = papayaContainers[0].viewer;
+        return viewer.getWorldCoordinateAtIndex(Object.values(viewer.currentCoord)[0],Object.values(viewer.currentCoord)[1],Object.values(viewer.currentCoord)[2], new papaya.core.Coordinate());
+    }
+    function gotoCoord(x,y,z){
+        let viewer = papayaContainers[0].viewer;
+        viewer.gotoWorldCoordinate({'x':x,'y':y,'z':z});
+    }
+    function updateCoords() {
+        const x = document.getElementById('findX').value;
+        const y = document.getElementById('findY').value;
+        const z = document.getElementById('findZ').value;
+        gotoCoord(x, y, z);
+    }
+    document.querySelector('.papaya').addEventListener('mousemove', function() {
+        const coords = getCurrentCoord();
+        document.getElementById('findX').value = coords.x;
+        document.getElementById('findY').value = coords.y;
+        document.getElementById('findZ').value = coords.z;
+    });
+
+</script>
+{% endblock %}
