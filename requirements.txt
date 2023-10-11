@@ -13,6 +13,6 @@ nilearn
 tqdm
 natsort
 importlib
-pfc-toolkit
 django-storages
 pillow
+-e ./pfc-toolkit
