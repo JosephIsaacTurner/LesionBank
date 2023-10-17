@@ -4,6 +4,7 @@ from django.utils import timezone
 import os
 import uuid
 from django.utils.deconstruct import deconstructible
+from django.core.files.base import ContentFile
 
 @deconstructible
 class PathAndRename(object):
@@ -194,8 +195,8 @@ class AtlasVoxels(models.Model):
 
 class GeneratedImages(models.Model):
     file_id = models.CharField(max_length=10, db_column='file_id', primary_key=True)
-    file_path_1mm = models.FileField(upload_to='output/')
-    file_path_2mm = models.FileField(upload_to='output/')
+    file_path_1mm = models.FileField(upload_to='output/', default='output/not_generated')
+    file_path_2mm = models.FileField(upload_to='output/', default='output/not_generated')
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     timestamp = models.DateTimeField(auto_now_add=True)
     page_name = models.CharField(max_length=200)
@@ -205,6 +206,13 @@ class GeneratedImages(models.Model):
 
     def __str__(self):
         return str(self.file_id)
+
+    def save(self, *args, **kwargs):
+        if not self.file_path_1mm:
+            self.file_path_1mm.save('not_generated', ContentFile(''), save=False)
+        if not self.file_path_2mm:
+            self.file_path_2mm.save('not_generated', ContentFile(''), save=False)
+        super().save(*args, **kwargs)
     
 class PredictionVoxels(models.Model):
     file = models.ForeignKey('GeneratedImages', on_delete=models.CASCADE, null=True)
