@@ -50,9 +50,7 @@ def predict(request):
     if request.method == 'POST':
         logged_points = json.loads(request.POST.get('loggedPoints', '[]'))
         logged_points = np.array(logged_points)
-        # 2mm resolution: 
         # First, make the .nifti file in 1mm resolution
-        # 1mm resolution:
         affine= np.array([
             [-1.,0.,0.,90.],
             [0.,1.,0.,-126.],
@@ -60,23 +58,30 @@ def predict(request):
             [0.,0.,0.,1.]
         ])
         shape=(182,218,182)
-        # 2 mm resolution
-        # affine = np.array([
-        #     [-2., 0., 0., 90.],
-        #     [0., 2., 0., -126.],
-        #     [0., 0., 2., -72.],
-        #     [0., 0., 0., 1.]
-        # ])
-        # shape=(91,109,91)
         nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
         file_id = str(int(time.time()))  # Get 10-digit UNIX timestamp
-        filename = f"{file_id}_trace.nii.gz"
-        filepath = os.path.join("prediction_traces/",filename)
-        save_image(nii_img, filepath)
+        filename = f"{file_id}_1mm_trace.nii.gz"
+        filepath_1mm = os.path.join("prediction_traces/",filename)
+        save_image(nii_img, filepath_1mm)
+
+        # Now, make a copy in 2mm resolution:
+        affine = np.array([
+            [-2., 0., 0., 90.],
+            [0., 2., 0., -126.],
+            [0., 0., 2., -72.],
+            [0., 0., 0., 1.]
+        ])
+        shape=(91,109,91)
+        nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
+        filename = f"{file_id}_2mm_trace.nii.gz"
+        filepath_2mm = os.path.join("prediction_traces/",filename)
+        save_image(nii_img, filepath_2mm)
+
         image, created = GeneratedImages.objects.get_or_create(
             file_id=file_id,
             defaults={
-                'file_path': filepath,
+                'file_path_1mm': filepath_1mm,
+                'file_path_2mm': filepath_2mm,
                 'user': request.user if request.user.is_authenticated else None,
                 'page_name': 'predict'
             }
@@ -151,7 +156,7 @@ def prediction_results(request, file_id):
     similar_case_studies_query += """ order by value desc """
     similar_case_studies = run_raw_sql(similar_case_studies_query)
     context = {}
-    context['file_path'] = image.file_path
+    context['file_path'] = image.file_path_1mm
     context['prediction_results'] = prediction_results
     context['title'] = "Prediction Results"
     context['initial_coord'] = initial_coord

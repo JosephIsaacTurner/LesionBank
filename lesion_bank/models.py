@@ -194,7 +194,8 @@ class AtlasVoxels(models.Model):
 
 class GeneratedImages(models.Model):
     file_id = models.CharField(max_length=10, db_column='file_id', primary_key=True)
-    file_path = models.FileField(upload_to='output/')
+    file_path_1mm = models.FileField(upload_to='output/')
+    file_path_2mm = models.FileField(upload_to='output/')
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     timestamp = models.DateTimeField(auto_now_add=True)
     page_name = models.CharField(max_length=200)
