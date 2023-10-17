@@ -1,61 +1,36 @@
-from lesion_bank.array_functions import npToSql_uploads, niftiTo2d, reshapeTo3d, numpyToSql
+from lesion_bank.array_functions import reshapeTo3d, numpyToSql
 from lesion_bank.models import GeneratedImages, PredictionVoxels
-from django.shortcuts import render
-from django.shortcuts import redirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 import numpy as np
 import nibabel as nib
 import os
 import time
 import json
-from django.http import HttpResponse
-from django.core.files.storage import default_storage
-import boto3
 from django.conf import settings
-from tempfile import NamedTemporaryFile
 from django.db import connection
-import gzip
-from io import BytesIO
+from django.utils.module_loading import import_string
 from django.conf import settings
+
+CustomStorage = import_string(settings.DEFAULT_FILE_STORAGE)
 
 private_symptoms = settings.PRIVATE_SYMPTOMS
+storage = CustomStorage()
 
-if settings.USE_S3:
-    SESSION = boto3.session.Session()
-    CLIENT = SESSION.client('s3',
-                            region_name='nyc3',
-                            endpoint_url='https://nyc3.digitaloceanspaces.com',
-                            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
-    
-    def upload_to_s3(content, path, client=CLIENT):
-        headers = {'ContentType': ''}
-        try:
-            client.upload_fileobj(content, "lesionbucket", f"{path}", ExtraArgs=headers)
-        except Exception as e:
-            print(f"Failed to upload {path} to S3. Error: {e}")
-            return None
-        return path
-
-def compress_nii_image(nii_img):
-    img_data = nii_img.to_bytes()
-    img_data_gz = BytesIO()
-    with gzip.GzipFile(fileobj=img_data_gz, mode='w') as f_out:
-        f_out.write(img_data)
-    img_data_gz.seek(0)
-    return img_data_gz
+def save_to_cloud(nii_img, path):
+    # The save method from CustomStorage is used to handle both the compression and the uploading process
+    compressed_img = storage.compress_nii_image(nii_img)
+    return storage.save(name=path, content=compressed_img)
 
 def save_local(nii_img, path):
+    # This function remains unchanged as it is specific to local saving and not present in CustomStorage
     nib.save(nii_img, path)
     return path
 
-def save_to_cloud(nii_img, path):
+def save_image(nii_img, path):
     if settings.USE_S3:
-        compressed_img = compress_nii_image(nii_img)
-        return upload_to_s3(compressed_img, path)
+        return save_to_cloud(nii_img, path)
     else:
-        save_local(nii_img, path)
-        return None
+        return save_local(nii_img, path)
 
 def run_raw_sql(query, single_value=False):
     with connection.cursor() as cursor:
@@ -97,11 +72,7 @@ def predict(request):
         file_id = str(int(time.time()))  # Get 10-digit UNIX timestamp
         filename = f"{file_id}_trace.nii.gz"
         filepath = os.path.join("prediction_traces/",filename)
-        if settings.USE_S3:
-            save_to_cloud(nii_img, os.path.join("uploads/",filepath))
-        else:
-            save_local(nii_img, os.path.join("uploads/", filepath))
-       # Create a GeneratedImages object
+        save_image(nii_img, os.path.join("uploads/", filepath))
         image, created = GeneratedImages.objects.get_or_create(
             file_id=file_id,
             defaults={
