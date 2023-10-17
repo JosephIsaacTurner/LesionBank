@@ -48,7 +48,7 @@
             <li class="list-group-item"> <i url="{{ MEDIA_URL }}{{ file_path }}" style="color:#E63232; font-size: 22px; cursor: pointer;" class="bi bi-square-fill" onclick="newNewToggle('{{ MEDIA_URL }}{{ file_path }}', this)"></i> <a href="{{ MEDIA_URL }}{{ file_path }}"><i class="bi bi-download"></i></a>
                 Lesion Trace  
             </li>
-            <li class="list-group-item"> <i url="{{ MEDIA_URL }}{{ network_path }}" style="color:#ff999e; font-size: 22px; cursor: pointer;" class="bi bi-square-fill" onclick="newNewToggle('{{ MEDIA_URL }}{{ file_path }}', this)"></i> <a href="{{ MEDIA_URL }}{{ file_path }}"><i class="bi bi-download"></i></a>
+            <li class="list-group-item"> <i url="{{ network_path }}" style="color:#ff999e; font-size: 22px; cursor: pointer;" class="bi bi-square-fill" onclick="newNewToggle('{{ MEDIA_URL }}{{ file_path }}', this)"></i> <a href="{{ MEDIA_URL }}{{ file_path }}"><i class="bi bi-download"></i></a>
                 Lesion Network Map  
             </li>
         </ul>
@@ -207,7 +207,7 @@
     params["images"] = [
         "https://neurovault.org/static/images/GenericMNI.nii.gz",
         "{{ MEDIA_URL }}{{ file_path }}",
-        "{{ MEDIA_URL }}{{ network_path }}"
+        "{{ network_path }}"
     ];
     params["luts"] = [
         {"name":"Lesion Trace", "data": [[0, 0.9, 0.2, 0.2], [1, 1, 0.2, 0.2]]},
