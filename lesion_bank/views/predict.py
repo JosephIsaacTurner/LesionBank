@@ -158,6 +158,7 @@ def prediction_results(request, file_id):
     similar_case_studies = run_raw_sql(similar_case_studies_query)
     context = {}
     context['file_path'] = image.file_path_1mm
+    context['network_path'] = image.file_path_2mm
     context['prediction_results'] = prediction_results
     context['title'] = "Prediction Results"
     context['initial_coord'] = initial_coord
