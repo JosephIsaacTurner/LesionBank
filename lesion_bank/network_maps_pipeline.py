@@ -1,7 +1,7 @@
 import subprocess
 import manage_aws_key
 
-def main(input_directory="s3://lesionbucket/trace_input", output_directory="s3://lesionbucket/network_maps_output"):
+def compute_network_map(input_directory="s3://lesionbucket/trace_input", output_directory="s3://lesionbucket/network_maps_output"):
     manage_aws_key.update_aws_secret_key()
 
     # Define the command as a list of strings
@@ -23,4 +23,4 @@ def main(input_directory="s3://lesionbucket/trace_input", output_directory="s3:/
     return output_directory
 
 if __name__ == "__main__":
-    main()
+    compute_network_map()

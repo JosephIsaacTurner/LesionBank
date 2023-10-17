@@ -10,6 +10,7 @@ from django.conf import settings
 from django.db import connection
 from django.utils.module_loading import import_string
 from django.conf import settings
+from lesion_bank.network_maps_pipeline import compute_network_map
 
 CustomStorage = import_string(settings.DEFAULT_FILE_STORAGE)
 
