@@ -1,5 +1,5 @@
 import subprocess
-from . import manage_aws_key
+import manage_aws_key
 
 def main():
     manage_aws_key.update_aws_secret_key()
