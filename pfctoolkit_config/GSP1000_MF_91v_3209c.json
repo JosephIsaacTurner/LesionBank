@@ -13,10 +13,10 @@
     "chunk_size": 91,
     "chunk_idx": "s3://lesionbucket/precomputed_connectome/chunks/MNI152_2mm_dil_91v_3209c/chunk_idx.nii.gz",
     "type": "volume",
-    "AWS_ACCESS_KEY_ID":"DO00ZUF4R9R7TV3ZBEB7",
-    "AWS_SECRET_ACCESS_KEY":"",
-    "AWS_STORAGE_BUCKET_NAME":"lesionbucket",
-    "AWS_S3_ENDPOINT_URL":"https://nyc3.digitaloceanspaces.com",
-    "AWS_S3_REGION_NAME":"nyc3",
+    "AWS_ACCESS_KEY_ID": "DO00ZUF4R9R7TV3ZBEB7",
+    "AWS_SECRET_ACCESS_KEY": "",
+    "AWS_STORAGE_BUCKET_NAME": "lesionbucket",
+    "AWS_S3_ENDPOINT_URL": "https://nyc3.digitaloceanspaces.com",
+    "AWS_S3_REGION_NAME": "nyc3",
     "USE_S3": true
 }

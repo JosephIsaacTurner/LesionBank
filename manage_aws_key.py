@@ -23,14 +23,14 @@ def update_aws_secret_key():
         json.dump(data, json_file, indent=4)
 
 def remove_aws_secret_key():
-    """Remove AWS_SECRET_ACCESS_KEY from the JSON config."""
+    """Replace AWS_SECRET_ACCESS_KEY with an empty string in the JSON config."""
 
     # Read the JSON file
     with open(CONFIG_PATH, 'r') as json_file:
         data = json.load(json_file)
 
-    # Remove the AWS_SECRET_ACCESS_KEY field
-    data.pop('AWS_SECRET_ACCESS_KEY', None)
+    # Set the AWS_SECRET_ACCESS_KEY to an empty string
+    data['AWS_SECRET_ACCESS_KEY'] = ""
 
     # Write the updated data back to the file
     with open(CONFIG_PATH, 'w') as json_file:
