@@ -16,19 +16,19 @@ CustomStorage = import_string(settings.DEFAULT_FILE_STORAGE)
 private_symptoms = settings.PRIVATE_SYMPTOMS
 storage = CustomStorage()
 
-def save_to_cloud(nii_img, path):
+def save_to_cloud(nii_img, path, bucketName=settings.AWS_STORAGE_BUCKET_NAME):
     # The save method from CustomStorage is used to handle both the compression and the uploading process
     compressed_img = storage.compress_nii_image(nii_img)
-    return storage.save(name=path, content=compressed_img)
+    return storage.save(name=path, content=compressed_img, bucket_name=bucketName)
 
 def save_local(nii_img, path):
     # This function remains unchanged as it is specific to local saving and not present in CustomStorage
     nib.save(nii_img, path)
     return path
 
-def save_image(nii_img, path):
+def save_image(nii_img, path, bucketName=settings.AWS_STORAGE_BUCKET_NAME):
     if settings.USE_S3:
-        return save_to_cloud(nii_img, path)
+        return save_to_cloud(nii_img, path, bucketName)
     else:
         return save_local(nii_img, path)
 
@@ -74,8 +74,8 @@ def predict(request):
         shape=(91,109,91)
         nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
         filename = f"{file_id}_2mm_trace.nii.gz"
-        filepath_2mm = os.path.join("prediction_traces/",filename)
-        save_image(nii_img, filepath_2mm)
+        filepath_2mm = os.path.join(f"{file_id}/",filename)
+        save_image(nii_img, filepath_2mm, "trace_input")
 
         image, created = GeneratedImages.objects.get_or_create(
             file_id=file_id,
