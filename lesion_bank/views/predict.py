@@ -93,7 +93,7 @@ def predict(request):
         odd_indices = logged_points[:, :3] % 2 == 1
         logged_points[:, :3][odd_indices] += 1
         numpyToSql(logged_points, "file", image, PredictionVoxels)  # pass image instance instead of file_id
-
+        compute_network_map(f"s3://lesionbucket/trace_input/{file_id}", f"s3://lesionbucket/network_maps_output/{file_id}")
         # return HttpResponse("success running numpyToSql")
         return redirect('prediction_results', file_id=file_id)
     else:
