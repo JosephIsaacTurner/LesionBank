@@ -72,7 +72,7 @@ def predict(request):
         file_id = str(int(time.time()))  # Get 10-digit UNIX timestamp
         filename = f"{file_id}_trace.nii.gz"
         filepath = os.path.join("prediction_traces/",filename)
-        save_image(nii_img, os.path.join("uploads/", filepath))
+        save_image(nii_img, filepath)
         image, created = GeneratedImages.objects.get_or_create(
             file_id=file_id,
             defaults={
