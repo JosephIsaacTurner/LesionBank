@@ -8,6 +8,7 @@
             <span class="visually-hidden">Loading...</span>
         </div>
         <p>Waiting for the network map to generate...</p>
+        <p id="counter"></p> 
     </div>
     <div id="loadedDiv" class="text-center d-none">
         <p>Network map is ready! Redirecting...</p>
@@ -18,13 +19,18 @@
     const URL_TO_CHECK = 'https://lesionbucket.nyc3.digitaloceanspaces.com/network_maps_output/{{file_id}}/{{file_id}}_2mm_trace_Precom_T.nii.gz';
     const REDIRECT_URL = "{% url 'prediction_results' file_id %}";
 
+    let seconds = 0;
+    const interval = setInterval(() => {
+        seconds++;
+        document.getElementById('counter').textContent = `${seconds} seconds elapsed`; 
+    }, 1000);
     function checkFile() {
         fetch(URL_TO_CHECK, { method: 'HEAD' })
             .then(response => {
                 if (response.ok) {
+                    clearInterval(interval);
                     document.getElementById('loadingDiv').classList.add('d-none');
                     document.getElementById('loadedDiv').classList.remove('d-none');
-                    
                     // Redirect to the Django URL after a slight delay to show the "ready" message
                     setTimeout(() => {
                         window.location.href = REDIRECT_URL;
