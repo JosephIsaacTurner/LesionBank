@@ -108,6 +108,7 @@ def predict(request):
         return render(request, 'lesion_bank/predict_trace.html', context)
 
 def prediction_results(request, file_id):
+    image = get_object_or_404(GeneratedImages, file_id=file_id)
     url_to_check = f'https://lesionbucket.nyc3.digitaloceanspaces.com/network_maps_output/{file_id}/{file_id}_2mm_trace_Precom_T.nii.gz'
     # Check if the file exists
     response = requests.head(url_to_check)
@@ -116,7 +117,6 @@ def prediction_results(request, file_id):
     if response.status_code == 404:
         return render(request, 'lesion_bank/loading.html', {'file_id': file_id})
     
-    image = get_object_or_404(GeneratedImages, file_id=file_id)
     prediction_query = f"""
         WITH join_table AS (
             SELECT prediction_voxels.voxel_id, symptom, percent_overlap, sensitivity_parametric_path
