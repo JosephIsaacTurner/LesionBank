@@ -11,6 +11,8 @@ from django.db import connection
 from django.utils.module_loading import import_string
 from django.conf import settings
 from lesion_bank.network_maps_pipeline import compute_network_map
+from lesion_bank.tasks import compute_network_map_async
+
 
 CustomStorage = import_string(settings.DEFAULT_FILE_STORAGE)
 
@@ -93,7 +95,10 @@ def predict(request):
         odd_indices = logged_points[:, :3] % 2 == 1
         logged_points[:, :3][odd_indices] += 1
         numpyToSql(logged_points, "file", image, PredictionVoxels)  # pass image instance instead of file_id
-        compute_network_map(f"s3://lesionbucket/trace_input/{file_id}", f"s3://lesionbucket/network_maps_output/{file_id}")
+        # The following line takes a long time to run, so I want to run it asynchronously
+        # But, this is a django view-- how do I do that?
+        # compute_network_map(f"s3://lesionbucket/trace_input/{file_id}", f"s3://lesionbucket/network_maps_output/{file_id}")
+        compute_network_map_async.delay(f"s3://lesionbucket/trace_input/{file_id}", f"s3://lesionbucket/network_maps_output/{file_id}")
         # return HttpResponse("success running numpyToSql")
         return redirect('prediction_results', file_id=file_id)
     else:

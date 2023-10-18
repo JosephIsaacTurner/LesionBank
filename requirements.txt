@@ -15,4 +15,6 @@ natsort
 importlib
 django-storages
 pillow
+celery
+redis
 -e ./pfc-toolkit
