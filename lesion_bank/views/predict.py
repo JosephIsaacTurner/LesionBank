@@ -12,7 +12,7 @@ from django.utils.module_loading import import_string
 from django.conf import settings
 from lesion_bank.network_maps_pipeline import compute_network_map
 from lesion_bank.tasks import compute_network_map_async
-
+import requests
 
 CustomStorage = import_string(settings.DEFAULT_FILE_STORAGE)
 
@@ -108,6 +108,14 @@ def predict(request):
         return render(request, 'lesion_bank/predict_trace.html', context)
 
 def prediction_results(request, file_id):
+    url_to_check = f'https://lesionbucket.nyc3.digitaloceanspaces.com/network_maps_output/{file_id}/{file_id}_2mm_trace_Precom_T.nii.gz'
+    # Check if the file exists
+    response = requests.head(url_to_check)
+
+    # if the response status is 404 (Not Found), then return the loading page
+    if response.status_code == 404:
+        return render(request, 'lesion_bank/loading.html', {'file_id': file_id})
+    
     image = get_object_or_404(GeneratedImages, file_id=file_id)
     prediction_query = f"""
         WITH join_table AS (

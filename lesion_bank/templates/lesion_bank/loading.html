@@ -1,0 +1,50 @@
+{% extends "lesion_bank/genericHTML.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div id="loadingDiv" class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p>Waiting for the network map to generate...</p>
+    </div>
+    <div id="loadedDiv" class="text-center d-none">
+        <p>Network map is ready! Redirecting...</p>
+    </div>
+</div>
+
+<script>
+    const URL_TO_CHECK = 'https://lesionbucket.nyc3.digitaloceanspaces.com/network_maps_output/{{file_id}}/{{file_id}}_2mm_trace_Precom_T.nii.gz';
+    const REDIRECT_URL = "{% url 'prediction_results' file_id %}";
+
+    function checkFile() {
+        fetch(URL_TO_CHECK, { method: 'HEAD' })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('loadingDiv').classList.add('d-none');
+                    document.getElementById('loadedDiv').classList.remove('d-none');
+                    
+                    // Redirect to the Django URL after a slight delay to show the "ready" message
+                    setTimeout(() => {
+                        window.location.href = REDIRECT_URL;
+                    }, 2000); 
+                } else {
+                    setTimeout(checkFile, 5000); // Check again in 5 seconds
+                }
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+                setTimeout(checkFile, 5000); // Check again in 5 seconds in case of a fetch error
+            });
+    }
+
+    // Start the checking process
+    checkFile();
+</script>
+
+
+
+
+{% endblock %}
+
