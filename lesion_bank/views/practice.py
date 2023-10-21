@@ -93,52 +93,6 @@ def practice_view_compare(request, upload_id):
                                                                  'file_path': file_path,
                                                                  'true_file_path': true_file_path})
 
-
-def practice_view_trace(request):
-    if request.method == 'POST':
-        logged_points = json.loads(request.POST.get('loggedPoints', '[]'))
-        logged_points = np.array(logged_points)
-        # 2 mm resolution:
-        # affine = np.array([
-        #     [-2., 0., 0., 90.],
-        #     [0., 2., 0., -126.],
-        #     [0., 0., 2., -72.],
-        #     [0., 0., 0., 1.]
-        # ])
-        # shape=(91,109,91)
-        # 1mm resolution:
-        affine= np.array([
-            [-1.,0.,0.,90.],
-            [0.,1.,0.,-126.],
-            [0.,0.,1.,-72.],
-            [0.,0.,0.,1.]
-        ])
-        shape=(182,218,182)
-        ni_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
-        # Specify the directory and filename for saving the image
-        directory = 'media/output/'  # Replace with the desired directory
-        file_id = str(int(time.time()))  # Get 10-digit UNIX timestamp
-        filename = f"{file_id}_trace.nii.gz"
-        filepath = os.path.join(directory, filename)
-        nib.save(ni_img, filepath)
-
-        # Remove the 'media/' part of the filepath
-        filepath = filepath.replace('media/', '')
-
-        # Create a GeneratedImages object
-        image, created = GeneratedImages.objects.get_or_create(
-            file_id=file_id,
-            defaults={
-                'file_path': filepath,
-                'user': request.user if request.user.is_authenticated else None,
-                'page_name': 'practice/trace'
-            }
-        )
-
-        return redirect('trace_view', file_id=file_id)
-    else:
-        return render(request, 'lesion_bank/practice_trace.html')
-
 def trace_view(request, file_id):
     image = get_object_or_404(GeneratedImages, file_id=file_id)
     return render(request, 'lesion_bank/trace_view.html', {'file_path': image.file_path})
