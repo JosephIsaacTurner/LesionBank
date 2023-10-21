@@ -147,9 +147,13 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # or your Redis URL
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+if os.environ.get('REDIS_HOST') and os.environ.get('REDIS_PORT'):
+    CELERY_BROKER_URL = f"redis://{os.environ['REDIS_HOST']}:{os.environ['REDIS_PORT']}/0"
+    CELERY_RESULT_BACKEND = f"redis://{os.environ['REDIS_HOST']}:{os.environ['REDIS_PORT']}/0"
+else:
+    # This is for your non-Docker environment.
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

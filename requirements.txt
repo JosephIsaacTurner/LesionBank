@@ -2,6 +2,7 @@ django
 django-crispy-forms
 crispy_bootstrap5
 openai
+netifaces
 python-decouple
 nibabel
 numpy
@@ -12,7 +13,6 @@ numba
 nilearn
 tqdm
 natsort
-importlib
 django-storages
 pillow
 celery

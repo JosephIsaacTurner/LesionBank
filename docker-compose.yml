@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  django_app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DJANGO_SETTINGS_MODULE=django_project.settings
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: dockerfile
+    command: celery -A django_project worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DJANGO_SETTINGS_MODULE=django_project.settings
+
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"

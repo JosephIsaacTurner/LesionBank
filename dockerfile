@@ -9,11 +9,14 @@ ENV DJANGO_SETTINGS_MODULE django_project.settings
 WORKDIR /app
 
 # Copy only the requirements file and install dependencies
-COPY requirements.txt /app/
-RUN pip install -r requirements.txt
+COPY requirements_docker.txt /app/
 
 # Copy the current directory contents into the container at /app
 COPY . /app/
+
+RUN pip install --upgrade pip setuptools wheel
+
+RUN pip install -r requirements_docker.txt
 
 # Expose the port your application will run on
 EXPOSE 8000

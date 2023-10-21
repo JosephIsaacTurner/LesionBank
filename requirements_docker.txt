@@ -1,0 +1,20 @@
+django
+django-crispy-forms
+crispy_bootstrap5
+openai
+netifaces
+python-decouple
+nibabel
+numpy
+psycopg2
+boto3
+scipy
+numba
+nilearn
+tqdm
+natsort
+django-storages
+pillow
+celery
+redis
+-e /app/pfc-toolkit
