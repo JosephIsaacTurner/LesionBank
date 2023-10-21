@@ -3,7 +3,7 @@ from decouple import config
 import argparse
 
 # Path to the JSON file
-CONFIG_PATH = "pfctoolkit_config/GSP1000_MF_91v_3209c.json"
+CONFIG_PATH = "GSP1000_MF_91v_3209c.json"
 
 def update_aws_secret_key():
     """Update AWS_SECRET_ACCESS_KEY in the JSON config."""

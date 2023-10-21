@@ -1,5 +1,5 @@
 import subprocess
-import manage_aws_key
+import pfctoolkit_config.manage_aws_key as manage_aws_key
 
 def compute_network_map(input_directory="s3://lesionbucket/trace_input", output_directory="s3://lesionbucket/network_maps_output"):
     manage_aws_key.update_aws_secret_key()
