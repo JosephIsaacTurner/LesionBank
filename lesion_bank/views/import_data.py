@@ -4,43 +4,18 @@ from lesion_bank.forms import LesionMetadataForm
 from lesion_bank.array_functions import npToSql, niftiTo2d, fillCoordinateTable, getNiftiFromCloud, niftiObjTo2d
 from django.db import IntegrityError
 from django.core.files.uploadedfile import InMemoryUploadedFile
-import nibabel as nib
-import boto3
-from io import BytesIO
 import gzip
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from lesion_bank.forms import NewSymptomsForm, UpdateSymptomsForm
+from django.forms import modelformset_factory
 private_symptoms = settings.PRIVATE_SYMPTOMS
 
-# def getNiftiFromCloud(cloud_filepath):
-#     from django.conf import settings
-#     session = boto3.session.Session()
-#     client = session.client('s3',
-#                             region_name='nyc3',
-#                             endpoint_url='https://nyc3.digitaloceanspaces.com',
-#                             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-#                             aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
-#     image_object = client.get_object(Bucket='lesionbucket', Key=cloud_filepath)
-#     image_data = image_object['Body'].read()
-#     fh = nib.FileHolder(fileobj=gzip.GzipFile(fileobj=BytesIO(image_data)))
-#     img = nib.Nifti1Image.from_file_map({'header': fh, 'image': fh})
-#     return img
 
 @login_required
 def edit_metadata_list_view(request):
     metadata_list = LesionMetadata.objects.all()
     return render(request, 'lesion_bank/edit_metadata_list.html', {'title':'Dataset Admin', 'metadata_list': metadata_list, 'edit':True})
-
-def view_metadata_list_view(request):
-    if request.user.is_authenticated:
-        # If the user is logged in, show all records
-        metadata_list = LesionMetadata.objects.all()
-    else:
-        # If the user is not logged in, exclude records with specified symptoms
-        excluded_symptoms = Symptoms.objects.filter(symptom__in=private_symptoms)
-        metadata_list = LesionMetadata.objects.exclude(symptoms__in=excluded_symptoms)
-        
-    return render(request, 'lesion_bank/edit_metadata_list.html', {'title':'Lesion Bank Dataset List', 'metadata_list': metadata_list, 'edit':False})
 
 @login_required
 def import_metadata_form(request):
@@ -113,3 +88,24 @@ def edit_metadata_form_view(request, lesion_id):
         form = LesionMetadataForm(instance=instance)
 
     return render(request, 'lesion_bank/metadata_form_template.html', {'form': form})
+
+@login_required
+def symptoms_form_view(request):
+    SymptomsFormSet = modelformset_factory(Symptoms, form=UpdateSymptomsForm, extra=0)
+
+    if request.method == 'POST':
+        form = NewSymptomsForm(request.POST or None)
+        formset = SymptomsFormSet(request.POST)
+        
+        if form.is_valid() and formset.is_valid():
+            if form.cleaned_data.get('symptom'):
+                form.save()
+            formset.save()
+
+            # Optionally, redirect to a success page
+            return redirect('new_symptom')
+    else:
+        form = NewSymptomsForm()
+        formset = SymptomsFormSet(queryset=Symptoms.objects.all())
+    
+    return render(request, 'lesion_bank/form_template.html', {'form': form, 'formset': formset})

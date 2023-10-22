@@ -2,6 +2,10 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.db import connection
+from django.shortcuts import render
+
+def api_docs(request):
+    return render(request, 'lesion_bank/api_docs.html',{'title': "API Docs"})
 
 # Define view function that handles GET requests
 @require_http_methods(["GET"])

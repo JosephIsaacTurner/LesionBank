@@ -12,9 +12,6 @@ class RegisterView(CreateView):
 def index_view(request):
     return render(request, 'lesion_bank/index.html')
 
-def api_docs(request):
-    return render(request, 'lesion_bank/api_docs.html',{'title': "API Docs"})
-
 def faq(request):
     return render(request, 'lesion_bank/faq.html',{'title':'FAQ'})
 
@@ -27,7 +24,3 @@ def api_view(request):
         return response
     else:
         return render(request, 'error.html', {'message': 'Invalid request method.'})
-    
-def charts_view(request):
-    from . import charts
-    return charts.page(request)
