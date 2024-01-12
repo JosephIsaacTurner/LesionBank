@@ -125,24 +125,26 @@
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 
-<!-- DataTables CSS -->
+<!-- DataTables CSS for Bootstrap 5 -->
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css">
+
+<!-- FixedHeader CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
+
+<!-- Buttons extension CSS for DataTables with Bootstrap 5 -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
 
 <!-- DataTables JS -->
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
 
-<!-- FixedHeader JS -->
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
-<!-- FixedHeader CSS -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
-
-<!-- DataTables Bootstrap Integration -->
+<!-- DataTables Bootstrap 5 Integration JS -->
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap5.min.js"></script>
 
-<!-- DataTables Buttons -->
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<!-- FixedHeader JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
 
-<!-- Buttons extension for DataTables -->
+<!-- DataTables Buttons JS -->
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 
 <!-- JSZip (for PDF/Excel export functionality) -->
@@ -156,7 +158,7 @@ $(document).ready(function() {
     lengthMenu: [[10, 20, 35, 50, 100, -1], [10, 20, 35, 50, 100, "All"]],
     order: [[7, 'asc']],
     dom: 'Bfrtip',  // Add this line, 'B' stands for buttons
-    buttons: ['pageLength', 'csv']  // Now the 'csv' button should appear
+    buttons: ['pageLength', 'csv'] // Why are these buttons not being styled properly? They aren't bootstrap buttons or DataTables buttons; just plain HTML buttons
   });
 });
 </script>
