@@ -173,7 +173,29 @@ $(document).ready(function() {
       "<'row'<'col-sm-12 col-md-6'><'col-sm-12 col-md-6'f>>" +
       "<'row'<'col-sm-12'tr>>" +
       "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>", // Use Bootstrap's grid layout
-    buttons: ['pageLength','csv']
+      buttons: [
+      'pageLength',
+      {
+        extend: 'csv',
+        text: 'Export CSV',
+        exportOptions: {
+          format: {
+            body: function(data, row, column, node) {
+              // If this is the column with links you want to export
+              if (column === yourColumnIndex) {
+                var href = $(node).find('a').attr('href');
+                return href ? href : data; // return href if it exists, else return the cell data
+              } else {
+                // For all other columns, return the cell data
+                return data;
+              }
+            }
+          },
+          columns: ':visible' // Or you can specify the index of columns you want to export
+        }
+      },
+      'copy'
+    ]
   });
 
   table.buttons().container().appendTo( '#sortableTable_wrapper .col-md-6:eq(0)' );
