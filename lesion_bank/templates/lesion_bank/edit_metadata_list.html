@@ -178,6 +178,7 @@ $(document).ready(function() {
       {
         extend: 'csv',
         text: 'Export CSV',
+        className: 'btn-primary',
         exportOptions: {
           columns: ':visible:not(:last-child)', // Export all visible columns except the last one
           format: {
@@ -186,14 +187,15 @@ $(document).ready(function() {
               if ([3, 8, 9, 10].includes(column)) {
                 var href = $(node).find('a').attr('href');
                 return href ? href : ''; // return href if it exists, else return an empty string
+              } else if (column === 7) {
+                return $(node).text(); // return only the text content for column 7
               } else {
                 return data; // return the cell data for other columns
               }
             }
           }
         }
-      },
-      'copy'
+      }
     ]
   });
 
