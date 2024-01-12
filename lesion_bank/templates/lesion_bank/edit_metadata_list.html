@@ -147,15 +147,7 @@ $(document).ready(function() {
       pageLength: -1,  // Display ALL rows by default
       lengthMenu: [[10, 20, 35, 50, 100, -1], [10, 20, 35, 50, 100, "All"]],  // Dropdown options for the user
       order: [[7, 'asc']],  // Sort by the 7th column (Symptoms) in ascending order by default
-      buttons: [
-        {
-          extend: 'csv',
-          text: 'Export CSV',
-          exportOptions: {
-            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  // Export all columns except the last one (Action)
-          }
-        }
-      ],
+      buttons: ['copy', 'csv']
   });
 });
 </script>
