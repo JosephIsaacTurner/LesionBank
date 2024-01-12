@@ -179,19 +179,18 @@ $(document).ready(function() {
         extend: 'csv',
         text: 'Export CSV',
         exportOptions: {
+          columns: ':visible:not(:last-child)', // Export all visible columns except the last one
           format: {
             body: function(data, row, column, node) {
-              // If this is the column with links you want to export
-              if (column === yourColumnIndex) {
+              // Check if this is one of the columns with links
+              if ([3, 8, 9, 10].includes(column)) {
                 var href = $(node).find('a').attr('href');
-                return href ? href : data; // return href if it exists, else return the cell data
+                return href ? href : ''; // return href if it exists, else return an empty string
               } else {
-                // For all other columns, return the cell data
-                return data;
+                return data; // return the cell data for other columns
               }
             }
-          },
-          columns: ':visible' // Or you can specify the index of columns you want to export
+          }
         }
       },
       'copy'
