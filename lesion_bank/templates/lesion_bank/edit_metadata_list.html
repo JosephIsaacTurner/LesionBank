@@ -151,14 +151,8 @@
 <script>
 $(document).ready(function() {
   var table = $('#sortableTable').DataTable({
-    fixedHeader: true,
-    pageLength: -1,
-    lengthMenu: [[10, 20, 35, 50, 100, -1], [10, 20, 35, 50, 100, "All"]],
-    order: [[7, 'asc']],
-    dom: "<'row'<'col-sm-12 col-md-10'B><'col-sm-12 col-md-2'f>>" + 
-         "<'row'<'col-sm-12'tr>>" + 
-         "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>", // Structured for Bootstrap's grid
-    buttons: ['pageLength','csv']
+    lengthChange: false,
+        buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
   });
 
   // No need to manually append the buttons container, the `dom` configuration handles it
