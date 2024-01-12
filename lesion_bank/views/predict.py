@@ -124,7 +124,7 @@ def prediction_results(request, file_id):
             ON prediction_voxels.voxel_id = sensitivity_voxels.voxel_id
             LEFT JOIN symptoms
             ON sensitivity_voxels.symptom_id = symptoms.id
-            WHERE prediction_voxels.file_id = {'file_id'}
+            WHERE prediction_voxels.file_id = {file_id}
         )
         SELECT
             AVG(percent_overlap),
