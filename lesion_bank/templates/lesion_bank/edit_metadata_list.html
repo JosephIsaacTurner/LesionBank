@@ -150,7 +150,7 @@
 
 <script>
 $(document).ready(function() {
-  $('#sortableTable').DataTable({
+  var table = $('#sortableTable').DataTable({
     fixedHeader: true,
     pageLength: -1,
     lengthMenu: [[10, 20, 35, 50, 100, -1], [10, 20, 35, 50, 100, "All"]],
@@ -158,6 +158,7 @@ $(document).ready(function() {
     dom: 'Bfrtip',  // Add this line, 'B' stands for buttons
     buttons: ['pageLength','csv'] // Why are these buttons not being styled properly? They aren't bootstrap buttons or DataTables buttons; just plain HTML buttons
   });
+  table.buttons().container().appendTo( '#sortableTable_wrapper .col-md-6:eq(0)' ); // Add the buttons to the DOM, inside the table header
 });
 </script>
 
