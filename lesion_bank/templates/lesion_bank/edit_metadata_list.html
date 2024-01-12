@@ -155,11 +155,15 @@ $(document).ready(function() {
     pageLength: -1,
     lengthMenu: [[10, 20, 35, 50, 100, -1], [10, 20, 35, 50, 100, "All"]],
     order: [[7, 'asc']],
-    dom: 'Bfrtip',  // Add this line, 'B' stands for buttons
-    buttons: ['pageLength','csv'] // Why are these buttons not being styled properly? They aren't bootstrap buttons or DataTables buttons; just plain HTML buttons
+    dom: "<'row'<'col-sm-12 col-md-6'B><'col-sm-12 col-md-6'f>>" + 
+         "<'row'<'col-sm-12'tr>>" + 
+         "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>", // Structured for Bootstrap's grid
+    buttons: ['pageLength','csv']
   });
-  table.buttons().container().appendTo( '.dataTables_wrapper .col-md-6:eq(0)' );
+
+  // No need to manually append the buttons container, the `dom` configuration handles it
 });
+
 </script>
 
 {% endblock %}
