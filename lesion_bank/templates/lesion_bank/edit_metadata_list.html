@@ -143,16 +143,6 @@
 <!-- FixedHeader JS -->
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
 
-<!-- DataTables Buttons JS -->
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-
-<!-- JSZip (for PDF/Excel export functionality) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-<!-- Buttons extension for DataTables - HTML5 and Print buttons -->
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
-
 <script>
 $(document).ready(function() {
   $('#sortableTable').DataTable({
@@ -160,8 +150,8 @@ $(document).ready(function() {
     pageLength: -1,
     lengthMenu: [[10, 20, 35, 50, 100, -1], [10, 20, 35, 50, 100, "All"]],
     order: [[7, 'asc']],
-    dom: 'Bfrtip',  // Add this line, 'B' stands for buttons
-    buttons: ['pageLength', 'csv'] // Why are these buttons not being styled properly? They aren't bootstrap buttons or DataTables buttons; just plain HTML buttons
+    dom: 'lBfrtip',  // Add this line, 'B' stands for buttons
+    buttons: ['csv'] // Why are these buttons not being styled properly? They aren't bootstrap buttons or DataTables buttons; just plain HTML buttons
   });
 });
 </script>
