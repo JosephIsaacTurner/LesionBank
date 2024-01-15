@@ -173,13 +173,13 @@
                                         <th>Publication Year</th>
                                         <th>Lesion Mask</th>
                                         <th>Lesion Network</th>
-                                        <th>Symptom</th>
                                         <th>Details</th>
                                         <!-- <th>DOI</th> -->
                                         <th>Publication Info</th>
                                         <th>Age</th>
                                         <th>Sex</th>
                                         <th>Cause</th>
+                                        <th>Symptom</th>
                                         
                                     </tr>
                                 </thead>
@@ -198,9 +198,6 @@
                                             <a href="{{ MEDIA_URL }}{{ case.network_file_name }}"><i class="bi bi-download"></i></a>                                  
                                         </td>
                                         <td>
-                                            <a target="_blank" href="{% url 'symptom_detail' case.symptom %}">{{ case.symptom }}</a>
-                                        </td>
-                                        <td>
                                             <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
                                                 <!-- <button type="button" id="overlay{{ forloop.counter }}" author="{{case.author}}" year="{{case.publication_year}}" trace="{{case.tracing_file_name}}" network_map="{{case.network_file_name}}" class="btn btn-sm btn-outline-secondary add-overlay-button" onclick="addOverlay(this)">Add Overlay</button> -->
                                                 <a target="_blank" href="{% url 'cases_single' case.lesion_id %}" class="btn btn-primary btn-sm">Full Details</a>
@@ -212,6 +209,9 @@
                                         <td>{{case.patient_age}}</td>
                                         <td>{{case.patient_sex}}</td>
                                         <td>{{case.cause_of_lesion}}</td>
+                                        <td>
+                                            <a target="_blank" href="{% url 'symptom_detail' case.symptom %}">{{ case.symptom }}</a>
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -457,7 +457,7 @@
                             if ([3, 4, 6].includes(column)) {
                                 var href = $(node).find('a').attr('href');
                                 return href ? href : ''; // return href if it exists, else return an empty string
-                            } else if ([5,7,8].includes(column)) {
+                            } else if ([7,8,9].includes(column)) {
                                 return $.trim($(node).text()); // return text content for column 7 with trimmed whitespace
                             } else {
                                 return data; // return the cell data for other columns
@@ -466,7 +466,7 @@
                         }
                     }
                 }
-            ]
+            ] // is it possible to reorder the columns in the exported CSV?
         });
         $("#sortableTable").width("100%");
     });
