@@ -123,15 +123,18 @@
       
         return csvRows.join('\n');
     }
-    function convertToCSV(obj) {
-        const csvRows = [];
-        const headers = Object.keys(obj).join(',');
-        const values = Object.values(obj).join(',');
-
-        csvRows.push(headers);
-        csvRows.push(values);
-
-        return csvRows.join('\n');
+    function downloadCSV() {
+        const data = extractData();
+        const csvString = convertToCSV(data);
+        const blob = new Blob([csvString], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', 'case_report.csv');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
 
 
