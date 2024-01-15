@@ -212,6 +212,7 @@
                                         <td>
                                             <a target="_blank" href="{% url 'symptom_detail' case.symptom %}">{{ case.symptom }}</a>
                                         </td>
+                                        <td>{{case.original_image_1}}</td>
                                         <td><a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a></td>
                                         <td><a href="{{ MEDIA_URL }}{{ case.network_file_name }}"><i class="bi bi-download"></i></a></td>
                                     </tr>
@@ -272,6 +273,7 @@
                                         <td>
                                             <a target="_blank" href="{% url 'symptom_detail' case.symptom %}">{{ case.symptom }}</a>
                                         </td>
+                                        <td>{{case.original_image_1}}</td>
                                         <td><a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a></td>
                                         <td><a href="{{ MEDIA_URL }}{{ case.network_file_name }}"><i class="bi bi-download"></i></a></td>
                                         <td>
@@ -486,7 +488,7 @@
             searching: false,
             columnDefs: [
                 {
-                    targets: [0, 1, 2, 11,12],
+                    targets: [0, 1, 2, 11,12, 13],
                     visible: false,  // Set visibility to false
                     searchable: false  // Optional, if you also want to exclude from search
                 }
