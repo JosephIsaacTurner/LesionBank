@@ -177,8 +177,8 @@
                                         <th>Age</th>
                                         <th>Sex</th>
                                         <th>Cause</th>
-                                        <th hidden class=".d-none" style="width:0%">Lesion Mask</th>
-                                        <th hidden class=".d-none" style="width:0%">Lesion Network</th>
+                                        <th>Lesion Mask</th>
+                                        <th>Lesion Network</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -207,10 +207,8 @@
                                         <td>{{case.patient_age}}</td>
                                         <td>{{case.patient_sex}}</td>
                                         <td>{{case.cause_of_lesion}}</td>
-                                        <td hidden style="width:0%"></td>
-                                        <td hidden style="width:0%"></td>
-                                        <!-- <td hidden class=".d-none">{{case.tracing_file_name}}</td>
-                                        <td hidden class=".d-none">{{case.network_file_name}}</td> -->
+                                        <th>{{case.tracing_file_name}}</th>
+                                        <th>{{case.network_file_name}}</th>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -426,7 +424,7 @@
     // a DOM attribute so that the button appears
     // notice that i dont want paging/searching
     $(document).ready(function() {
-        var table1 = $('#sortableTable').DataTable({
+        $('#sortableTable').DataTable({
             fixedHeader: true,  // Enables the fixed header
             pageLength: 0,  // Display ALL rows by default
             lengthMenu: [[10, 20, 35, 50, 100, -1], [10, 20, 35, 50, 100, "All"]],  // Dropdown options for the user
@@ -470,22 +468,23 @@
         $("#sortableTable").width("100%");
     });
     $(document).ready(function() {
-    $('#sortableTable2').DataTable({
-        fixedHeader: true,  // Enables the fixed header
-        paging: false,  // Disable pagination
-        info: false,
-        order: [[0, 'desc']] ,
-        searching: false,
-        columnDefs: [
-            {
-                targets: [9, 10],  // Target the last two columns (0-indexed)
-                visible: false,  // Set visibility to false
-                searchable: false  // Optional, if you also want to exclude from search
-            }
-        ],
-        buttons: ['csv']
+        $('#sortableTable2').DataTable({
+            fixedHeader: true,  // Enables the fixed header
+            paging: false,  // Disable pagination
+            info: false,
+            order: [[0, 'desc']] ,
+            searching: false,
+            columnDefs: [
+                {
+                    targets: [9, 10],  // Target the last two columns (0-indexed)
+                    visible: false,  // Set visibility to false
+                    searchable: false  // Optional, if you also want to exclude from search
+                }
+            ],
+            buttons: ['csv']
+        });
     });
-    });
+    $("#sortableTable2").width("100%");
 </script>
 
 {% endblock %}
