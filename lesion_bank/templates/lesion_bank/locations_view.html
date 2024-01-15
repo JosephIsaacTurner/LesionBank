@@ -174,7 +174,6 @@
                                         <th>Lesion Mask</th>
                                         <th>Lesion Network</th>
                                         <th>Details</th>
-                                        <!-- <th>DOI</th> -->
                                         <th>Publication Info</th>
                                         <th>Age</th>
                                         <th>Sex</th>
@@ -228,23 +227,28 @@
                             <table id="sortableTable2" class="table table-hover">
                                 <thead id='tableHeader' class="thead-light">
                                     <tr>
+                                        <th>Lesion ID</th>
+                                        <th>Author</th>
+                                        <th>Publication Year</th>
                                         <th>Lesion Mask</th>
                                         <th>Lesion Network</th>
-                                        <th>Symptom</th>
-                                        <th>T value</th>
                                         <th>Details</th>
-                                        <!-- <th>DOI</th> -->
                                         <th>Publication Info</th>
                                         <th>Age</th>
                                         <th>Sex</th>
                                         <th>Cause</th>
-                                        <th>Lesion Mask</th> <!-- Should be a hidden column-->
-                                        <th>Lesion Network</th> <!-- Should be a hidden column-->
+                                        <th>Symptom</th>
+                                        <th>Lesion Mask</th>
+                                        <th>Lesion Network</th>
+                                        <th>T value</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for case in network_results %}
                                     <tr> 
+                                        <td>{{case.lesion_id}}</td>
+                                        <th>{{case.author}}</th>
+                                        <th>{{case.publication_year}}</th>
                                         <td>
                                             <i url='{{ MEDIA_URL }}{{ case.tracing_file_name }}' id='2toggle{{forloop.counter}}' style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('{{ MEDIA_URL }}{{ case.tracing_file_name }}', this)"></i> 
                                             <a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a>                                  
@@ -252,12 +256,6 @@
                                         <td>
                                             <i url='{{ MEDIA_URL }}{{ case.network_file_name }}' id='2toggle{{forloop.counter}}' style="color:#ff999e; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('{{ MEDIA_URL }}{{ case.network_file_name }}', this)"></i> 
                                             <a href="{{ MEDIA_URL }}{{ case.network_file_name }}"><i class="bi bi-download"></i></a>                                  
-                                        </td>
-                                        <td>
-                                            <a target="_blank" href="{% url 'symptom_detail' case.symptom %}">{{ case.symptom }}</a>
-                                        </td>
-                                        <td>
-                                            {{case.value}}
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
@@ -271,8 +269,14 @@
                                         <td>{{case.patient_age}}</td>
                                         <td>{{case.patient_sex}}</td>
                                         <td>{{case.cause_of_lesion}}</td>
-                                        <td>{{case.author}}</td>
-                                        <td>{{case.publication_year}}</td>
+                                        <td>
+                                            <a target="_blank" href="{% url 'symptom_detail' case.symptom %}">{{ case.symptom }}</a>
+                                        </td>
+                                        <td><a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a></td>
+                                        <td><a href="{{ MEDIA_URL }}{{ case.network_file_name }}"><i class="bi bi-download"></i></a></td>
+                                        <td>
+                                            {{case.value}}
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -469,7 +473,7 @@
                         }
                     }
                 }
-            ] // is it possible to reorder the columns in the exported CSV?
+            ]
         });
         $("#sortableTable").width("100%");
     });
@@ -482,12 +486,37 @@
             searching: false,
             columnDefs: [
                 {
-                    targets: [9, 10],  // Target the last two columns (0-indexed)
+                    targets: [0, 1, 2, 11,12],
                     visible: false,  // Set visibility to false
                     searchable: false  // Optional, if you also want to exclude from search
                 }
             ],
-            buttons: ['csv']
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'csv',
+                    text: 'Export CSV',
+                    className: 'btn-success',
+                    exportOptions: {
+                        columns: function(idx, data, node) {
+                            return idx !== 3 && idx !== 4 && idx !== 5; // Export all columns except indexes 3, 4, and 5
+                        },
+                        format: {
+                            body: function(data, row, column, node) {
+                            // Check if this is one of the columns with links
+                            if ([3,8,9].includes(column)) {
+                                var href = $(node).find('a').attr('href');
+                                return href ? href : ''; // return href if it exists, else return an empty string
+                            } else if ([0,1,2,4,5,6,7].includes(column)) {
+                                return $.trim($(node).text()); // return text content for column 7 with trimmed whitespace
+                            } else {
+                                return data; // return the cell data for other columns
+                            }
+                            }
+                        }
+                    }
+                }
+            ]
         });
     });
     $("#sortableTable2").width("100%");
