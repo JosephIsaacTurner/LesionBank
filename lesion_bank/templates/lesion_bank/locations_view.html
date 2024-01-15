@@ -180,7 +180,8 @@
                                         <th>Sex</th>
                                         <th>Cause</th>
                                         <th>Symptom</th>
-                                        
+                                        <th>Lesion Mask</th>
+                                        <th>Lesion Network</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -212,6 +213,8 @@
                                         <td>
                                             <a target="_blank" href="{% url 'symptom_detail' case.symptom %}">{{ case.symptom }}</a>
                                         </td>
+                                        <td><a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a></td>
+                                        <td><a href="{{ MEDIA_URL }}{{ case.network_file_name }}"><i class="bi bi-download"></i></a></td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -449,15 +452,15 @@
                     className: 'btn-success',
                     exportOptions: {
                         columns: function(idx, data, node) {
-                            return idx !== 5; // Export all columns except the one at index 3
+                            return idx !== 3 && idx !== 4 && idx !== 5; // Export all columns except indexes 3, 4, and 5
                         },
                         format: {
                             body: function(data, row, column, node) {
                             // Check if this is one of the columns with links
-                            if ([3, 4, 5].includes(column)) {
+                            if ([3,7,8,9].includes(column)) {
                                 var href = $(node).find('a').attr('href');
                                 return href ? href : ''; // return href if it exists, else return an empty string
-                            } else if ([6,7,8,9].includes(column)) {
+                            } else if ([0,1,2,4,5,6].includes(column)) {
                                 return $.trim($(node).text()); // return text content for column 7 with trimmed whitespace
                             } else {
                                 return data; // return the cell data for other columns
