@@ -451,10 +451,10 @@
                         format: {
                             body: function(data, row, column, node) {
                             // Check if this is one of the columns with links
-                            if ([0, 1, 4].includes(column)) {
+                            if ([0, 1, 3].includes(column)) {
                                 var href = $(node).find('a').attr('href');
                                 return href ? href : ''; // return href if it exists, else return an empty string
-                            } else if ([2].includes(column)) {
+                            } else if ([2,4,5].includes(column)) {
                                 return $.trim($(node).text()); // return text content for column 7 with trimmed whitespace
                             } else {
                                 return data; // return the cell data for other columns
