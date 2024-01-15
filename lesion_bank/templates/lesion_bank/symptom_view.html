@@ -158,6 +158,7 @@
                                         <th>Age</th>
                                         <th>Sex</th>
                                         <th>Cause</th>
+                                        <th>Symptom</th>
                                         <th>Original Image</th>
                                         <th>Lesion Mask</th>
                                         <th>Lesion Network</th>
@@ -189,7 +190,7 @@
                                         <td>{{case.patient_sex}}</td>
                                         <td>{{case.cause_of_lesion}}</td>
                                         <td>
-                                            {{ case.symptom }}
+                                            {{ symptom }}
                                         </td>
                                         <td><a href="{{ MEDIA_URL }}{{ case.original_image_1 }}" target="_blank">Link</a></td>
                                         <td><a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a></td>

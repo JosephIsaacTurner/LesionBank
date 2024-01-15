@@ -211,7 +211,7 @@
                                         <td>{{case.patient_sex}}</td>
                                         <td>{{case.cause_of_lesion}}</td>
                                         <td>
-                                            <a target="_blank" href="{% url 'symptom_detail' symptom %}">{{ symptom }}</a>
+                                            <a target="_blank" href="{% url 'symptom_detail' case.symptom %}">{{ case.symptom }}</a>
                                         </td>
                                         <td><a href="{{ MEDIA_URL }}{{ case.original_image_1 }}" target="_blank">Link</a></td>
                                         <td><a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a></td>
