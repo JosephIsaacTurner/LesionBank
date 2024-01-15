@@ -351,6 +351,32 @@
                     searchable: false  // Optional, if you also want to exclude from search
                 }
             ],
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'csv',
+                    text: 'Export CSV',
+                    className: 'btn-success',
+                    exportOptions: {
+                        columns: function(idx, data, node) {
+                            return idx !== 3 && idx !== 4 && idx !== 5; // Export all columns except indexes 3, 4, and 5
+                        },
+                        format: {
+                            body: function(data, row, column, node) {
+                            // Check if this is one of the columns with links
+                            if ([3,8,9,10].includes(column)) {
+                                var href = $(node).find('a').attr('href');
+                                return href ? href : ''; // return href if it exists, else return an empty string
+                            } else if ([0,1,2,4,5,6,7].includes(column)) {
+                                return $.trim($(node).text()); // return text content for column 7 with trimmed whitespace
+                            } else {
+                                return data; // return the cell data for other columns
+                            }
+                            }
+                        }
+                    }
+                }
+            ]
         });
     });
     $("#sortableTable").width("100%");
