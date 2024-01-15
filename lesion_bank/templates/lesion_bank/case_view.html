@@ -9,6 +9,7 @@
     </div>
     <div class="col col-sm-3 btn-group" role="group"> <!-- Removed mt-3 as it's not needed anymore -->
         <a href="{% url 'list' %}" class="btn btn-primary">Return to List</a>
+        <button class="btn btn-success" onclick="downloadCSV()">Export as CSV</button>
         <a href="{% url 'edit_metadata' case_id %}" class="btn btn-secondary">Edit Case Info</a>
     </div>
 </div>
@@ -56,7 +57,7 @@
         </ul>
         <br>
         <ul class="list-group">
-            <li class="list-group-item disabled">Case Report Information:</li><button onclick="downloadCSV()">Export to CSV</button>
+            <li class="list-group-item disabled">Case Report Information:</li>
 
             <li class="list-group-item">
                 Symptoms: 
@@ -98,20 +99,33 @@
 {% block script %}
 <script>
     function extractData() {
+        const lesion_id = "{{case_id}}";
         const listItems = document.querySelectorAll('.list-group-item');
-        let caseData = {};
+        let caseData = {"lesion_id": lesion_id};
 
         listItems.forEach(item => {
             if (!item.classList.contains('disabled')) {
-                let content = item.textContent.trim();
-                let key = content.split(':')[0].trim();
-                let value = content.split(':').slice(1).join(':').trim();
+                // Check if the item contains an <a> tag
+                const link = item.querySelector('a');
+                let key = item.childNodes[0].textContent.trim().split(':')[0];
+
+                let value;
+                if (link) {
+                    // If it's a link, use the href attribute
+                    value = link.getAttribute('href');
+                    // If you need the full URL instead of a relative path, use link.href
+                } else {
+                    // Otherwise, use the text content
+                    value = item.textContent.trim().split(':').slice(1).join(':').trim();
+                }
+
                 caseData[key] = value;
             }
         });
 
         return caseData;
     }
+
     function convertToCSV(obj) {
         const csvRows = [];
         const headers = Object.keys(obj).join(',');
