@@ -207,6 +207,7 @@
                                         <td>{{case.patient_age}}</td>
                                         <td>{{case.patient_sex}}</td>
                                         <td>{{case.cause_of_lesion}}</td>
+                                        <td>{{case.lesion_id}}</td>
                                         <th>{{case.author}}</th>
                                         <th>{{case.publication_year}}</th>
                                     </tr>
@@ -265,6 +266,7 @@
                                         <td>{{case.patient_age}}</td>
                                         <td>{{case.patient_sex}}</td>
                                         <td>{{case.cause_of_lesion}}</td>
+                                        <td>{{case.lesion_id}}</td>
                                         <td>{{case.author}}</td>
                                         <td>{{case.publication_year}}</td>
                                     </tr>
@@ -433,7 +435,7 @@
             searching: false,
             columnDefs: [
                 {
-                    targets: [8, 9],  // Target the last two columns (0-indexed)
+                    targets: [8, 9,10],  // Target the last two columns (0-indexed)
                     visible: false,  // Set visibility to false
                     searchable: false  // Optional, if you also want to exclude from search
                 }
