@@ -49,7 +49,7 @@
         <ul class="list-group">
             <li class="list-group-item disabled">Legend:</li>
             <li class="list-group-item"> <i style="color:#E63232; font-size: 22px; cursor: pointer;" class="bi bi-square-fill" onclick="toggleOverlay(10, this)"></i> 
-                Lesion Trace  <a href="{{ MEDIA_URL }}{{ trace_file_path }}"><i class="bi bi-download"></i></a>
+                Lesion Mask  <a href="{{ MEDIA_URL }}{{ trace_file_path }}"><i class="bi bi-download"></i></a>
             </li>
             <li class="list-group-item"> <i style="color:#ff999e; font-size: 22px; cursor: pointer;" class="bi bi-square-fill" onclick="toggleOverlay(20, this)"></i> 
                 Lesion Network  <a href="{{ MEDIA_URL }}{{ network_file_path }}"><i class="bi bi-download"></i></a>
@@ -100,11 +100,17 @@
 <script>
     function extractData() {
         const lesion_id = "{{case_id}}";
+        const lesion_mask = "{{ MEDIA_URL }}{{ trace_file_path }}";
+        const lesion_network = "{{ MEDIA_URL }}{{ network_file_path }}";
+        let caseData = {
+            'lesion_id': lesion_id,
+            'lesion_mask': lesion_mask,
+            'lesion_network': lesion_network,
+        };
         const listItems = document.querySelectorAll('.list-group-item');
-        let caseData = {"lesion_id": lesion_id};
 
         listItems.forEach(item => {
-            if (!item.classList.contains('disabled')) {
+            if (!item.classList.contains('disabled') && !item.innerHTML.includes("Lesion Mask") && !item.innerHTML.includes("Lesion Network")) {
                 // Check if the item contains an <a> tag
                 const link = item.querySelector('a');
                 let key = item.childNodes[0].textContent.trim().split(':')[0];
