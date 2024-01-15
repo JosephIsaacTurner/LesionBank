@@ -110,10 +110,10 @@
                 let key = item.childNodes[0].textContent.trim().split(':')[0];
 
                 let value;
-                if (link && !item.contains("symptom")) {
-                    // If it's a link, use the href attribute
-                    value = link.getAttribute('href');
-                    // If you need the full URL instead of a relative path, use link.href
+                if (link && !item.innerHTML.includes("symptom")) { 
+                    // If it's a link and does not contain the word "symptom", use the href attribute
+                    // Use link.href to get the full URL
+                    value = link.href;
                 } else {
                     // Otherwise, use the text content
                     value = item.textContent.trim().split(':').slice(1).join(':').trim();
@@ -125,6 +125,7 @@
 
         return caseData;
     }
+
 
     function convertToCSV(obj) {
         const csvRows = [];
