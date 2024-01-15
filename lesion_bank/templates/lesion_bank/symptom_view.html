@@ -188,6 +188,9 @@
                                         <td>{{case.patient_age}}</td>
                                         <td>{{case.patient_sex}}</td>
                                         <td>{{case.cause_of_lesion}}</td>
+                                        <td>
+                                            {{ case.symptom }}
+                                        </td>
                                         <td><a href="{{ MEDIA_URL }}{{ case.original_image_1 }}" target="_blank">Link</a></td>
                                         <td><a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a></td>
                                         <td><a href="{{ MEDIA_URL }}{{ case.network_file_name }}"><i class="bi bi-download"></i></a></td>
@@ -342,7 +345,7 @@
             searching: false,
             columnDefs: [
                 {
-                    targets: [0, 1, 2, 10,11,12],
+                    targets: [0, 1, 2, 9,10,11,12],
                     visible: false,  // Set visibility to false
                     searchable: false  // Optional, if you also want to exclude from search
                 }
