@@ -426,47 +426,48 @@
     // a DOM attribute so that the button appears
     // notice that i dont want paging/searching
     $(document).ready(function() {
-    $('#sortableTable').DataTable({
-        fixedHeader: true,  // Enables the fixed header
-        pageLength: 0,  // Display ALL rows by default
-        lengthMenu: [[10, 20, 35, 50, 100, -1], [10, 20, 35, 50, 100, "All"]],  // Dropdown options for the user
-        info: false,
-        paging: false,
-        searching: false,
-        // columnDefs: [
-        //     {
-        //         targets: [8, 9],  // Target the last two columns (0-indexed)
-        //         visible: false,  // Set visibility to false
-        //         searchable: false  // Optional, if you also want to exclude from search
-        //     }
-        // ],
-        dom: 'Bfrtip',
-        buttons: [
-        {
-        extend: 'csv',
-        text: 'Export CSV',
-        className: 'btn-success',
-        exportOptions: {
-            columns: function(idx, data, node) {
-                return idx !== 3; // Export all columns except the one at index 3
-            },
-            format: {
-                body: function(data, row, column, node) {
-                // Check if this is one of the columns with links
-                if ([2, 4].includes(column)) {
-                    var href = $(node).find('a').attr('href');
-                    return href ? href : ''; // return href if it exists, else return an empty string
-                } else if (column === 7) {
-                    return $.trim($(node).text()); // return text content for column 7 with trimmed whitespace
-                } else {
-                    return data; // return the cell data for other columns
+        var table1 = $('#sortableTable').DataTable({
+            fixedHeader: true,  // Enables the fixed header
+            pageLength: 0,  // Display ALL rows by default
+            lengthMenu: [[10, 20, 35, 50, 100, -1], [10, 20, 35, 50, 100, "All"]],  // Dropdown options for the user
+            info: false,
+            paging: false,
+            searching: false,
+            columnDefs: [
+                {
+                    targets: [8, 9],  // Target the last two columns (0-indexed)
+                    visible: false,  // Set visibility to false
+                    searchable: false  // Optional, if you also want to exclude from search
                 }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'csv',
+                    text: 'Export CSV',
+                    className: 'btn-success',
+                    exportOptions: {
+                        columns: function(idx, data, node) {
+                            return idx !== 3; // Export all columns except the one at index 3
+                        },
+                        format: {
+                            body: function(data, row, column, node) {
+                            // Check if this is one of the columns with links
+                            if ([2, 4].includes(column)) {
+                                var href = $(node).find('a').attr('href');
+                                return href ? href : ''; // return href if it exists, else return an empty string
+                            } else if (column === 7) {
+                                return $.trim($(node).text()); // return text content for column 7 with trimmed whitespace
+                            } else {
+                                return data; // return the cell data for other columns
+                            }
+                            }
+                        }
+                    }
                 }
-            }
-        }
-      }
-        ]
-    });
+            ]
+        });
+        table1.columns.adjust().draw();
     });
     $(document).ready(function() {
     $('#sortableTable2').DataTable({
