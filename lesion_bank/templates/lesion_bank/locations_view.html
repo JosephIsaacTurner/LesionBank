@@ -177,6 +177,8 @@
                                         <th>Age</th>
                                         <th>Sex</th>
                                         <th>Cause</th>
+                                        <th>Lesion Mask</th>
+                                        <th>Lesion Network</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -205,6 +207,8 @@
                                         <td>{{case.patient_age}}</td>
                                         <td>{{case.patient_sex}}</td>
                                         <td>{{case.cause_of_lesion}}</td>
+                                        <td>{{case.tracing_file_name}}</td>
+                                        <td>{{case.network_file_name}}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -228,6 +232,8 @@
                                         <th>Age</th>
                                         <th>Sex</th>
                                         <th>Cause</th>
+                                        <th>Lesion Mask</th> <!-- Should be a hidden column-->
+                                        <th>Lesion Network</th> <!-- Should be a hidden column-->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -259,6 +265,8 @@
                                         <td>{{case.patient_age}}</td>
                                         <td>{{case.patient_sex}}</td>
                                         <td>{{case.cause_of_lesion}}</td>
+                                        <td>{{case.tracing_file_name}}</td>
+                                        <td>{{case.network_file_name}}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -423,8 +431,39 @@
         info: false,
         paging: false,
         searching: false,
+        columnDefs: [
+            {
+                targets: [8, 9],  // Target the last two columns (0-indexed)
+                visible: false,  // Set visibility to false
+                searchable: false  // Optional, if you also want to exclude from search
+            }
+        ]
         dom: 'Bfrtip',
-        buttons: ['csv']
+        buttons: [
+        {
+        extend: 'csv',
+        text: 'Export CSV',
+        className: 'btn-success',
+        exportOptions: {
+            columns: function(idx, data, node) {
+                return idx !== 3; // Export all columns except the one at index 3
+            },
+            format: {
+                body: function(data, row, column, node) {
+                // Check if this is one of the columns with links
+                if ([2, 4].includes(column)) {
+                    var href = $(node).find('a').attr('href');
+                    return href ? href : ''; // return href if it exists, else return an empty string
+                } else if (column === 7) {
+                    return $.trim($(node).text()); // return text content for column 7 with trimmed whitespace
+                } else {
+                    return data; // return the cell data for other columns
+                }
+                }
+            }
+        }
+      }
+        ]
     });
     });
     $(document).ready(function() {
@@ -434,6 +473,13 @@
         info: false,
         order: [[0, 'desc']] ,
         searching: false,
+        columnDefs: [
+            {
+                targets: [9, 10],  // Target the last two columns (0-indexed)
+                visible: false,  // Set visibility to false
+                searchable: false  // Optional, if you also want to exclude from search
+            }
+        ],
         buttons: ['csv']
     });
     });
