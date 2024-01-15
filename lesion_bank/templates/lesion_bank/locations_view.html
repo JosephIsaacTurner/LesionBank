@@ -412,6 +412,9 @@
 
 
 <script>
+    /// In the below code, we need to add
+    // a DOM attribute so that the button appears
+    // notice that i dont want paging/searching
     $(document).ready(function() {
     $('#sortableTable').DataTable({
         fixedHeader: true,  // Enables the fixed header
@@ -420,6 +423,7 @@
         info: false,
         paging: false,
         searching: false,
+        dom: 'Bfrtip',
         buttons: ['csv']
     });
     });
