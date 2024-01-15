@@ -188,8 +188,8 @@
                                     {% for case in trace_results %}
                                     <tr> 
                                         <td>{{case.lesion_id}}</td>
-                                        <th>{{case.author}}</th>
-                                        <th>{{case.publication_year}}</th>
+                                        <td>{{case.author}}</td>
+                                        <td>{{case.publication_year}}</td>
                                         <td>
                                             <i url='{{ MEDIA_URL }}{{ case.tracing_file_name }}' id='2toggle{{forloop.counter}}' style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('{{ MEDIA_URL }}{{ case.tracing_file_name }}', this)"></i> 
                                             <a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a>                                  
@@ -250,8 +250,8 @@
                                     {% for case in network_results %}
                                     <tr> 
                                         <td>{{case.lesion_id}}</td>
-                                        <th>{{case.author}}</th>
-                                        <th>{{case.publication_year}}</th>
+                                        <td>{{case.author}}</td>
+                                        <td>{{case.publication_year}}</td>
                                         <td>
                                             <i url='{{ MEDIA_URL }}{{ case.tracing_file_name }}' id='2toggle{{forloop.counter}}' style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('{{ MEDIA_URL }}{{ case.tracing_file_name }}', this)"></i> 
                                             <a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a>                                  

@@ -148,6 +148,9 @@
                             <table id="sortableTable" class="table table-hover">
                                 <thead id='tableHeader' class="thead-light">
                                     <tr>
+                                        <th>Lesion ID</th>
+                                        <th>Author</th>
+                                        <th>Publication Year</th>
                                         <th>Lesion Mask</th>
                                         <th>Lesion Network</th>
                                         <th>Details</th>
@@ -155,11 +158,17 @@
                                         <th>Age</th>
                                         <th>Sex</th>
                                         <th>Cause</th>
+                                        <th>Original Image</th>
+                                        <th>Lesion Mask</th>
+                                        <th>Lesion Network</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for case in case_list %}
                                     <tr> 
+                                        <td>{{case.lesion_id}}</td>
+                                        <td>{{case.author}}</td>
+                                        <td>{{case.publication_year}}</td>
                                         <td>
                                             <i url='{{ MEDIA_URL }}{{ case.tracing_file_name }}' id='2toggle{{forloop.counter}}' style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('{{ MEDIA_URL }}{{ case.tracing_file_name }}', this)"></i> 
                                             <a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a>                                  
@@ -179,6 +188,9 @@
                                         <td>{{case.patient_age}}</td>
                                         <td>{{case.patient_sex}}</td>
                                         <td>{{case.cause_of_lesion}}</td>
+                                        <td><a href="{{ MEDIA_URL }}{{ case.original_image_1 }}" target="_blank">Link</a></td>
+                                        <td><a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a></td>
+                                        <td><a href="{{ MEDIA_URL }}{{ case.network_file_name }}"><i class="bi bi-download"></i></a></td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -281,21 +293,43 @@
 </script>
 
 <!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 
-<!-- DataTables CSS -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css">
+<!-- DataTables Bootstrap 5 CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 
-<!-- DataTables JS -->
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+<!-- DataTables Buttons Bootstrap 5 CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+<!-- DataTables Bootstrap 5 integration -->
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
 <!-- FixedHeader JS -->
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+
 <!-- FixedHeader CSS -->
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
 
-<!-- DataTables Bootstrap Integration -->
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap5.min.js"></script>
+<!-- DataTables Buttons -->
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+
+<!-- Buttons Bootstrap 5 integration -->
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+
+<!-- JSZip for Buttons extension -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<!-- pdfmake for Buttons extension -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<!-- Buttons extensions (HTML5 export, Print view, Column visibility) -->
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
 
 
 <script>
@@ -305,6 +339,13 @@
             pageLength: 0,  // Display ALL rows by default
             lengthMenu: [[10, 20, 35, 50, 100, -1], [10, 20, 35, 50, 100, "All"]],  // Dropdown options for the user
             info: false,
+            columnDefs: [
+                {
+                    targets: [0, 1, 2, 11,12,13],
+                    visible: false,  // Set visibility to false
+                    searchable: false  // Optional, if you also want to exclude from search
+                }
+            ],
         });
     });
 </script>
