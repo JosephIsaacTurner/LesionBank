@@ -177,8 +177,8 @@
                                         <th>Age</th>
                                         <th>Sex</th>
                                         <th>Cause</th>
-                                        <th>Lesion Mask</th>
-                                        <th>Lesion Network</th>
+                                        <th class=".d-none">Lesion Mask</th>
+                                        <th class=".d-none">Lesion Network</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -207,8 +207,8 @@
                                         <td>{{case.patient_age}}</td>
                                         <td>{{case.patient_sex}}</td>
                                         <td>{{case.cause_of_lesion}}</td>
-                                        <td>{{case.tracing_file_name}}</td>
-                                        <td>{{case.network_file_name}}</td>
+                                        <td class=".d-none">{{case.tracing_file_name}}</td>
+                                        <td class=".d-none">{{case.network_file_name}}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
