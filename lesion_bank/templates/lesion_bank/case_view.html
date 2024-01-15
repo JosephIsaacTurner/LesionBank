@@ -56,7 +56,8 @@
         </ul>
         <br>
         <ul class="list-group">
-            <li class="list-group-item disabled">Case Report Information:</li>
+            <li class="list-group-item disabled">Case Report Information:</li><button onclick="downloadCSV()">Export to CSV</button>
+
             <li class="list-group-item">
                 Symptoms: 
                 {% for symptom in symptoms %}
@@ -64,7 +65,7 @@
                     {% if not forloop.last %}, {% endif %}
                 {% endfor %}
             </li>
-            
+
             
             <li class="list-group-item">
                 Publication link:  <a target="_blank" href="{{doi}}">DOI</a>
@@ -95,6 +96,47 @@
 {% endblock %}
 
 {% block script %}
+<script>
+    function extractData() {
+        const listItems = document.querySelectorAll('.list-group-item');
+        let caseData = {};
+
+        listItems.forEach(item => {
+            if (!item.classList.contains('disabled')) {
+                let content = item.textContent.trim();
+                let key = content.split(':')[0].trim();
+                let value = content.split(':').slice(1).join(':').trim();
+                caseData[key] = value;
+            }
+        });
+
+        return caseData;
+    }
+    function convertToCSV(obj) {
+        const csvRows = [];
+        const headers = Object.keys(obj).join(',');
+        const values = Object.values(obj).join(',');
+
+        csvRows.push(headers);
+        csvRows.push(values);
+
+      
+        return csvRows.join('\n');
+    }
+    function convertToCSV(obj) {
+        const csvRows = [];
+        const headers = Object.keys(obj).join(',');
+        const values = Object.values(obj).join(',');
+
+        csvRows.push(headers);
+        csvRows.push(values);
+
+        return csvRows.join('\n');
+    }
+
+
+
+</script>
 <script type="text/javascript">
     var params = [];
     params["images"] = [
