@@ -63,7 +63,7 @@ def symptom_detail_view(request, symptom):
     if symptom_object:
         case_results = LesionMetadata.objects.filter(symptoms__symptom=symptom) 
         count = case_results.count()
-        case_list = list(case_results.values('author','publication_year', 'doi', 'lesion_id', 'tracing_file_name', 'network_file_name', 'patient_age', 'patient_sex', 'cause_of_lesion', 'original_image_1', 'symptom'))
+        case_list = list(case_results.values('author','publication_year', 'doi', 'lesion_id', 'tracing_file_name', 'network_file_name', 'patient_age', 'patient_sex', 'cause_of_lesion', 'original_image_1'))
         context = {
             'symptom_list':symptom_list,
             'symptom':symptom_object.symptom,
