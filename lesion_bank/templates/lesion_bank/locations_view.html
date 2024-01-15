@@ -213,7 +213,7 @@
                                         <td>
                                             <a target="_blank" href="{% url 'symptom_detail' case.symptom %}">{{ case.symptom }}</a>
                                         </td>
-                                        <td>{{case.original_image_1}}</td>
+                                        <td><a href="{{ MEDIA_URL }}{{ case.original_image_1 }}" target="_blank">Link</a></td>
                                         <td><a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a></td>
                                         <td><a href="{{ MEDIA_URL }}{{ case.network_file_name }}"><i class="bi bi-download"></i></a></td>
                                     </tr>
@@ -275,7 +275,7 @@
                                         <td>
                                             <a target="_blank" href="{% url 'symptom_detail' case.symptom %}">{{ case.symptom }}</a>
                                         </td>
-                                        <td>{{case.original_image_1}}</td>
+                                        <td><a href="{{ MEDIA_URL }}{{ case.original_image_1 }}" target="_blank">Link</a></td>
                                         <td><a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a></td>
                                         <td><a href="{{ MEDIA_URL }}{{ case.network_file_name }}"><i class="bi bi-download"></i></a></td>
                                         <td>
@@ -465,7 +465,7 @@
                         format: {
                             body: function(data, row, column, node) {
                             // Check if this is one of the columns with links
-                            if ([3,8,9].includes(column)) {
+                            if ([3,8,9,10].includes(column)) {
                                 var href = $(node).find('a').attr('href');
                                 return href ? href : ''; // return href if it exists, else return an empty string
                             } else if ([0,1,2,4,5,6,7].includes(column)) {
@@ -508,7 +508,7 @@
                         format: {
                             body: function(data, row, column, node) {
                             // Check if this is one of the columns with links
-                            if ([3,8,9].includes(column)) {
+                            if ([3,8,9,10].includes(column)) {
                                 var href = $(node).find('a').attr('href');
                                 return href ? href : ''; // return href if it exists, else return an empty string
                             } else if ([0,1,2,4,5,6,7].includes(column)) {
