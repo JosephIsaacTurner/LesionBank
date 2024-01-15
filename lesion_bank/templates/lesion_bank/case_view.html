@@ -128,8 +128,21 @@
                 caseData[key] = value;
             }
         });
+        let orderedCaseData = {
+                'lesion_id': caseData['lesion_id'],
+                'Author': caseData['Author'],
+                'Publication Year': caseData['Publication Year'],
+                'Publication link': caseData['Publication link'],
+                'Patient Age': caseData['Patient Age'],
+                'Patient Sex': caseData['Patient Sex'],
+                'Cause': caseData['Cause'],
+                'Symptoms': caseData['Symptoms'],
+                'Original Image': caseData['Original Image'],
+                'lesion_mask': caseData['lesion_mask'],
+                'lesion_network': caseData['lesion_network']
+            };
 
-        return caseData;
+        return orderedCaseData;
     }
 
 
