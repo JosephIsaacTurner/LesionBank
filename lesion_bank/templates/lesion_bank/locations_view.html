@@ -168,6 +168,9 @@
                             <table id="sortableTable" class="table table-hover">
                                 <thead id='tableHeader' class="thead-light">
                                     <tr>
+                                        <th>Lesion ID</th>
+                                        <th>Author</th>
+                                        <th>Publication Year</th>
                                         <th>Lesion Mask</th>
                                         <th>Lesion Network</th>
                                         <th>Symptom</th>
@@ -177,14 +180,15 @@
                                         <th>Age</th>
                                         <th>Sex</th>
                                         <th>Cause</th>
-                                        <th>Lesion ID</th>
-                                        <th>Author</th>
-                                        <th>Publication Year</th>
+                                        
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for case in trace_results %}
                                     <tr> 
+                                        <td>{{case.lesion_id}}</td>
+                                        <th>{{case.author}}</th>
+                                        <th>{{case.publication_year}}</th>
                                         <td>
                                             <i url='{{ MEDIA_URL }}{{ case.tracing_file_name }}' id='2toggle{{forloop.counter}}' style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('{{ MEDIA_URL }}{{ case.tracing_file_name }}', this)"></i> 
                                             <a href="{{ MEDIA_URL }}{{ case.tracing_file_name }}"><i class="bi bi-download"></i></a>                                  
@@ -208,9 +212,6 @@
                                         <td>{{case.patient_age}}</td>
                                         <td>{{case.patient_sex}}</td>
                                         <td>{{case.cause_of_lesion}}</td>
-                                        <td>{{case.lesion_id}}</td>
-                                        <th>{{case.author}}</th>
-                                        <th>{{case.publication_year}}</th>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -435,7 +436,7 @@
             searching: false,
             columnDefs: [
                 {
-                    targets: [8, 9,10],  // Target the last two columns (0-indexed)
+                    targets: [0, 1, 2],  // Target the last two columns (0-indexed)
                     visible: false,  // Set visibility to false
                     searchable: false  // Optional, if you also want to exclude from search
                 }
@@ -448,15 +449,15 @@
                     className: 'btn-success',
                     exportOptions: {
                         columns: function(idx, data, node) {
-                            return idx !== 3; // Export all columns except the one at index 3
+                            return idx !== 6; // Export all columns except the one at index 3
                         },
                         format: {
                             body: function(data, row, column, node) {
                             // Check if this is one of the columns with links
-                            if ([0, 1, 3].includes(column)) {
+                            if ([3, 4, 6].includes(column)) {
                                 var href = $(node).find('a').attr('href');
                                 return href ? href : ''; // return href if it exists, else return an empty string
-                            } else if ([2,4,5].includes(column)) {
+                            } else if ([5,7,8].includes(column)) {
                                 return $.trim($(node).text()); // return text content for column 7 with trimmed whitespace
                             } else {
                                 return data; // return the cell data for other columns
