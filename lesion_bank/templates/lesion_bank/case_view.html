@@ -110,7 +110,7 @@
                 let key = item.childNodes[0].textContent.trim().split(':')[0];
 
                 let value;
-                if (link) {
+                if (link && !item.contains("symptom")) {
                     // If it's a link, use the href attribute
                     value = link.getAttribute('href');
                     // If you need the full URL instead of a relative path, use link.href
