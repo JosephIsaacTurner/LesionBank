@@ -297,8 +297,8 @@
                 path.moveTo(points[0].x, points[0].y);
                 for (var i = 1; i < points.length; i++) {
                     let testPoint = {
-                        x: this.viewer.convertScreenToImageCoordinateX(point[0], this.viewer.axialSlice),
-                        y: this.viewer.convertScreenToImageCoordinateY(point[1], this.viewer.axialSlice),
+                        x: this.viewer.convertScreenToImageCoordinateX(points[i].x, this.viewer.axialSlice),
+                        y: this.viewer.convertScreenToImageCoordinateY(points[i].y, this.viewer.axialSlice),
                         z: this.viewer.cursorPosition.z
                     }
                     if (this.viewer.intersectsMainSlice(testPoint)) {
