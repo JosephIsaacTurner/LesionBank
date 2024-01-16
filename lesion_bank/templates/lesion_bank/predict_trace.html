@@ -407,6 +407,8 @@
         // This is to ensure that the canvas is loaded before we try to access it
 
         setTimeout(() => {
+            const viewer = papayaContainers[0].viewer; // or however you get the viewer
+            const canvas = document.querySelector('canvas');
             const segmenter = new PapayaSegmenter(viewer, canvas);
         }, 5000);
 
