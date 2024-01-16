@@ -51,13 +51,11 @@
                         <div class="btn-group" role="group" aria-label="Mask size selection">
                             <button type="button" class="btn btn-primary active" id="mask2mm">2mm mask</button>
                             <button type="button" class="btn btn-outline-primary" id="mask1mm">1mm mask</button>
+                            <button id="createNifti" class="btn btn-secondary disabled">
+                                Create Map
+                                <i class="bi bi-play-fill"></i>
+                            </button>
                         </div>
-                    
-                        <!-- Generate Lesion Network Map Button -->
-                        <button id="createNifti" class="btn btn-secondary disabled">
-                            Generate Lesion Network Map
-                            <i class="bi bi-play-fill"></i>
-                        </button>
                     </div>
                     <script>
                         document.getElementById('mask2mm').addEventListener('click', function() {
