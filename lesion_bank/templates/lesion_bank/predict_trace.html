@@ -219,6 +219,7 @@
         lassoTool() {
             // Method to create a lasso tool on the canvas
             function drawPath(ctx, points) {
+                console.log("drawPath called");
                 // Function create a path from the points array and draw it on the canvas
                 ctx.beginPath();
                 ctx.moveTo(points[0].x, points[0].y);
