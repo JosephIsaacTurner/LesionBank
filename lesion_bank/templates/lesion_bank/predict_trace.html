@@ -216,7 +216,7 @@
             this.viewer.drawViewer();
         }
 
-        lassoTool(canvas) {
+        lassoTool() {
             // Method to create a lasso tool on the canvas
             function drawPath(ctx, points) {
                 // Function create a path from the points array and draw it on the canvas
@@ -229,15 +229,15 @@
             }
             var points = [];
             var isDrawing = false;
-            var ctx = canvas.getContext('2d');
-            canvas.addEventListener("mousedown", function(e) {
+            var ctx = this.canvas.getContext('2d');
+            this.canvas.addEventListener("mousedown", function(e) {
                 isDrawing = true;
                 points.push({
                     x: e.offsetX,
                     y: e.offsetY,
                 });
             });
-            canvas.addEventListener("mousemove", function(e) {
+            this.canvas.addEventListener("mousemove", function(e) {
                 if (!isDrawing) return;
                 points.push({
                     x: e.offsetX,
@@ -245,7 +245,7 @@
                 });
                 drawPath(ctx, points);
             });
-            canvas.addEventListener("mouseup", (e) => {
+            this.canvas.addEventListener("mouseup", (e) => {
                 isDrawing = false;
                 var path = new Path2D();
                 path.moveTo(points[0].x, points[0].y);
@@ -287,7 +287,7 @@
             // Method to check if the canvas exists, and if it does, add the lassoTool to it
             // If not, wait 1 second and try again
             if (this.canvas) {
-                this.lassoTool(this.canvas);
+                this.lassoTool();
 
                 this.canvas.addEventListener('mouseup', () => {
                     this.checkLassoList();
