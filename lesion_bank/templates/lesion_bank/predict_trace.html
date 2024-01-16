@@ -195,24 +195,43 @@
 <script>
 
     class PapayaSegmenter {
-        // Class to handle in-browser segmentation of 3d volumes in Papaya
+        constructor(viewer = null, canvas = null, papayaPrototype = null) {
+            this.initialize(viewer, canvas, papayaPrototype);
+        }
 
-        constructor(viewer=papayaContainers[0].viewer,canvas=document.querySelector("canvas"), papayaPrototype=papaya.viewer.Viewer.prototype) {
-            this.lassoList = [];
-            this.worldLassoList = [];
-            this.overall_points = [];
-            this.viewer = viewer
-            this.canvas = canvas
-            this.papayaPrototype = papayaPrototype
-            this.viewer.drawViewer = this.drawViewer.bind(this);
-            this.checkCanvasExists();
+        initialize(viewer, canvas, papayaPrototype) {
+            // Method to initialize the segmenter and retry if any elements are not found
+            if (canvas === null) {
+                canvas = document.querySelector("canvas");
+            }
+            if (viewer === null && papayaContainers && papayaContainers.length > 0) {
+                viewer = papayaContainers[0].viewer;
+            }
+            if (papayaPrototype === null && papaya && papaya.viewer && papaya.viewer.Viewer) {
+                papayaPrototype = papaya.viewer.Viewer.prototype;
+            }
+
+            if (viewer && canvas && papayaPrototype) {
+                // If all elements are found, initialize the segmenter
+                this.lassoList = [];
+                this.worldLassoList = [];
+                this.voxels = [];
+                this.viewer = viewer;
+                this.canvas = canvas;
+                this.papayaPrototype = papayaPrototype;
+                this.viewer.drawViewer = this.drawViewer.bind(this);
+                this.checkCanvasExists();
+            } else {
+                // If any element is not found, retry after a delay
+                setTimeout(() => this.initialize(viewer, canvas, papayaPrototype), 1000); // Retry after 1 second
+            }
         }
 
         clearAll() {
             // Method to clear all lassos and points from the viewer
             this.lassoList = [];
             this.worldLassoList = [];
-            this.overall_points = [];
+            this.voxels = [];
             this.viewer.drawViewer();
         }
 
@@ -220,7 +239,6 @@
             // Method to create a lasso tool on the canvas
             function drawPath(points) {
                 ctx = this.canvas.getContext('2d');
-                console.log("drawPath called");
                 ctx.strokeStyle = 'magenta'; // Change 'red' to any color you prefer
                 // Function create a path from the points array and draw it on the canvas
                 ctx.beginPath();
@@ -229,8 +247,6 @@
                 ctx.lineTo(points[i].x, points[i].y);
                 }
                 ctx.stroke();
-                console.log(points);
-                // What color is the line it is drawing?
             }
             var points = [];
             var isDrawing = false;
@@ -381,21 +397,21 @@
             return total_points;
         }
 
-        getOverallPoints() {
+        getVoxels() {
             // For each lasso in the list, convert it to world coordinates
             // Then find each point in the polygon and add it to the overall_points list
             this.lassoToWorld();
-            this.overall_points = [];
+            this.voxels = [];
             this.worldLassoList.forEach(sub_list => {
                 let point_list = this.pointsInPolygon(sub_list);
                 point_list.forEach(inner_point =>{
-                    if(!this.overall_points.some(op => op.x === inner_point.x && op.y === inner_point.y && op.z === inner_point.z)){
-                        this.overall_points.push(inner_point);
+                    if(!this.voxels.some(op => op.x === inner_point.x && op.y === inner_point.y && op.z === inner_point.z)){
+                        this.voxels.push(inner_point);
                     }
                 });
             });
-            this.overall_points = this.overall_points.map(point => [point.x, point.y, point.z,1]);
-            return this.overall_points;
+            this.voxels = this.voxels.map(point => [point.x, point.y, point.z,1]);
+            return this.voxels;
         }
     }
 
