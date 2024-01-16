@@ -398,13 +398,13 @@
 
     document.addEventListener('DOMContentLoaded', (event) => {
         // Ensuring the DOM is fully loaded before accessing elements
-        const canvas = document.querySelector('canvas');
+        // const canvas = document.querySelector('canvas');
         
         // Assuming papayaContainers is already available here
-        const viewer = papayaContainers[0].viewer; // or however you get the viewer
+        // const viewer = papayaContainers[0].viewer; // or however you get the viewer
 
         // Initialize the PapayaSegmenter instance
-        const segmenter = new PapayaSegmenter(viewer, canvas);
+        const segmenter = new PapayaSegmenter();
 
         // Now you can use 'segmenter' to call methods from your class
         // For example:
