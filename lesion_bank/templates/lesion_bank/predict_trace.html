@@ -150,6 +150,40 @@
             segmenter.clearAll();
             niftiButton.classList.add("disabled");
         });
+
+        document.getElementById('createNifti').addEventListener('click', function(e) {
+            e.preventDefault();
+            let loggedWorldPoints = segmenter.getVoxels();
+            document.getElementById('loggedPoints').value = JSON.stringify(loggedWorldPoints);
+            document.getElementById('pointsForm').submit();
+        });
+
+        function toggleOverlay(id_number, element){
+            document.getElementById('ImageButton'+ id_number).click();
+            document.getElementById('ToggleOverlay-' + id_number).click();
+            element.classList.toggle("bi-square-fill");
+            element.classList.toggle("bi-square");
+        }
+        function getCurrentCoord(){
+            let viewer = papayaContainers[0].viewer;
+            return viewer.getWorldCoordinateAtIndex(Object.values(viewer.currentCoord)[0],Object.values(viewer.currentCoord)[1],Object.values(viewer.currentCoord)[2], new papaya.core.Coordinate());
+        }
+        function gotoCoord(x,y,z){
+            let viewer = papayaContainers[0].viewer;
+            viewer.gotoWorldCoordinate({'x':x,'y':y,'z':z});
+        }
+        function updateCoords() {
+            const x = document.getElementById('findX').value;
+            const y = document.getElementById('findY').value;
+            const z = document.getElementById('findZ').value;
+            gotoCoord(x, y, z);
+        }
+        document.querySelector('.papaya').addEventListener('mousemove', function() {
+            const coords = getCurrentCoord();
+            document.getElementById('findX').value = coords.x;
+            document.getElementById('findY').value = coords.y;
+            document.getElementById('findZ').value = coords.z;
+        });
     }
 
     var params = [];
@@ -175,47 +209,8 @@
     // params["contextManager"] = new ctxManager();
     params["loadingComplete"] = loadingFinished;
 </script>
-<script>
-    
-    function toggleOverlay(id_number, element){
-        document.getElementById('ImageButton'+ id_number).click();
-        document.getElementById('ToggleOverlay-' + id_number).click();
-        element.classList.toggle("bi-square-fill");
-        element.classList.toggle("bi-square");
-    }
-    function getCurrentCoord(){
-        let viewer = papayaContainers[0].viewer;
-        return viewer.getWorldCoordinateAtIndex(Object.values(viewer.currentCoord)[0],Object.values(viewer.currentCoord)[1],Object.values(viewer.currentCoord)[2], new papaya.core.Coordinate());
-    }
-    function gotoCoord(x,y,z){
-        let viewer = papayaContainers[0].viewer;
-        viewer.gotoWorldCoordinate({'x':x,'y':y,'z':z});
-    }
-    function updateCoords() {
-        const x = document.getElementById('findX').value;
-        const y = document.getElementById('findY').value;
-        const z = document.getElementById('findZ').value;
-        gotoCoord(x, y, z);
-    }
-    document.querySelector('.papaya').addEventListener('mousemove', function() {
-        const coords = getCurrentCoord();
-        document.getElementById('findX').value = coords.x;
-        document.getElementById('findY').value = coords.y;
-        document.getElementById('findZ').value = coords.z;
-    });
 
-</script>
 
-<script>
-
-    document.getElementById('createNifti').addEventListener('click', function(e) {
-        e.preventDefault();
-        let loggedWorldPoints = segmenter.getVoxels();
-        document.getElementById('loggedPoints').value = JSON.stringify(loggedWorldPoints);
-        document.getElementById('pointsForm').submit();
-    });
-
-</script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.11/paper-full.min.js"></script>
 <script>
