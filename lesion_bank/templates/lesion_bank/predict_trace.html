@@ -396,30 +396,23 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', (event) => {
-        // Ensuring the DOM is fully loaded before accessing elements
-        // const canvas = document.querySelector('canvas');
-        
-        // Assuming papayaContainers is already available here
-        // const viewer = papayaContainers[0].viewer; // or however you get the viewer
+    let segmenter; // Declare segmenter as a global variable
 
-        // Initialize the PapayaSegmenter instance after a timeout of 3 seconds
-        // This is to ensure that the canvas is loaded before we try to access it
+document.addEventListener('DOMContentLoaded', (event) => {
+  setTimeout(() => {
+    const viewer = papayaContainers[0].viewer; // or however you get the viewer
+    const canvas = document.querySelector('canvas');
+    const papayaPrototype = papaya.viewer.Viewer.prototype;
+    
+    // Assign a value to the global variable segmenter
+    segmenter = new PapayaSegmenter(viewer, canvas, papayaPrototype);
+  }, 5000);
+});
 
-        setTimeout(() => {
-            const viewer = papayaContainers[0].viewer; // or however you get the viewer
-            const canvas = document.querySelector('canvas');
-            const papayaPrototype = papaya.viewer.Viewer.prototype;
-            const segmenter = new PapayaSegmenter(viewer, canvas, papayaPrototype);
-            // const segmenter = new PapayaSegmenter();
-        }, 5000);
+// Now, you can access segmenter outside of the event listener callback
+// as it's declared in the global scope
+console.log(segmenter);
 
-        // const segmenter = new PapayaSegmenter();
-
-        // Now you can use 'segmenter' to call methods from your class
-        // For example:
-        // segmenter.clearAll();
-    });
 
 
 
