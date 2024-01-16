@@ -178,7 +178,7 @@
             const z = document.getElementById('findZ').value;
             gotoCoord(x, y, z);
         }
-        document.querySelector('.papaya').addEventListener('mousemove', function() {
+        document.querySelector("canvas").addEventListener('mousemove', function() {
             const coords = getCurrentCoord();
             document.getElementById('findX').value = coords.x;
             document.getElementById('findY').value = coords.y;
