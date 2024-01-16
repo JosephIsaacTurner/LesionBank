@@ -4,13 +4,12 @@
 
 <div class="row align-items-center"> <!-- Add align-items-center to vertically align items in the row -->
     <div class="col col-sm-9 my-auto"> <!-- Use my-auto to center content vertically within the column -->
-        <h4>Create Lesion Mask</h4>
+        <h4>Create or Upload Lesion Mask</h4>
     </div>
     <div class="col col-sm-3 btn-group" role="group"> <!-- Removed mt-3 as it's not needed anymore -->
         <a href="{% url 'list' %}" class="btn btn-primary">Return to List</a>
     </div>
 </div>
-
 
 <hr>
 <p>
@@ -18,7 +17,7 @@
     <br>
     Zoom in to the brain image below. Then, click and drag to lasso regions that you would like to trace. 
     <br>
-    When you are finished, click the "Create NIFTI Image" button. 
+    When you are finished, click the "Generate Lesion Network Map" button. 
 </p>
 <br>
 <br>
@@ -47,10 +46,36 @@
                 <form id="pointsForm" method="post" action=".">
                     {% csrf_token %}
                     <input type="hidden" id="loggedPoints" name="loggedPoints" value="">
-                    <button id="createNifti" class="btn btn-secondary disabled">
-                        Create NIFTI image
-                        <i class="bi bi-play-fill"></i>
-                    </button>
+                    <div class="input-group">
+                        <!-- Toggleable Buttons -->
+                        <div class="btn-group" role="group" aria-label="Mask size selection">
+                            <button type="button" class="btn btn-primary active" id="mask2mm">2mm mask</button>
+                            <button type="button" class="btn btn-outline-primary" id="mask1mm">1mm mask</button>
+                        </div>
+                    
+                        <!-- Generate Lesion Network Map Button -->
+                        <button id="createNifti" class="btn btn-secondary disabled">
+                            Generate Lesion Network Map
+                            <i class="bi bi-play-fill"></i>
+                        </button>
+                    </div>
+                    <script>
+                        document.getElementById('mask2mm').addEventListener('click', function() {
+                            this.classList.add('active');
+                            this.classList.remove('btn-outline-primary');
+                            this.classList.add('btn-primary');
+                            document.getElementById('mask1mm').classList.add('btn-outline-primary');
+                            document.getElementById('mask1mm').classList.remove('btn-primary', 'active');
+                        });
+                        
+                        document.getElementById('mask1mm').addEventListener('click', function() {
+                            this.classList.add('active');
+                            this.classList.remove('btn-outline-primary');
+                            this.classList.add('btn-primary');
+                            document.getElementById('mask2mm').classList.add('btn-outline-primary');
+                            document.getElementById('mask2mm').classList.remove('btn-primary', 'active');
+                        });
+                    </script>
                 </form>
             </li>
             
