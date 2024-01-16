@@ -226,6 +226,16 @@
                         {% endif %}
                         <div class="table-responsive">
                             <h6>Case studies with high functional connectivity to the voxel of interest ({{title}}):</h6>
+                            <table class="inputs table">
+                                <tbody><tr>
+                                    <td>Minimum t-value:</td>
+                                    <td><input type="text" id="min" name="min"></td>
+                                </tr>
+                                <tr>
+                                    <td>Maximum t-value:</td>
+                                    <td><input type="text" id="max" name="max"></td>
+                                </tr>
+                            </tbody></table>
                             <table id="sortableTable2" class="table table-hover">
                                 <thead id='tableHeader' class="thead-light">
                                     <tr>
@@ -481,6 +491,28 @@
         });
         $("#sortableTable").width("100%");
     });
+
+    const minEl = document.querySelector('#min');
+    const maxEl = document.querySelector('#max');
+
+    // Custom range filtering function
+    DataTable.ext.search.push(function (settings, data, dataIndex) {
+        let min = parseInt(minEl.value, 10);
+        let max = parseInt(maxEl.value, 10);
+        let val = parseFloat(data[8]) || 0; // use data for the age column
+    
+        if (
+            (isNaN(min) && isNaN(max)) ||
+            (isNaN(min) && val <= max) ||
+            (min <= val && isNaN(max)) ||
+            (min <= val && val <= max)
+        ) {
+            return true;
+        }
+    
+        return false;
+    });
+
     $(document).ready(function() {
         $('#sortableTable2').DataTable({
             fixedHeader: true,  // Enables the fixed header
