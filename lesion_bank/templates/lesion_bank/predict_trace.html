@@ -296,7 +296,10 @@
                 var path = new Path2D();
                 path.moveTo(points[0].x, points[0].y);
                 for (var i = 1; i < points.length; i++) {
-                    path.lineTo(points[i].x, points[i].y);
+                    if (this.viewer.intersectsMainSlice(points[i])) {
+                        path.lineTo(points[i].x, points[i].y);
+                    }
+                    // path.lineTo(points[i].x, points[i].y);
                 }
                 ctx.fillStyle = "red";
                 ctx.fill(path);
@@ -320,8 +323,7 @@
                     y: this.viewer.convertScreenToImageCoordinateY(point[1], this.viewer.axialSlice),
                     z: cursorPosition.z
                 };
-                // if(this.viewer.intersectsMainSlice(newPoint)){
-                if(1==1){
+                if(this.viewer.intersectsMainSlice(newPoint)){
                     if (!lasso.some(existingPoint => existingPoint.x === newPoint.x && existingPoint.y === newPoint.y && existingPoint.z === newPoint.z)) {
                         lasso.push(newPoint);
                     }
@@ -336,8 +338,7 @@
             for (var i = 0; i < this.lassoList.length; i++) {
                 let screenPoints = [];
                 this.lassoList[i].forEach(point => {
-                    // if (this.viewer.intersectsMainSlice(point)) {
-                    if (1==1) {
+                    if (this.viewer.intersectsMainSlice(point)) {
                         var screenCoor = this.viewer.convertCoordinateToScreen(point);
                         screenPoints.push(screenCoor);
                     }
