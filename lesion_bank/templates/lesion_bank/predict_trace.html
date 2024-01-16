@@ -305,7 +305,7 @@
                     let testPoint = {
                         x: this.viewer.convertScreenToImageCoordinateX(points[i][0], this.viewer.coronalSlice),
                         z: this.viewer.convertScreenToImageCoordinateY(points[i][1], this.viewer.coronalSlice),
-                        y: cursorPosition.z
+                        y: this.viewer.cursorPosition.z
                     }
                     if (this.viewer.intersectsMainSlice(testPoint)) {
                         console.log("point in main slice");
