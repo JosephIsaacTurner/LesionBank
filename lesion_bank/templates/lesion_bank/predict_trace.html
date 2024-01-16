@@ -415,7 +415,14 @@
         }
     }
 
-    let segmenter = new PapayaSegmenter();
+    let segmenter;
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        segmenter = new PapayaSegmenter();
+        // setTimeout(() => {
+        //     segmenter = new PapayaSegmenter();
+        // }, 1000);
+    });
 
 
 // let lassoList = [];
