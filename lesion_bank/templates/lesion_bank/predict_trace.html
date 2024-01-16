@@ -129,12 +129,25 @@
 
 {% block script %}
 <script type="text/javascript">
+
     let loadingComplete = false;
+    let segmenter;
     function loadingFinished(){
         loadingComplete = true;
         console.log("Loading complete");
         segmenter = new PapayaSegmenter();
+        var niftiButton = document.getElementById('createNifti');
+        // Add to listener for when the lassoList is updated
+        document.querySelector("canvas").addEventListener('mouseup', function() {
+            if(segmenter.lassoList.length>0){
+                niftiButton.classList.remove("disabled");
+            }
+            else{
+                niftiButton.classList.add("disabled");
+            }
+        });
     }
+    
     var params = [];
     params["images"] = [
         "https://neurovault.org/static/images/GenericMNI.nii.gz"
@@ -190,12 +203,14 @@
 </script>
 
 <script>
-    // document.getElementById('createNifti').addEventListener('click', function(e) {
-    //     e.preventDefault();
-    //     let loggedWorldPoints = getOverallPoints(lassoList);
-    //     document.getElementById('loggedPoints').value = JSON.stringify(loggedWorldPoints);
-    //     document.getElementById('pointsForm').submit();
-    // });
+
+    document.getElementById('createNifti').addEventListener('click', function(e) {
+        e.preventDefault();
+        let loggedWorldPoints = segmenter.getVoxels();
+        document.getElementById('loggedPoints').value = JSON.stringify(loggedWorldPoints);
+        document.getElementById('pointsForm').submit();
+    });
+
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.11/paper-full.min.js"></script>
@@ -309,32 +324,6 @@
             });
             this.lassoList.push(lasso);
         }
-
-        // checkCanvasExists() {
-        //     // Method to check if the canvas exists, and if it does, add the lassoTool to it
-        //     // If not, wait 1 second and try again
-        //     if (this.canvas) {
-        //         this.lassoTool();
-
-        //         this.canvas.addEventListener('mouseup', () => {
-        //             this.checkLassoList();
-        //         });
-        //     } else {
-        //         setTimeout(() => this.checkCanvasExists(), 1000);
-        //     }
-        // }
-
-        // Later on we will have to pull this out of the class, because it doesn't generalize to other use cases
-        // checkLassoList(){
-        //     // Method to see if the lassoList is empty or not, and if it is, disable the nifti button
-        //     var niftiButton = document.getElementById('createNifti');
-        //     if(this.lassoList.length>0){
-        //         niftiButton.classList.remove("disabled");
-        //     }
-        //     else{
-        //         niftiButton.classList.add("disabled");
-        //     }
-        // }
 
         drawViewer() {
             // Method to draw the viewer and the lasso outlines when the viewer is updated
