@@ -290,7 +290,6 @@
                 this.lassoTool(this.canvas);
 
                 this.canvas.addEventListener('mouseup', () => {
-                    console.log('mouseup');
                     this.checkLassoList();
                 });
             } else {
@@ -300,13 +299,15 @@
 
         // Later on we will have to pull this out of the class, because it doesn't generalize to other use cases
         checkLassoList(){
-            console.log('checkLassoList called');
             // Method to see if the lassoList is empty or not, and if it is, disable the nifti button
             var niftiButton = document.getElementById('createNifti');
+            console.log(niftiButton);
             if(this.lassoList.length>0){
+                console.log('removing disabled');
                 niftiButton.classList.remove("disabled");
             }
             else{
+                console.log('adding disabled');
                 niftiButton.classList.add("disabled");
             }
         }
