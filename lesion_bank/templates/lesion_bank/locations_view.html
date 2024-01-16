@@ -492,29 +492,12 @@
         $("#sortableTable").width("100%");
     });
 
-    const minEl = document.querySelector('#min');
-    const maxEl = document.querySelector('#max');
-
-    // Custom range filtering function
-    DataTable.ext.search.push(function (settings, data, dataIndex) {
-        let min = parseInt(minEl.value, 10);
-        let max = parseInt(maxEl.value, 10);
-        let val = parseFloat(data[8]) || 0; // use data for the age column
     
-        if (
-            (isNaN(min) && isNaN(max)) ||
-            (isNaN(min) && val <= max) ||
-            (min <= val && isNaN(max)) ||
-            (min <= val && val <= max)
-        ) {
-            return true;
-        }
-    
-        return false;
-    });
+    $(document).ready(function() {
+        const minEl = document.querySelector('#min');
+        const maxEl = document.querySelector('#max');
 
-    var table2 = $(document).ready(function() {
-        $('#sortableTable2').DataTable({
+        var table2 = $('#sortableTable2').DataTable({
             fixedHeader: true,  // Enables the fixed header
             pageLength: 0,
             lengthMenu: [[10, 20, 35, 50, 100, -1], [10, 20, 35, 50, 100, "All"]],  // Dropdown options for the user
@@ -555,16 +538,37 @@
                 }
             ]
         });
-    });
-    $("#sortableTable2").width("100%");
 
-    // Changes to the inputs will trigger a redraw to update the table
-    minEl.addEventListener('input', function () {
-        table2.draw();
+        // Custom range filtering function
+        DataTable.ext.search.push(function (settings, data, dataIndex) {
+            let min = parseInt(minEl.value, 10);
+            let max = parseInt(maxEl.value, 10);
+            let val = parseFloat(data[8]) || 0; // use data for the age column
+        
+            if (
+                (isNaN(min) && isNaN(max)) ||
+                (isNaN(min) && val <= max) ||
+                (min <= val && isNaN(max)) ||
+                (min <= val && val <= max)
+            ) {
+                return true;
+            }
+        
+            return false;
+        });
+
+        $("#sortableTable2").width("100%");
+
+        // Changes to the inputs will trigger a redraw to update the table
+        minEl.addEventListener('input', function () {
+            table2.draw();
+        });
+        maxEl.addEventListener('input', function () {
+            table2.draw();
+        });
+
     });
-    maxEl.addEventListener('input', function () {
-        table2.draw();
-    });
+
 </script>
 
 {% endblock %}
