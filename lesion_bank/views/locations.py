@@ -76,7 +76,7 @@ def locations_view(request, voxel_id):
         trace_query += f""" AND symptom NOT IN ({', '.join(map(lambda x: f"'{x}'", private_symptoms))})"""
     trace_results = run_raw_sql(trace_query)
     network_query = f"""
-    select metadata.lesion_id,value, author, patient_age, patient_sex, publication_year, doi, cause_of_lesion, tracing_file_name, network_file_name, symptom, original_image_1 from metadata
+    select metadata.lesion_id, value, author, patient_age, patient_sex, publication_year, doi, cause_of_lesion, tracing_file_name, network_file_name, symptom, original_image_1 from metadata
     left join network_voxels
     on metadata.lesion_id = network_voxels.lesion_id
     left join metadata_symptoms
@@ -91,6 +91,7 @@ def locations_view(request, voxel_id):
     limit 5
     """
     network_results = run_raw_sql(network_query)
+    network_results = sorted(network_results, key=lambda k: k['value'], reverse=True)
     context['symptom_results'] = symptom_results
     context['trace_results'] = trace_results
     context['network_results'] = network_results
