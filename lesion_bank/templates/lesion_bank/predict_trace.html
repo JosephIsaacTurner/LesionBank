@@ -245,21 +245,21 @@
                 });
                 drawPath(ctx, points);
             });
-            canvas.addEventListener("mouseup", function() {
-            isDrawing = false;
-            var path = new Path2D();
-            path.moveTo(points[0].x, points[0].y);
+            canvas.addEventListener("mouseup", (e) => {
+                isDrawing = false;
+                var path = new Path2D();
+                path.moveTo(points[0].x, points[0].y);
                 for (var i = 1; i < points.length; i++) {
                     path.lineTo(points[i].x, points[i].y);
-            }
-            ctx.fillStyle = "red";
-            ctx.fill(path);
-            var lassoPoints = [];
-            for (var i = 0; i < points.length; i++) {
-                lassoPoints.push([points[i].x, points[i].y]);
-            }
-            this.addToLassoList(lassoPoints);
-            points = [];
+                }
+                ctx.fillStyle = "red";
+                ctx.fill(path);
+                var lassoPoints = [];
+                for (var i = 0; i < points.length; i++) {
+                    lassoPoints.push([points[i].x, points[i].y]);
+                }
+                this.addToLassoList(lassoPoints); // 'this' now correctly refers to PapayaSegmenter instance
+                points = [];
             });
         }
 
