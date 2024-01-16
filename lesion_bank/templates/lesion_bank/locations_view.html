@@ -513,7 +513,7 @@
         return false;
     });
 
-    $(document).ready(function() {
+    var table2 = $(document).ready(function() {
         $('#sortableTable2').DataTable({
             fixedHeader: true,  // Enables the fixed header
             pageLength: 0,
@@ -557,6 +557,14 @@
         });
     });
     $("#sortableTable2").width("100%");
+
+    // Changes to the inputs will trigger a redraw to update the table
+    minEl.addEventListener('input', function () {
+        table2.draw();
+    });
+    maxEl.addEventListener('input', function () {
+        table2.draw();
+    });
 </script>
 
 {% endblock %}
