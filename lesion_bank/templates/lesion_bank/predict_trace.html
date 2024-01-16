@@ -312,6 +312,7 @@
         }
 
         drawViewer() {
+            console.log("drawViewer called");
             // Method to draw the viewer and the lasso outlines when the viewer is updated
             var result = this.papayaPrototype.drawViewer.apply(this.viewer, arguments);
             for (var i = 0; i < this.lassoList.length; i++) {
@@ -337,6 +338,7 @@
         }
         
         lassoToWorld() {
+            console.log("lassoToWorld called");
             // Method to convert points defining the lassos into world coordinates
             this.worldLassoList = []
             this.lassoList.forEach(lasso => {
