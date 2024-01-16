@@ -46,13 +46,21 @@
                 <form id="uploadForm" method="post" action=".">
                     {% csrf_token %}
                     <div class="btn-group" role="group" aria-label="Mask size selection">
-                        <input type="file" id="file" name="file" accept=".nii.gz" class="form-control" onchange="this.form.submit()" style="display: none;">
-                        <label for="file" class="btn btn-primary">Upload Nifti</label>
+                        <!-- Hidden file input -->
+                        <input type="file" id="file" name="file" accept=".nii.gz" class="form-control" onchange="this.form.submit()" hidden>
+                    
+                        <!-- Label styled as a button -->
+                        <label for="file" class="btn btn-primary">
+                            Upload Nifti
+                        </label>
+                    
+                        <!-- Separate button for upload and predict -->
                         <button id="createNifti" class="btn btn-secondary disabled">
                             Upload and Predict
                             <i class="bi bi-play-fill"></i>
                         </button>
                     </div>
+                    
                 </form>
             </li>
 
