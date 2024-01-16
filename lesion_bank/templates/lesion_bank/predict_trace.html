@@ -303,9 +303,9 @@
                 path.moveTo(points[0].x, points[0].y);
                 for (var i = 1; i < points.length; i++) {
                     let testPoint = {
-                        x: this.viewer.convertScreenToImageCoordinateX(points[i].x, this.viewer.coronalSlice),
-                        y: this.viewer.convertScreenToImageCoordinateY(points[i].y, this.viewer.coronalSlice),
-                        z: this.viewer.cursorPosition.z
+                        x: this.viewer.convertScreenToImageCoordinateX(point[0], this.viewer.coronalSlice),
+                        z: this.viewer.convertScreenToImageCoordinateY(point[1], this.viewer.coronalSlice),
+                        y: cursorPosition.z
                     }
                     if (this.viewer.intersectsMainSlice(testPoint)) {
                         console.log("point in main slice");
@@ -335,8 +335,8 @@
                 let cursorPosition = this.viewer.cursorPosition
                 let newPoint = {
                     x: this.viewer.convertScreenToImageCoordinateX(point[0], this.viewer.coronalSlice),
-                    y: this.viewer.convertScreenToImageCoordinateY(point[1], this.viewer.coronalSlice),
-                    z: cursorPosition.z
+                    z: this.viewer.convertScreenToImageCoordinateY(point[1], this.viewer.coronalSlice),
+                    y: cursorPosition.z
                 };
                 if(this.viewer.intersectsMainSlice(newPoint)){
                     if (!lasso.some(existingPoint => existingPoint.x === newPoint.x && existingPoint.y === newPoint.y && existingPoint.z === newPoint.z)) {
