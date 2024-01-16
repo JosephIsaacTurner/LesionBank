@@ -227,7 +227,7 @@
                 this.canvas = canvas;
                 this.papayaPrototype = papayaPrototype;
                 this.viewer.drawViewer = this.drawViewer.bind(this);
-                this.checkCanvasExists();
+                this.lassoTool();
             } else {
                 // If any element is not found, retry after a delay
                 setTimeout(() => this.initialize(viewer, canvas, papayaPrototype), 1000); // Retry after 1 second
@@ -244,10 +244,7 @@
 
         lassoTool() {
             // Method to create a lasso tool on the canvas
-            function drawPath(points, ctx) {
-                // I think I am not properly accessing the canvas here. Help!
-                // ctx = this.canvas.getContext('2d');
-                console.log(ctx);
+            function drawPath(points, ctx) {;
                 ctx.strokeStyle = 'magenta'; // Change 'red' to any color you prefer
                 // Function create a path from the points array and draw it on the canvas
                 ctx.beginPath();
@@ -313,31 +310,31 @@
             this.lassoList.push(lasso);
         }
 
-        checkCanvasExists() {
-            // Method to check if the canvas exists, and if it does, add the lassoTool to it
-            // If not, wait 1 second and try again
-            if (this.canvas) {
-                this.lassoTool();
+        // checkCanvasExists() {
+        //     // Method to check if the canvas exists, and if it does, add the lassoTool to it
+        //     // If not, wait 1 second and try again
+        //     if (this.canvas) {
+        //         this.lassoTool();
 
-                this.canvas.addEventListener('mouseup', () => {
-                    this.checkLassoList();
-                });
-            } else {
-                setTimeout(() => this.checkCanvasExists(), 1000);
-            }
-        }
+        //         this.canvas.addEventListener('mouseup', () => {
+        //             this.checkLassoList();
+        //         });
+        //     } else {
+        //         setTimeout(() => this.checkCanvasExists(), 1000);
+        //     }
+        // }
 
         // Later on we will have to pull this out of the class, because it doesn't generalize to other use cases
-        checkLassoList(){
-            // Method to see if the lassoList is empty or not, and if it is, disable the nifti button
-            var niftiButton = document.getElementById('createNifti');
-            if(this.lassoList.length>0){
-                niftiButton.classList.remove("disabled");
-            }
-            else{
-                niftiButton.classList.add("disabled");
-            }
-        }
+        // checkLassoList(){
+        //     // Method to see if the lassoList is empty or not, and if it is, disable the nifti button
+        //     var niftiButton = document.getElementById('createNifti');
+        //     if(this.lassoList.length>0){
+        //         niftiButton.classList.remove("disabled");
+        //     }
+        //     else{
+        //         niftiButton.classList.add("disabled");
+        //     }
+        // }
 
         drawViewer() {
             // Method to draw the viewer and the lasso outlines when the viewer is updated
