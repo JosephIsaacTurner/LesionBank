@@ -258,7 +258,7 @@
                 for (var i = 0; i < points.length; i++) {
                     lassoPoints.push([points[i].x, points[i].y]);
                 }
-                this.addToLassoList(lassoPoints); // 'this' now correctly refers to PapayaSegmenter instance
+                this.addToLassoList(lassoPoints);
                 points = [];
             });
         }
@@ -280,7 +280,6 @@
                     }
                 }
             });
-            console.log("Lasso of length" + lasso.length + "added to lassoList");
             this.lassoList.push(lasso);
         }
 
@@ -291,6 +290,7 @@
                 this.lassoTool(this.canvas);
 
                 this.canvas.addEventListener('mouseup', () => {
+                    console.log('mouseup');
                     this.checkLassoList();
                 });
             } else {
@@ -300,6 +300,7 @@
 
         // Later on we will have to pull this out of the class, because it doesn't generalize to other use cases
         checkLassoList(){
+            console.log('checkLassoList called');
             // Method to see if the lassoList is empty or not, and if it is, disable the nifti button
             var niftiButton = document.getElementById('createNifti');
             if(this.lassoList.length>0){
@@ -311,7 +312,6 @@
         }
 
         drawViewer() {
-            console.log("drawViewer called");
             // Method to draw the viewer and the lasso outlines when the viewer is updated
             var result = this.papayaPrototype.drawViewer.apply(this.viewer, arguments);
             for (var i = 0; i < this.lassoList.length; i++) {
@@ -337,7 +337,6 @@
         }
         
         lassoToWorld() {
-            // console.log("lassoToWorld called");
             // Method to convert points defining the lassos into world coordinates
             this.worldLassoList = []
             this.lassoList.forEach(lasso => {
@@ -397,25 +396,16 @@
         }
     }
 
-    let segmenter; // Declare segmenter as a global variable
+    let segmenter;
 
-document.addEventListener('DOMContentLoaded', (event) => {
-  setTimeout(() => {
-    const viewer = papayaContainers[0].viewer; // or however you get the viewer
-    const canvas = document.querySelector('canvas');
-    const papayaPrototype = papaya.viewer.Viewer.prototype;
-    
-    // Assign a value to the global variable segmenter
-    segmenter = new PapayaSegmenter(viewer, canvas, papayaPrototype);
-  }, 5000);
-});
-
-// Now, you can access segmenter outside of the event listener callback
-// as it's declared in the global scope
-console.log(segmenter);
-
-
-
+    document.addEventListener('DOMContentLoaded', (event) => {
+        setTimeout(() => {
+            const viewer = papayaContainers[0].viewer;
+            const canvas = document.querySelector('canvas');
+            const papayaPrototype = papaya.viewer.Viewer.prototype;
+            segmenter = new PapayaSegmenter(viewer, canvas, papayaPrototype);
+        }, 1000);
+    });
 
 
 // let lassoList = [];
