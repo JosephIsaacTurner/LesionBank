@@ -237,8 +237,9 @@
 
         lassoTool() {
             // Method to create a lasso tool on the canvas
-            function drawPath(points) {
-                ctx = this.canvas.getContext('2d');
+            function drawPath(points, ctx) {
+                // I think I am not properly accessing the canvas here. Help!
+                // ctx = this.canvas.getContext('2d');
                 console.log(ctx);
                 ctx.strokeStyle = 'magenta'; // Change 'red' to any color you prefer
                 // Function create a path from the points array and draw it on the canvas
@@ -251,7 +252,7 @@
             }
             var points = [];
             var isDrawing = false;
-            var ctx = this.canvas.getContext('2d');
+            let ctx = this.canvas.getContext('2d');
             this.canvas.addEventListener("mousedown", function(e) {
                 isDrawing = true;
                 points.push({
@@ -265,7 +266,7 @@
                     x: e.offsetX,
                     y: e.offsetY,
                 });
-                drawPath(points);
+                drawPath(points, this.canvas.getContext('2d'));
             });
             this.canvas.addEventListener("mouseup", (e) => {
                 isDrawing = false;
