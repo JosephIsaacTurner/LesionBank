@@ -320,7 +320,8 @@
                     y: this.viewer.convertScreenToImageCoordinateY(point[1], this.viewer.axialSlice),
                     z: cursorPosition.z
                 };
-                if(this.viewer.intersectsMainSlice(newPoint)){
+                // if(this.viewer.intersectsMainSlice(newPoint)){
+                if(1==1){
                     if (!lasso.some(existingPoint => existingPoint.x === newPoint.x && existingPoint.y === newPoint.y && existingPoint.z === newPoint.z)) {
                         lasso.push(newPoint);
                     }
@@ -335,7 +336,8 @@
             for (var i = 0; i < this.lassoList.length; i++) {
                 let screenPoints = [];
                 this.lassoList[i].forEach(point => {
-                    if (this.viewer.intersectsMainSlice(point)) {
+                    // if (this.viewer.intersectsMainSlice(point)) {
+                    if (1==1) {
                         var screenCoor = this.viewer.convertCoordinateToScreen(point);
                         screenPoints.push(screenCoor);
                     }
