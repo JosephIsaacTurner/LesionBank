@@ -146,8 +146,12 @@
                 niftiButton.classList.add("disabled");
             }
         });
+        document.getElementById("clear").addEventListener('click', function() {
+            segmenter.clearAll();
+            niftiButton.classList.add("disabled");
+        });
     }
-    
+
     var params = [];
     params["images"] = [
         "https://neurovault.org/static/images/GenericMNI.nii.gz"
