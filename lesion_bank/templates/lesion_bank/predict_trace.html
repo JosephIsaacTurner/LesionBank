@@ -42,6 +42,7 @@
     <div class="col col-sm-4">
         <ul class="list-group border-0">
             <li class="list-group-item border-0 d-flex align-items-center justify-content-between">
+                
                 <form id="uploadForm" method="post" action=".">
                     {% csrf_token %}
                     <div class="btn-group" role="group" aria-label="Mask size selection">
@@ -52,8 +53,14 @@
                             <i class="bi bi-play-fill"></i>
                         </button>
                     </div>
-                    <h3>OR</h3>
                 </form>
+            </li>
+            
+            <br>
+            <h3>OR</h3>
+            <br>
+
+            <li class="list-group-item border-0 d-flex align-items-center justify-content-between">
                 <form id="pointsForm" method="post" action=".">
                     {% csrf_token %}
                     <input type="hidden" id="loggedPoints" name="loggedPoints" value="">
