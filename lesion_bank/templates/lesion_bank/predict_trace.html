@@ -296,8 +296,13 @@
                 var path = new Path2D();
                 path.moveTo(points[0].x, points[0].y);
                 for (var i = 1; i < points.length; i++) {
+                    // Do I have access to this.viewer in this scope?
                     if (this.viewer.intersectsMainSlice(points[i])) {
+                        console.log("point in main slice");
                         path.lineTo(points[i].x, points[i].y);
+                    }
+                    else{
+                        console.log("Point not in main slice");
                     }
                     // path.lineTo(points[i].x, points[i].y);
                 }
