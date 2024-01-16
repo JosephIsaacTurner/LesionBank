@@ -543,7 +543,7 @@
         DataTable.ext.search.push(function (settings, data, dataIndex) {
             let min = parseInt(minEl.value, 10);
             let max = parseInt(maxEl.value, 10);
-            let val = parseFloat(data[8]) || 0; // use data for the age column
+            let val = parseFloat(data[14]) || 0; // use data for the age column
         
             if (
                 (isNaN(min) && isNaN(max)) ||
