@@ -266,7 +266,7 @@
                     x: e.offsetX,
                     y: e.offsetY,
                 });
-                drawPath(points, this.canvas.getContext('2d'));
+                drawPath(points, ctx);
             });
             this.canvas.addEventListener("mouseup", (e) => {
                 isDrawing = false;
