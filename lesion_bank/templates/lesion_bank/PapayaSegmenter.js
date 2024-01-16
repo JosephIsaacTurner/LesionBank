@@ -1,73 +1,107 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.11/paper-full.min.js"></script>
-
 class PapayaSegmenter {
-    // Class to handle in-browser segmentation of 3d volumes in Papaya
+    constructor(viewer = null, canvas = null, papayaPrototype = null) {
+        this.initialize(viewer, canvas, papayaPrototype);
+    }
 
-    constructor(viewer=papayaContainers[0].viewer,canvas=document.querySelector("canvas"), papayaPrototype=papaya.viewer.Viewer.prototype) {
-        this.lassoList = [];
-        this.worldLassoList = [];
-        this.overall_points = [];
-        this.viewer = viewer
-        this.canvas = canvas
-        this.papayaPrototype = papayaPrototype
-        this.viewer.drawViewer = this.drawViewer.bind(this);
-        this.checkCanvasExists();
+    initialize(viewer, canvas, papayaPrototype) {
+        // Method to initialize the segmenter and retry if any elements are not found
+        if (canvas === null) {
+            canvas = document.querySelector("canvas");
+        }
+        if (viewer === null && papayaContainers && papayaContainers.length > 0) {
+            viewer = papayaContainers[0].viewer;
+        }
+        if (papayaPrototype === null && papaya && papaya.viewer && papaya.viewer.Viewer) {
+            papayaPrototype = papaya.viewer.Viewer.prototype;
+        }
+
+        if (viewer && canvas && papayaPrototype) {
+            // If all elements are found, initialize the segmenter
+            this.lassoList = [];
+            this.worldLassoList = [];
+            this.voxels = [];
+            this.viewer = viewer;
+            this.canvas = canvas;
+            this.papayaPrototype = papayaPrototype;
+            this.viewer.drawViewer = this.drawViewer.bind(this);
+            this.lassoTool();
+        } else {
+            // If any element is not found, retry after a delay
+            setTimeout(() => this.initialize(viewer, canvas, papayaPrototype), 1000); // Retry after 1 second
+        }
     }
 
     clearAll() {
         // Method to clear all lassos and points from the viewer
         this.lassoList = [];
         this.worldLassoList = [];
-        this.overall_points = [];
+        this.voxels = [];
         this.viewer.drawViewer();
     }
 
-    lassoTool(canvas) {
+    lassoTool() {
         // Method to create a lasso tool on the canvas
-        function drawPath(ctx, points) {
-            // Function create a path from the points array and draw it on the canvas
+        const drawPath = (points, ctx) => {
+            ctx.strokeStyle = 'magenta';
             ctx.beginPath();
             ctx.moveTo(points[0].x, points[0].y);
             for (var i = 1; i < points.length; i++) {
-            ctx.lineTo(points[i].x, points[i].y);
+                let testPoint = {
+                    x: this.viewer.convertScreenToImageCoordinateX(points[i].x, this.viewer.axialSlice),
+                    y: this.viewer.convertScreenToImageCoordinateY(points[i].y, this.viewer.axialSlice),
+                    z: this.viewer.cursorPosition.z
+                };
+                if (this.viewer.intersectsMainSlice(testPoint)) {
+                    ctx.lineTo(points[i].x, points[i].y);
+                }
             }
             ctx.stroke();
-        }
+        };
         var points = [];
         var isDrawing = false;
-        var ctx = canvas.getContext('2d');
-        canvas.addEventListener("mousedown", function(e) {
+        let ctx = this.canvas.getContext('2d');
+        this.canvas.addEventListener("mousedown", function(e) {
             isDrawing = true;
             points.push({
                 x: e.offsetX,
                 y: e.offsetY,
             });
         });
-        canvas.addEventListener("mousemove", function(e) {
+        this.canvas.addEventListener("mousemove", function(e) {
             if (!isDrawing) return;
             points.push({
                 x: e.offsetX,
                 y: e.offsetY,
             });
-            drawPath(ctx, points);
+            drawPath(points, ctx, this.viewer);
         });
-        canvas.addEventListener("mouseup", function() {
-        isDrawing = false;
-        var path = new Path2D();
-        path.moveTo(points[0].x, points[0].y);
+        this.canvas.addEventListener("mouseup", (e) => {
+            isDrawing = false;
+            var path = new Path2D();
+            path.moveTo(points[0].x, points[0].y);
             for (var i = 1; i < points.length; i++) {
-                path.lineTo(points[i].x, points[i].y);
-        }
-        ctx.fillStyle = "red";
-        ctx.fill(path);
-        var lassoPoints = [];
-        for (var i = 0; i < points.length; i++) {
-            lassoPoints.push([points[i].x, points[i].y]);
-        }
-        if (typeof callback === "function") {
+                let testPoint = {
+                    x: this.viewer.convertScreenToImageCoordinateX(points[i].x, this.viewer.axialSlice),
+                    y: this.viewer.convertScreenToImageCoordinateY(points[i].y, this.viewer.axialSlice),
+                    z: this.viewer.cursorPosition.z
+                }
+                if (this.viewer.intersectsMainSlice(testPoint)) {
+                    console.log("point in main slice");
+                    path.lineTo(points[i].x, points[i].y);
+                }
+                else{
+                    console.log("Point not in main slice");
+                }
+                // path.lineTo(points[i].x, points[i].y);
+            }
+            ctx.fillStyle = "red";
+            ctx.fill(path);
+            var lassoPoints = [];
+            for (var i = 0; i < points.length; i++) {
+                lassoPoints.push([points[i].x, points[i].y]);
+            }
             this.addToLassoList(lassoPoints);
-        }
-        points = [];
+            points = [];
         });
     }
 
@@ -89,32 +123,6 @@ class PapayaSegmenter {
             }
         });
         this.lassoList.push(lasso);
-    }
-
-    checkCanvasExists() {
-        // Method to check if the canvas exists, and if it does, add the lassoTool to it
-        // If not, wait 1 second and try again
-        if (this.canvas) {
-            this.lassoTool(this.canvas);
-
-            this.canvas.addEventListener('mouseup', () => {
-                this.checkLassoList();
-            });
-        } else {
-            setTimeout(() => this.checkCanvasExists(), 1000);
-        }
-    }
-
-    // Later on we will have to pull this out of the class, because it doesn't generalize to other use cases
-    checkLassoList(){
-        // Method to see if the lassoList is empty or not, and if it is, disable the nifti button
-        var niftiButton = document.getElementById('createNifti');
-        if(this.lassoList.length>0){
-            niftiButton.classList.remove("disabled");
-        }
-        else{
-            niftiButton.classList.add("disabled");
-        }
     }
 
     drawViewer() {
@@ -184,20 +192,20 @@ class PapayaSegmenter {
         return total_points;
     }
 
-    getOverallPoints() {
+    getVoxels() {
         // For each lasso in the list, convert it to world coordinates
         // Then find each point in the polygon and add it to the overall_points list
         this.lassoToWorld();
-        this.overall_points = [];
+        this.voxels = [];
         this.worldLassoList.forEach(sub_list => {
             let point_list = this.pointsInPolygon(sub_list);
             point_list.forEach(inner_point =>{
-                if(!this.overall_points.some(op => op.x === inner_point.x && op.y === inner_point.y && op.z === inner_point.z)){
-                    this.overall_points.push(inner_point);
+                if(!this.voxels.some(op => op.x === inner_point.x && op.y === inner_point.y && op.z === inner_point.z)){
+                    this.voxels.push(inner_point);
                 }
             });
         });
-        this.overall_points = this.overall_points.map(point => [point.x, point.y, point.z,1]);
-        return this.overall_points;
+        this.voxels = this.voxels.map(point => [point.x, point.y, point.z,1]);
+        return this.voxels;
     }
 }
