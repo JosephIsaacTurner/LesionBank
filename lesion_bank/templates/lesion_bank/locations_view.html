@@ -225,17 +225,19 @@
                         <br>
                         {% endif %}
                         <div class="table-responsive">
-                            <h6>Case studies with high functional connectivity to the voxel of interest ({{title}}):</h6>
-                            <table class="inputs table">
-                                <tbody><tr>
-                                    <td>Minimum t-value:</td>
-                                    <td><input type="text" id="min" name="min"></td>
-                                </tr>
-                                <tr>
-                                    <td>Maximum t-value:</td>
-                                    <td><input type="text" id="max" name="max"></td>
-                                </tr>
-                            </tbody></table>
+                            <h6>Case studies with functional connectivity to the voxel of interest ({{title}}):</h6>
+                            <div class="container">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <label for="min">Minimum t-value:</label>
+                                        <input class="form-control" type="text" id="min" name="min">
+                                    </div>
+                                    <div class="col">
+                                        <label for="max">Maximum t-value:</label>
+                                        <input class="form-control" type="text" id="max" name="max">
+                                    </div>
+                                </div>
+                            </div>                            
                             <table id="sortableTable2" class="table table-hover">
                                 <thead id='tableHeader' class="thead-light">
                                     <tr>
