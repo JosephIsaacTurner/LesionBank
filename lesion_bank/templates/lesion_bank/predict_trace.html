@@ -87,6 +87,7 @@
                 <form id="pointsForm" method="post" action=".">
                     {% csrf_token %}
                     <input type="hidden" id="loggedPoints" name="loggedPoints" value="">
+                    <input type="hidden" id="selectedMask" name="selectedMask" value="">
                     <div class="input-group">
                         <!-- Toggleable Buttons -->
                         <div class="btn-group" role="group" aria-label="Mask size selection">
@@ -99,12 +100,15 @@
                         </div>
                     </div>
                     <script>
+                        // The buttons classes are toggling succesfully-- but when I submit the form, I only want the active button to be submitted.
+                        // So that I know if users have selected 1mm or 2mm masks.
                         document.getElementById('mask2mm').addEventListener('click', function() {
                             this.classList.add('active');
                             this.classList.remove('btn-outline-primary');
                             this.classList.add('btn-primary');
                             document.getElementById('mask1mm').classList.add('btn-outline-primary');
                             document.getElementById('mask1mm').classList.remove('btn-primary', 'active');
+                            document.getElementById('selectedMask').value = '2mm';
                         });
                         
                         document.getElementById('mask1mm').addEventListener('click', function() {
@@ -113,6 +117,7 @@
                             this.classList.add('btn-primary');
                             document.getElementById('mask2mm').classList.add('btn-outline-primary');
                             document.getElementById('mask2mm').classList.remove('btn-primary', 'active');
+                            document.getElementById('selectedMask').value = '1mm';
                         });
                     </script>
                 </form>
@@ -209,8 +214,6 @@
     // params["contextManager"] = new ctxManager();
     params["loadingComplete"] = loadingFinished;
 </script>
-
-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.11/paper-full.min.js"></script>
 <script src="https://josephisaacturner.github.io/PapayaSegmenter.js"></script>
