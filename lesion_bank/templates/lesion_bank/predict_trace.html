@@ -403,8 +403,14 @@
         // Assuming papayaContainers is already available here
         // const viewer = papayaContainers[0].viewer; // or however you get the viewer
 
-        // Initialize the PapayaSegmenter instance
-        const segmenter = new PapayaSegmenter();
+        // Initialize the PapayaSegmenter instance after a timeout of 3 seconds
+        // This is to ensure that the canvas is loaded before we try to access it
+
+        setTimeout(() => {
+            const segmenter = new PapayaSegmenter(viewer, canvas);
+        }, 3000);
+
+        // const segmenter = new PapayaSegmenter();
 
         // Now you can use 'segmenter' to call methods from your class
         // For example:
