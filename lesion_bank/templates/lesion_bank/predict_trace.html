@@ -258,9 +258,7 @@
             for (var i = 0; i < points.length; i++) {
                 lassoPoints.push([points[i].x, points[i].y]);
             }
-            if (typeof callback === "function") {
-                this.addToLassoList(lassoPoints);
-            }
+            this.addToLassoList(lassoPoints);
             points = [];
             });
         }
@@ -282,6 +280,7 @@
                     }
                 }
             });
+            console.log("Lasso of length" + lasso.length + "added to lassoList");
             this.lassoList.push(lasso);
         }
 
@@ -338,7 +337,7 @@
         }
         
         lassoToWorld() {
-            console.log("lassoToWorld called");
+            // console.log("lassoToWorld called");
             // Method to convert points defining the lassos into world coordinates
             this.worldLassoList = []
             this.lassoList.forEach(lasso => {
