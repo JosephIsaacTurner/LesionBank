@@ -88,10 +88,9 @@ def locations_view(request, voxel_id):
         network_query += f""" AND symptom NOT IN ({', '.join(map(lambda x: f"'{x}'", private_symptoms))})"""
     network_query += """
      order by value desc
-    limit 5
     """
     network_results = run_raw_sql(network_query)
-    network_results = sorted(network_results, key=lambda k: k['value'], reverse=True)
+    # network_results = sorted(network_results, key=lambda k: k['value'], reverse=True)
     context['symptom_results'] = symptom_results
     context['trace_results'] = trace_results
     context['network_results'] = network_results
