@@ -417,14 +417,7 @@
 
     let segmenter;
 
-    document.addEventListener('DOMContentLoaded', (event) => {
-        setTimeout(() => {
-            const viewer = papayaContainers[0].viewer;
-            const canvas = document.querySelector('canvas');
-            const papayaPrototype = papaya.viewer.Viewer.prototype;
-            segmenter = new PapayaSegmenter(viewer, canvas, papayaPrototype);
-        }, 1000);
-    });
+    segmenter = new PapayaSegmenter(viewer, canvas, papayaPrototype);
 
 
 // let lassoList = [];
