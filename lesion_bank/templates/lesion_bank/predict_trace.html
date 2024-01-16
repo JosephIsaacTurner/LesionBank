@@ -47,7 +47,7 @@
                     {% csrf_token %}
                     <div class="btn-group" role="group" aria-label="Mask size selection">
                         <!-- Hidden file input -->
-                        <input type="file" id="file" name="file" accept=".nii.gz" class="form-control" onchange="this.form.submit()" hidden>
+                        <input type="file" id="file" name="file" accept=".nii.gz" class="btn form-control" onchange="this.form.submit()" hidden>
                     
                         <!-- Label styled as a button -->
                         <label for="file" class="btn btn-primary">
