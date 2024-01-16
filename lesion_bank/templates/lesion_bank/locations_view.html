@@ -484,10 +484,11 @@
     $(document).ready(function() {
         $('#sortableTable2').DataTable({
             fixedHeader: true,  // Enables the fixed header
-            paging: false,  // Disable pagination
+            pageLength: 0,
+            lengthMenu: [[10, 20, 35, 50, 100, -1], [10, 20, 35, 50, 100, "All"]],  // Dropdown options for the user
             info: false,
             order: [[0, 'desc']] ,
-            searching: false,
+            searching: true,
             columnDefs: [
                 {
                     targets: [0, 1, 2, 11,12, 13],
