@@ -129,6 +129,11 @@
 
 {% block script %}
 <script type="text/javascript">
+    let loadingComplete = false;
+    function loadingFinished(){
+        loadingComplete = true;
+        console.log("Loading complete");
+    }
     var params = [];
     params["images"] = [
         "https://neurovault.org/static/images/GenericMNI.nii.gz"
@@ -150,6 +155,7 @@
     params["allowScroll"] = false;
     params["coordinate"] = ("{{ initial_coord }}".split('_')).map(Number);
     // params["contextManager"] = new ctxManager();
+    params["loadingComplete"] = loadingFinished;
 </script>
 <script>
     
