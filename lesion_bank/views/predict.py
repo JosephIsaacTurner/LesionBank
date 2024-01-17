@@ -59,8 +59,7 @@ def predict(request):
 
         # Generate file_id and filename from UNIX timestamp
         file_id = str(int(time.time()))  # Get 10-digit UNIX timestamp
-        filename = f"{mask_resolution}/input_mask.nii.gz" # Create filename in separate folder for each resolution
-        full_file_path = os.path.join(f"mask_input/{file_id}/", filename) # Include file_id as parent directory for mask
+        full_file_path = f"network_maps_output/{file_id}/{file_id}_2mm_trace_Precom_T.nii.gz"
 
         if mask_resolution == '1mm':
 
