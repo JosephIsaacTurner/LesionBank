@@ -138,7 +138,7 @@ def prediction_results(request, file_id):
 
     # if the response status is 404 (Not Found), then return the loading page
     if response.status_code == 404:
-        return render(request, 'lesion_bank/loading.html', {'file_id': file_id})
+        return render(request, 'lesion_bank/loading.html', {'file_id': file_id, 'url_to_check': url_to_check})
     
     prediction_query = f"""
         WITH join_table AS (
