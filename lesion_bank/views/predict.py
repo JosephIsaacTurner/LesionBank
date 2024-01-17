@@ -107,7 +107,7 @@ def predict(request):
             file_id=file_id,
             defaults={
                 'mask_filepath': f"mask_input/{file_id}/{mask_resolution}/input_mask.nii.gz",
-                'lesion_network_filepath': f"network_maps_output/{file_id}/{file_id}_2mm_trace_Precom_T.nii.gz",
+                'lesion_network_filepath': f"network_maps_output/{file_id}/input_mask_Precom_T.nii.gz",
                 'user': request.user if request.user.is_authenticated else None,
                 'page_name': 'predict'
             }
@@ -132,7 +132,7 @@ def predict(request):
 
 def prediction_results(request, file_id):
     image = get_object_or_404(GeneratedImages, file_id=file_id)
-    url_to_check = f'https://lesionbucket.nyc3.digitaloceanspaces.com/uploads/network_maps_output/{file_id}/{file_id}_2mm_trace_Precom_T.nii.gz'
+    url_to_check = f'https://lesionbucket.nyc3.digitaloceanspaces.com/uploads/"network_maps_output/{file_id}/input_mask_Precom_T.nii.gz"'
     # Check if the file exists
     response = requests.head(url_to_check)
 
