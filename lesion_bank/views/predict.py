@@ -62,7 +62,7 @@ def predict(request):
         full_file_path = f"mask_input/{file_id}/{mask_resolution}/input_mask.nii.gz"
 
         if mask_resolution == '1mm':
-
+            file_path_1mm = full_file_path
             # First, make the .nifti file in 1mm resolution
             affine= np.array([
                 [-1.,0.,0.,90.],
@@ -86,12 +86,11 @@ def predict(request):
             nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
             filename_2mm = f"2mm/input_mask.nii.gz" # Create filename in separate folder for each resolution
             full_2mm_file_path = os.path.join(f"mask_input/{file_id}/", filename_2mm) # Include file_id as parent directory for mask
-            # filename = f"{file_id}_2mm_trace.nii.gz" # Standardize filepath
-            # filepath_2mm = os.path.join(f"{file_id}/",filename) # Standardize filepath
             save_image(nii_img, full_2mm_file_path)
         
         # If mask resolution is 2mm:
         if mask_resolution == '2mm':
+            file_path_1mm = ''
             # First, make the .nifti file in 2mm resolution
             affine = np.array([
                 [-2., 0., 0., 90.],
@@ -102,11 +101,13 @@ def predict(request):
             shape=(91,109,91)
             nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
             save_image(nii_img, full_file_path)
-
+        
         image, created = GeneratedImages.objects.get_or_create(
             file_id=file_id,
             defaults={
                 'mask_filepath': f"mask_input/{file_id}/{mask_resolution}/input_mask.nii.gz",
+                'file_path_2mm': f"mask_input/{file_id}/2mm/input_mask.nii.gz",
+                'file_path_1mm': file_path_1mm,
                 'lesion_network_filepath': f"network_maps_output/{file_id}/input_mask_Precom_T.nii.gz",
                 'user': request.user if request.user.is_authenticated else None,
                 'page_name': 'predict'
@@ -118,9 +119,7 @@ def predict(request):
         odd_indices = logged_points[:, :3] % 2 == 1
         logged_points[:, :3][odd_indices] += 1
         numpyToSql(logged_points, "file", image, PredictionVoxels)  # pass image instance instead of file_id
-        # The following line takes a long time to run, so I want to run it asynchronously
-        # But, this is a django view-- how do I do that?
-        # compute_network_map(f"s3://lesionbucket/mask_input/{file_id}", f"s3://lesionbucket/network_maps_output/{file_id}")
+
         compute_network_map_async.delay(f"s3://lesionbucket/uploads/mask_input/{file_id}/2mm", f"s3://lesionbucket/uploads/network_maps_output/{file_id}")
         
         return redirect('prediction_results', file_id=file_id)
