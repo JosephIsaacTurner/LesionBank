@@ -59,7 +59,7 @@ def predict(request):
 
         # Generate file_id and filename from UNIX timestamp
         file_id = str(int(time.time()))  # Get 10-digit UNIX timestamp
-        full_file_path = f"network_maps_output/{file_id}/{file_id}_2mm_trace_Precom_T.nii.gz"
+        full_file_path = f"mask_input/{file_id}/{mask_resolution}/input_mask.nii.gz"
 
         if mask_resolution == '1mm':
 
