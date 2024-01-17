@@ -50,40 +50,65 @@ def run_raw_sql(query, single_value=False):
 
 def predict(request):
     if request.method == 'POST':
+        # Find resolution of mask from form data (can be either 1mm or 2mm)
+        mask_resolution = request.POST.get('selectedMask', '2mm') # Default to 2mm if not specified
+
+        # Get the logged points from the form data (these are the voxels that the user selected in the mask)        
         logged_points = json.loads(request.POST.get('loggedPoints', '[]'))
         logged_points = np.array(logged_points)
-        # First, make the .nifti file in 1mm resolution
-        affine= np.array([
-            [-1.,0.,0.,90.],
-            [0.,1.,0.,-126.],
-            [0.,0.,1.,-72.],
-            [0.,0.,0.,1.]
-        ])
-        shape=(182,218,182)
-        nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
-        file_id = str(int(time.time()))  # Get 10-digit UNIX timestamp
-        filename = f"{file_id}_1mm_trace.nii.gz"
-        filepath_1mm = os.path.join("prediction_traces/",filename)
-        save_image(nii_img, filepath_1mm)
 
-        # Now, make a copy in 2mm resolution:
-        affine = np.array([
-            [-2., 0., 0., 90.],
-            [0., 2., 0., -126.],
-            [0., 0., 2., -72.],
-            [0., 0., 0., 1.]
-        ])
-        shape=(91,109,91)
-        nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
-        filename = f"{file_id}_2mm_trace.nii.gz"
-        filepath_2mm = os.path.join(f"{file_id}/",filename)
-        save_image(nii_img, filepath_2mm, "trace_input")
+        # Generate file_id and filename from UNIX timestamp
+        file_id = str(int(time.time()))  # Get 10-digit UNIX timestamp
+        filename = f"{mask_resolution}/input_mask.nii.gz" # Create filename in separate folder for each resolution
+        full_file_path = os.path.join(f"mask_input/{file_id}/", filename) # Include file_id as parent directory for mask
+
+        if mask_resolution == '1mm':
+
+            # First, make the .nifti file in 1mm resolution
+            affine= np.array([
+                [-1.,0.,0.,90.],
+                [0.,1.,0.,-126.],
+                [0.,0.,1.,-72.],
+                [0.,0.,0.,1.]
+            ])
+            shape=(182,218,182) # 1mm resolution shape
+            nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
+            # filepath_1mm = os.path.join("prediction_traces/",filename) # Standardize filepath
+            save_image(nii_img, full_file_path)
+
+            # Even though the selected mask is 1mm, we still need to save the 2mm version for lesion network mapping
+            affine = np.array([
+                [-2., 0., 0., 90.],
+                [0., 2., 0., -126.],
+                [0., 0., 2., -72.],
+                [0., 0., 0., 1.]
+            ])
+            shape=(91,109,91) # 2mm resolution shape
+            nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
+            filename_2mm = f"2mm/input_mask.nii.gz" # Create filename in separate folder for each resolution
+            full_2mm_file_path = os.path.join(f"mask_input/{file_id}/", filename_2mm) # Include file_id as parent directory for mask
+            # filename = f"{file_id}_2mm_trace.nii.gz" # Standardize filepath
+            # filepath_2mm = os.path.join(f"{file_id}/",filename) # Standardize filepath
+            save_image(nii_img, full_2mm_file_path)
+        
+        # If mask resolution is 2mm:
+        if mask_resolution == '2mm':
+            # First, make the .nifti file in 2mm resolution
+            affine = np.array([
+                [-2., 0., 0., 90.],
+                [0., 2., 0., -126.],
+                [0., 0., 2., -72.],
+                [0., 0., 0., 1.]
+            ])
+            shape=(91,109,91)
+            nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
+            save_image(nii_img, full_file_path)
 
         image, created = GeneratedImages.objects.get_or_create(
             file_id=file_id,
             defaults={
-                'file_path_1mm': filepath_1mm,
-                'file_path_2mm': filepath_2mm,
+                'mask_filepath': full_file_path,
+                'lesion_network_filepath': f"network_maps_output/{file_id}/{file_id}_2mm_trace_Precom_T.nii.gz",
                 'user': request.user if request.user.is_authenticated else None,
                 'page_name': 'predict'
             }
@@ -96,9 +121,9 @@ def predict(request):
         numpyToSql(logged_points, "file", image, PredictionVoxels)  # pass image instance instead of file_id
         # The following line takes a long time to run, so I want to run it asynchronously
         # But, this is a django view-- how do I do that?
-        # compute_network_map(f"s3://lesionbucket/trace_input/{file_id}", f"s3://lesionbucket/network_maps_output/{file_id}")
-        compute_network_map_async.delay(f"s3://lesionbucket/trace_input/{file_id}", f"s3://lesionbucket/network_maps_output/{file_id}")
-        # return HttpResponse("success running numpyToSql")
+        # compute_network_map(f"s3://lesionbucket/mask_input/{file_id}", f"s3://lesionbucket/network_maps_output/{file_id}")
+        compute_network_map_async.delay(f"s3://lesionbucket/uploads/mask_input/{file_id}/2mm", f"s3://lesionbucket/uploads/network_maps_output/{file_id}")
+        
         return redirect('prediction_results', file_id=file_id)
     else:
         context = {}
@@ -108,7 +133,7 @@ def predict(request):
 
 def prediction_results(request, file_id):
     image = get_object_or_404(GeneratedImages, file_id=file_id)
-    url_to_check = f'https://lesionbucket.nyc3.digitaloceanspaces.com/network_maps_output/{file_id}/{file_id}_2mm_trace_Precom_T.nii.gz'
+    url_to_check = f'https://lesionbucket.nyc3.digitaloceanspaces.com/uploads/network_maps_output/{file_id}/{file_id}_2mm_trace_Precom_T.nii.gz'
     # Check if the file exists
     response = requests.head(url_to_check)
 
@@ -169,8 +194,8 @@ def prediction_results(request, file_id):
     similar_case_studies_query += """ order by value desc """
     similar_case_studies = run_raw_sql(similar_case_studies_query)
     context = {}
-    context['file_path'] = image.file_path_1mm
-    context['network_path'] = f"https://lesionbucket.nyc3.digitaloceanspaces.com/network_maps_output/{file_id}/{file_id}_2mm_trace_Precom_T.nii.gz"
+    context['file_path'] = image.mask_filepath
+    context['network_path'] = f"https://lesionbucket.nyc3.digitaloceanspaces.com/uploads/network_maps_output/{file_id}/{file_id}_2mm_trace_Precom_T.nii.gz"
     context['prediction_results'] = prediction_results
     context['title'] = "Prediction Results"
     context['initial_coord'] = initial_coord
