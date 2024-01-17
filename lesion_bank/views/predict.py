@@ -107,7 +107,7 @@ def predict(request):
         image, created = GeneratedImages.objects.get_or_create(
             file_id=file_id,
             defaults={
-                'mask_filepath': full_file_path,
+                'mask_filepath': f"mask_input/{file_id}/{mask_resolution}/input_mask.nii.gz",
                 'lesion_network_filepath': f"network_maps_output/{file_id}/{file_id}_2mm_trace_Precom_T.nii.gz",
                 'user': request.user if request.user.is_authenticated else None,
                 'page_name': 'predict'
