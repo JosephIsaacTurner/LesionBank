@@ -14,8 +14,9 @@ def index_view(request):
     return render(request, 'lesion_bank/index.html')
 
 def index_new_view(request):
-    # Pick a random symptom from the database
-    random_symptom = Symptoms.objects.order_by('?').first()
+    # Pick a random symptom from the database where sensitivity_parametric_path is not null
+    random_symptom = Symptoms.objects.filter(sensitivity_parametric_path__isnull=False).order_by('?').first()
+
     if not random_symptom:
         # Handle the case where no symptoms are found
         return render(request, 'lesion_bank/index_new.html', {'error': 'No symptoms found'})
@@ -40,7 +41,8 @@ def index_new_view(request):
     context = {
         'symptom': random_symptom.symptom,
         'case_studies': lesion_metadata,
-        'case_count': len(lesion_metadata),  # Or lesions.count()
+        'case_count': len(lesion_metadata),
+        'sensitivity_map': random_symptom.sensitivity_parametric_path,
     }
 
     # Now render it with the context
