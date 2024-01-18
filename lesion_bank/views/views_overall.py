@@ -16,23 +16,29 @@ def index_view(request):
 def index_new_view(request):
     # Pick a random symptom from the database
     random_symptom = Symptoms.objects.order_by('?').first()
+    if not random_symptom:
+        # Handle the case where no symptoms are found
+        return render(request, 'lesion_bank/index_new.html', {'error': 'No symptoms found'})
+
     # Get all lesions with that symptom
-    lesion_metadata = LesionMetadata.objects.filter(symptoms__symptom=random_symptom.symptom)
-    # Get the count of lesions with that symptom
-    case_count = lesion_metadata.count()
-    # Rename dict keys to match the template
-    # tracing_file_name -> lesion_mask
-    # network_file_name -> lesion_network_map
-    lesion_metadata = {k: v for k, v in lesion_metadata.items() if k in ['lesion_id', 'lesion_mask', 'lesion_network_map']}
-    lesion_metadata['lesion_mask'] = lesion_metadata.pop('tracing_file_name')
-    lesion_metadata['lesion_network_map'] = lesion_metadata.pop('network_file_name')
-    lesion_metadata['case_count'] = case_count
-    lesion_metadata['symptom'] = random_symptom.symptom
+    lesions = LesionMetadata.objects.filter(symptoms__symptom=random_symptom.symptom)
+
+    # Transform the lesions into a list of dictionaries
+    lesion_metadata = []
+    for lesion in lesions:
+        lesion_dict = {
+            'lesion_id': lesion.lesion_id,
+            'lesion_mask': getattr(lesion, 'tracing_file_name', None),
+            'lesion_network_map': getattr(lesion, 'network_file_name', None),
+        }
+        lesion_metadata.append(lesion_dict)
+
     context = {
         'symptom': random_symptom.symptom,
         'cases': lesion_metadata,
-        'case_count': case_count,
+        'case_count': len(lesion_metadata),  # Or lesions.count()
     }
+
     # Now render it with the context
     return render(request, 'lesion_bank/index_new.html', context)
 
