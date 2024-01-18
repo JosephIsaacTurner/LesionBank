@@ -39,7 +39,7 @@ def index_new_view(request):
 
     context = {
         'symptom': random_symptom.symptom,
-        'cases': lesion_metadata,
+        'case_studies': lesion_metadata,
         'case_count': len(lesion_metadata),  # Or lesions.count()
     }
 
