@@ -19,7 +19,7 @@
     <!-- Papaya & jQuery -->
     <link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/rii-mango/Papaya@build-1449/release/current/minimal/papaya.css'/>
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/rii-mango/Papaya@build-1455/release/current/minimal/papaya.js"></script>
+    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/rii-mango/Papaya@build-1455/release/current/minimal/papaya.js"></script> -->
     
     <!-- DataTables Bootstrap Integration -->
     
@@ -237,6 +237,16 @@
             // ]
         });
     });
+</script>
+
+
+<script>
+    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!isMobile) {
+        var script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/gh/rii-mango/Papaya@build-1455/release/current/minimal/papaya.js'; // Replace with the actual path
+        document.head.appendChild(script);
+    }
 </script>
 
 <!-- Functions for loading overlays -->
