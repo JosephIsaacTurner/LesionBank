@@ -6,6 +6,7 @@ urlpatterns = [
     path('', views.index_view, name='index'),
     path('faq/', views.faq, name='faq'),
     path('register/', views.RegisterView.as_view(), name='register'),
+    path('index_new/', views.index_new_view, name='index_new'),
 
     ## Data imports and metadata editing
     path('edit-metadata/', views.edit_metadata_list_view, name='edit_metadata_list'),
