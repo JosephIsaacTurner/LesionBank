@@ -4,6 +4,8 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from django.contrib.auth.forms import UserCreationForm
 from lesion_bank.models import Symptoms, LesionMetadata
+from django.db.models import Count
+
 
 class RegisterView(CreateView):
     form_class = UserCreationForm
@@ -14,8 +16,16 @@ def index_view(request):
     return render(request, 'lesion_bank/index.html')
 
 def index_new_view(request):
-    # Pick a random symptom from the database where sensitivity_parametric_path is not null
-    random_symptom = Symptoms.objects.filter(sensitivity_parametric_path__isnull=False).order_by('?').first()
+    # Pick a random symptom from the database where sensitivity_parametric_path is not null and count of lesions is > 10
+    symptoms_with_lesion_count = Symptoms.objects.annotate(
+            lesion_count=Count('lesionmetadata_set')
+        ).filter(
+            sensitivity_parametric_path__isnull=False,
+            lesion_count__gt=10
+        )
+    # Pick a random symptom from the filtered queryset
+    random_symptom = symptoms_with_lesion_count.order_by('?').first()
+
 
     if not random_symptom:
         # Handle the case where no symptoms are found
