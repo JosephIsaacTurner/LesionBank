@@ -286,7 +286,7 @@
     var params = {};
     params["images"] = [
         "https://neurovault.org/static/images/GenericMNI.nii.gz",
-        // {{ sensitivity_map}}
+        '{{ MEDIA_URL }}{{ sensitivity_map}}'
     ];
     params["luts"] = [
         {"name":"Lesion Trace", "data": [[0, 0.9, 0.2, 0.2], [1, 1, 0.2, 0.2]]},
