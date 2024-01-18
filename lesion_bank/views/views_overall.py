@@ -30,6 +30,10 @@ def index_new_view(request):
             'lesion_id': lesion.lesion_id,
             'lesion_mask': getattr(lesion, 'tracing_file_name', None),
             'lesion_network_map': getattr(lesion, 'network_file_name', None),
+            'doi': lesion.doi,
+            'author': lesion.author,
+            'publication_year': lesion.publication_year,
+            'lesion_id': lesion.lesion_id,
         }
         lesion_metadata.append(lesion_dict)
 
