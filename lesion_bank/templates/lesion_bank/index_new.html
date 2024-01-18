@@ -77,7 +77,6 @@
             }
         }
 
-        /* Show it is fixed to the top */
         body {
             min-height: 75rem;
             padding-top: 4.5rem;
@@ -91,10 +90,6 @@
 
         .dtfh-floatingparenthead{
             background-color:white!important;
-            /* z-index: 1000 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            height: 80 px !important; */
         }
         table.table-hover.dataTable.no-footer.fixedHeader-floating {
             margin-top:0 !important;
@@ -196,6 +191,7 @@
               </div>
             </div>
             <div class="col-md-6">
+                <p id="warning_message"></p>
                 <div id="papaya-holder" class="papaya" data-params="params"></div>
             </div>
         </div>
@@ -231,14 +227,9 @@
             "bLengthChange": false,
             pageLength: 0,
             lengthMenu: [[7, 10, 20, 35, 50, 100, -1], [10, 20, 35, 50, 100, "All"]],
-            // dom: 'Bfrtip',
-            // buttons: [
-            //     'copy', 'csv', 'excel', 'pdf', 'print'
-            // ]
         });
     });
 </script>
-
 
 <script>
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -246,6 +237,9 @@
         var script = document.createElement('script');
         script.src = 'https://cdn.jsdelivr.net/gh/rii-mango/Papaya@build-1455/release/current/minimal/papaya.js'; // Replace with the actual path
         document.head.appendChild(script);
+    }
+    else {
+        document.getElementById("warning_message").innerHTML = "Papaya is not well supported on mobile devices. Please use a desktop browser for a better experience.";
     }
 </script>
 
