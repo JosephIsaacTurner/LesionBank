@@ -177,7 +177,7 @@
                         {% for case in case_studies %}
                             <tr>
                                 <td>{{case.author}}, {{case.publication_year}}</td>
-                                <td>{{case.doi}}</td>
+                                <td><a href="{{case.doi}}" target="_blank">doi</a></td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
                                         <a target="_blank" href="{% url 'cases_single' case.lesion_id %}" class="btn btn-primary btn-sm">Details</a>
