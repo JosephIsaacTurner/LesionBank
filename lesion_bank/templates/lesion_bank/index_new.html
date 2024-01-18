@@ -161,6 +161,7 @@
         </p>
         <!-- <hr> -->
         <div class="row">
+            <h5>{{symptom}} Sensitivity Map derived from {{case_count}} Lesions</h5>
             <div class="col-md-6">
               <div class="table-responsive">
                 <table id="example" class="table table-hover">
@@ -185,11 +186,11 @@
                                 </td>
                                 <td>
                                     <i url='{{ MEDIA_URL }}{{ case.lesion_mask }}' id='2toggle{{forloop.counter}}' style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="addNewOverlay('{{ MEDIA_URL }}{{ case.lesion_mask }}', this)"></i> 
-                                    <a href="{{ MEDIA_URL }}{{ case.lesion_mask }}"><i class="bi bi-download"></i></a>                               
+                                    <!-- <a href="{{ MEDIA_URL }}{{ case.lesion_mask }}"><i class="bi bi-download"></i></a>                                -->
                                 </td>
                                 <td>
                                     <i url='{{ MEDIA_URL }}{{ case.lesion_network_map }}' id='2toggle{{forloop.counter}}' style="color:#ff999e; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="addNewOverlay('{{ MEDIA_URL }}{{ case.lesion_network_map }}', this)"></i> 
-                                    <a href="{{ MEDIA_URL }}{{ case.lesion_network_map }}"><i class="bi bi-download"></i></a>                                  
+                                    <!-- <a href="{{ MEDIA_URL }}{{ case.lesion_network_map }}"><i class="bi bi-download"></i></a>                                   -->
                                 </td>
                             </tr>
                         {% endfor %}
@@ -198,7 +199,6 @@
               </div>
             </div>
             <div class="col-md-6">
-                <h5>{{symptom}} Sensitivity Map derived from {{case_count}} Lesions</h5>
                 <div id="papaya-holder" class="papaya" data-params="params"></div>
             </div>
         </div>
