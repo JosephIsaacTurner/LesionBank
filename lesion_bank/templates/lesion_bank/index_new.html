@@ -162,7 +162,10 @@
         <!-- <hr> -->
         <div class="row">
             <div class="text-center">
-                <h5><i>{{symptom}} Sensitivity Map derived from {{case_count}} Lesions</i></h5>
+                <h5><i>
+                    <a target="_blank" href="{% url 'symptom_detail' row.symptom %}">{{ row.symptom }}</a>
+                    Sensitivity Map derived from {{case_count}} Lesions
+                </i></h5>
             </div>              
             <div class="col-md-6">
               <div class="table-responsive">
@@ -171,7 +174,7 @@
                         <tr>
                             <th>Author</th>
                             <th>DOI</th>
-                            <th>Details</th>
+                            <!-- <th>Details</th> -->
                             <th>Lesion</th>
                             <th>Network</th>
                         </tr>
@@ -179,13 +182,13 @@
                     <tbody>
                         {% for case in case_studies %}
                             <tr>
-                                <td>{{case.author}}, {{case.publication_year}}</td>
+                                <td><a href="{% url 'cases_single' case.lesion_id %}" target="_blank">{{case.author}}, {{case.publication_year}}</a></td>
                                 <td><a href="{{case.doi}}" target="_blank">doi</a></td>
-                                <td>
+                                <!-- <td>
                                     <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
                                         <a target="_blank" href="{% url 'cases_single' case.lesion_id %}" class="btn btn-primary btn-sm">Details</a>
                                     </div>
-                                </td>
+                                </td> -->
                                 <td>
                                     <i url='{{ MEDIA_URL }}{{ case.lesion_mask }}' id='2toggle{{forloop.counter}}' style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="addNewOverlay('{{ MEDIA_URL }}{{ case.lesion_mask }}', this)"></i> 
                                     <!-- <a href="{{ MEDIA_URL }}{{ case.lesion_mask }}"><i class="bi bi-download"></i></a>                                -->
