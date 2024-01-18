@@ -174,21 +174,23 @@
                     </thead>
                     <tbody>
                         {% for case in case_studies}
-                            <td>{{case.author}}, {{case.publication_year}}</td>
-                            <td>{{case.doi}}</td>
-                            <td>
-                                <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                                    <a target="_blank" href="{% url 'cases_single' case.lesion_id %}" class="btn btn-primary btn-sm">Details</a>
-                                </div>
-                            </td>
-                            <td>
-                                <i url='{{ MEDIA_URL }}{{ case.lesion_mask }}' id='2toggle{{forloop.counter}}' style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('{{ MEDIA_URL }}{{ case.lesion_mask }}', this)"></i> 
-                                <a href="{{ MEDIA_URL }}{{ case.lesion_mask }}"><i class="bi bi-download"></i></a>                               
-                            </td>
-                            <td>
-                                <i url='{{ MEDIA_URL }}{{ case.lesion_network_map }}' id='2toggle{{forloop.counter}}' style="color:#ff999e; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('{{ MEDIA_URL }}{{ case.lesion_network_map }}', this)"></i> 
-                                <a href="{{ MEDIA_URL }}{{ case.lesion_network_map }}"><i class="bi bi-download"></i></a>                                  
-                            </td>
+                            <tr>
+                                <td>{{case.author}}, {{case.publication_year}}</td>
+                                <td>{{case.doi}}</td>
+                                <td>
+                                    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                        <a target="_blank" href="{% url 'cases_single' case.lesion_id %}" class="btn btn-primary btn-sm">Details</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <i url='{{ MEDIA_URL }}{{ case.lesion_mask }}' id='2toggle{{forloop.counter}}' style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="addNewOverlay('{{ MEDIA_URL }}{{ case.lesion_mask }}', this)"></i> 
+                                    <a href="{{ MEDIA_URL }}{{ case.lesion_mask }}"><i class="bi bi-download"></i></a>                               
+                                </td>
+                                <td>
+                                    <i url='{{ MEDIA_URL }}{{ case.lesion_network_map }}' id='2toggle{{forloop.counter}}' style="color:#ff999e; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="addNewOverlay('{{ MEDIA_URL }}{{ case.lesion_network_map }}', this)"></i> 
+                                    <a href="{{ MEDIA_URL }}{{ case.lesion_network_map }}"><i class="bi bi-download"></i></a>                                  
+                                </td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>
