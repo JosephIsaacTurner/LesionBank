@@ -18,7 +18,7 @@ def index_view(request):
 def index_new_view(request):
     # Pick a random symptom from the database where sensitivity_parametric_path is not null and count of lesions is > 10
     symptoms_with_lesion_count = Symptoms.objects.annotate(
-            lesion_count=Count('lesionmetadata_set')
+            lesion_count=Count('lesionmetadata')
         ).filter(
             sensitivity_parametric_path__isnull=False,
             lesion_count__gt=10
