@@ -2,7 +2,6 @@
 {% load static %}
 {% block content %}
 
-
 <div class="row align-items-center">
 
     <div class="input-group mb-3 input-group-lg">
@@ -13,10 +12,7 @@
             {% endfor %}
         </select>
         <button class="btn btn-outline-secondary" type="button" onclick="setActionURL()" id="button-addon1">Select</button>
-    </div>
-    
-    
-    
+    </div>    
     <script>
         const selectMenu = document.getElementById("selectMenu");
         function setActionURL(e) {
@@ -26,12 +22,6 @@
                 window.location.href = redirectURL;
             }
         }
-        // const symptomValue = "{{ symptom }}";  // Assuming you're setting this value somewhere
-        // for (let i = 0; i < selectMenu.options.length; i++) {
-        //     if (selectMenu.options[i].value === symptomValue) {
-        //         selectMenu.options[i].selected = true;
-        //     }
-        // }
     </script>
     <p>
         All symptoms with a minimum of {{min_count}} case reports are displayed.
