@@ -126,6 +126,7 @@ def predict(request):
     else:
         context = {}
         context["title"] = "Predict"
+        context["page_name"] = "Predict"
         context["initial_coord"] = "0_-18_6"
         return render(request, 'lesion_bank/predict_trace.html', context)
 
