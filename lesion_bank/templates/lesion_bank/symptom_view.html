@@ -1,12 +1,7 @@
 {% extends "lesion_bank/base.html" %}
-
 {% block content %}
 
-
-
- 
 <div class="row align-items-center"> <!-- Add align-items-center to vertically align items in the row -->
-
     <div class="input-group mb-3 input-group-lg">
         <a href="{% url 'list' %}" class="btn btn-primary">Return to List</a>
         <select id='selectMenu' class='form-select' aria-label='Select an option'>
@@ -16,9 +11,6 @@
         </select>
         <button class="btn btn-outline-secondary" type="button" onclick="setActionURL()" id="button-addon1">Select</button>
     </div>
-    
-    
-    
     <script>
         const selectMenu = document.getElementById("selectMenu");
         function setActionURL(e) {
@@ -69,9 +61,6 @@
                 window.location.href = targetUrl;
             }
         </script>
-
-        
-
     </div>
     <div class="col col-sm-5">
         <div class="accordion" id="sensitivityAccordion">
@@ -116,7 +105,6 @@
         <br>
     </div>
     <div class="col col-sm-12">
-
         <div class="accordion" id="caseStudiesAccordion">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOne">
@@ -126,7 +114,6 @@
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#caseStudiesAccordion">
                     <div class="accordion-body">
-        
                         <div class="table-responsive">
                             <table id="sortableTable" class="table table-hover">
                                 <thead id='tableHeader' class="thead-light">
@@ -183,17 +170,13 @@
                                 </tbody>
                             </table>
                         </div>
-        
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 </div>
-
 {% endblock %}
-
 {% block script %}
 <script type="text/javascript">
     function newNewToggle(link, element){
@@ -278,7 +261,6 @@
     });
 
 </script>
-
 <script>
     $(document).ready(function() {
         $('#sortableTable').DataTable({
@@ -323,7 +305,5 @@
         });
     });
     $("#sortableTable").width("100%");
-
 </script>
-
 {% endblock %}

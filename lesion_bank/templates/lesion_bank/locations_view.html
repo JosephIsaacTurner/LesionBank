@@ -1,26 +1,4 @@
 {% extends "lesion_bank/base.html" %}
-{% load static %}
-
-{% block style %}
-<style>
-    .dtfh-floatingparenthead{
-     background-color:white!important;
-     /* z-index: 1000 !important;
-     margin: 0 !important;
-     padding: 0 !important;
-     height: 80 px !important; */
-    }
-    table.table-hover.dataTable.no-footer.fixedHeader-floating {
-     margin-top:0 !important;
-     margin-bottom:0 !important;
-     border-bottom: 1px solid black !important;
-    }
-    .papaya-menu{
-        width: unset !important;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 {% comment %}
 {{symptom_results}}
@@ -98,10 +76,6 @@
                 window.location.href = targetUrl;
             }
         </script>
-        
-
-        
-
     </div>
     <div class="col col-sm-5">
         <div class="accordion" id="sensitivityAccordion">
@@ -319,7 +293,6 @@
 {% endblock %}
 
 {% block script %}
-
 <script type="text/javascript">
     function newNewToggle(link, element){
         if(params[link.split('/').pop()]){
@@ -412,46 +385,6 @@
 
 </script>
 
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-
-<!-- DataTables Bootstrap 5 CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-
-<!-- DataTables Buttons Bootstrap 5 CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
-
-<!-- DataTables -->
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-
-<!-- DataTables Bootstrap 5 integration -->
-<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-
-<!-- FixedHeader JS -->
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
-
-<!-- FixedHeader CSS -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
-
-<!-- DataTables Buttons -->
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-
-<!-- Buttons Bootstrap 5 integration -->
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
-
-<!-- JSZip for Buttons extension -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-<!-- pdfmake for Buttons extension -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-
-<!-- Buttons extensions (HTML5 export, Print view, Column visibility) -->
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
-
-
 <script>
     /// In the below code, we need to add
     // a DOM attribute so that the button appears
@@ -501,7 +434,6 @@
         $("#sortableTable").width("100%");
     });
 
-    
     $(document).ready(function() {
         const minEl = document.querySelector('#min');
         const maxEl = document.querySelector('#max');

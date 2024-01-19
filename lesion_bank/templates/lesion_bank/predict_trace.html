@@ -1,7 +1,5 @@
 {% extends "lesion_bank/base.html" %}
-{% load static %}
 {% block content %}
-
 <div class="row align-items-center"> <!-- Add align-items-center to vertically align items in the row -->
     <div class="col col-sm-9 my-auto"> <!-- Use my-auto to center content vertically within the column -->
         <h4>Create or Upload Lesion Mask</h4>
@@ -10,7 +8,6 @@
         <a href="{% url 'list' %}" class="btn btn-primary">Return to List</a>
     </div>
 </div>
-
 <hr>
 <p>
     This page allows you to trace lesions from inside the browser.
@@ -65,7 +62,6 @@
                             Generate <i class="bi bi-play-fill"></i>
                         </button>
                     </div>
-                    
                     <script>
                     // JavaScript to update the filename placeholder
                     document.getElementById('file').addEventListener('change', function() {
@@ -100,8 +96,6 @@
                         </div>
                     </div>
                     <script>
-                        // The buttons classes are toggling succesfully-- but when I submit the form, I only want the active button to be submitted.
-                        // So that I know if users have selected 1mm or 2mm masks.
                         document.getElementById('mask2mm').addEventListener('click', function() {
                             this.classList.add('active');
                             this.classList.remove('btn-outline-primary');

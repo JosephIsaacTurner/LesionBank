@@ -11,8 +11,6 @@
         <a href="{% url 'predict' %}" class="btn btn-success">New Prediction</a>
     </div>
 </div>
-
-
 <hr>
 <div class="row">
     <div class="col col-sm-7">
@@ -166,12 +164,10 @@
         <br><br>
     </div>
 </div>
-
 {% endblock %}
 
 {% block script %}
 <script type="text/javascript">
-
     function newNewToggle(link, element){
             if(params[link.split('/').pop()]){
                 let viewer = papayaContainers[0].viewer;
@@ -236,7 +232,6 @@
 
 </script>
 <script>
-    
     function getCurrentCoord(){
         let viewer = papayaContainers[0].viewer;
         return viewer.getWorldCoordinateAtIndex(Object.values(viewer.currentCoord)[0],Object.values(viewer.currentCoord)[1],Object.values(viewer.currentCoord)[2], new papaya.core.Coordinate());
@@ -257,6 +252,5 @@
         document.getElementById('findY').value = coords.y;
         document.getElementById('findZ').value = coords.z;
     });
-
 </script>
 {% endblock %}

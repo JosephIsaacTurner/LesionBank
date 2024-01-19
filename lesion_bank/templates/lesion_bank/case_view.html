@@ -1,7 +1,5 @@
 {% extends "lesion_bank/base.html" %}
-{% load static %}
 {% block content %}
-
  
 <div class="row align-items-center"> <!-- Add align-items-center to vertically align items in the row -->
     <div class="col col-sm-9 my-auto"> <!-- Use my-auto to center content vertically within the column -->
@@ -13,10 +11,7 @@
         <a href="{% url 'edit_metadata' case_id %}" class="btn btn-secondary">Edit Case Info</a>
     </div>
 </div>
-
-
 <hr>
-
 <div class="row">
     <div class="col col-sm-8">
         <div id="papaya-holder" class="papaya" data-params="params">
@@ -65,9 +60,7 @@
                     <a target="_blank" href="{% url 'symptom_detail' symptom %}">{{ symptom }}</a>
                     {% if not forloop.last %}, {% endif %}
                 {% endfor %}
-            </li>
-
-            
+            </li>            
             <li class="list-group-item">
                 Publication link:  <a target="_blank" href="{{doi}}">DOI</a>
             </li>
@@ -145,7 +138,6 @@
         return orderedCaseData;
     }
 
-
     function convertToCSV(obj) {
         const csvRows = [];
         const headers = Object.keys(obj).join(',');
@@ -170,8 +162,6 @@
         a.click();
         document.body.removeChild(a);
     }
-
-
 
 </script>
 <script type="text/javascript">
