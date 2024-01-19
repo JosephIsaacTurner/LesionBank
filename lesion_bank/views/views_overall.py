@@ -102,7 +102,7 @@ def index_new_view(request):
     return render(request, 'lesion_bank/index.html', context)
 
 def faq(request):
-    return render(request, 'lesion_bank/faq.html',{'title':'FAQ'})
+    return render(request, 'lesion_bank/faq.html',{'title':'FAQ', 'page_name':'FAQ'})
 
 def api_view(request):
     from . import api

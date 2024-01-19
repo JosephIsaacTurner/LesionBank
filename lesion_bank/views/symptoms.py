@@ -35,6 +35,7 @@ def symptoms_view(request):
     context['title'] = "Symptoms"
     context['symptom_list'] =  symptom_list
     context['min_count'] = min_count
+    context['page_name'] = 'Symptoms'
     return render(request, 'lesion_bank/all_symptoms.html', context)
 
 
@@ -74,7 +75,8 @@ def symptom_detail_view(request, symptom):
             'sensitivity_neg_path':symptom_object.sensitivity_neg_path,
             'min_threshold':int(.50*count),
             'max_threshold':count,
-            'title':symptom
+            'title':symptom,
+            'page_name':'Symptoms',
         }
         return render(request, 'lesion_bank/symptom_view.html', context)
     else:

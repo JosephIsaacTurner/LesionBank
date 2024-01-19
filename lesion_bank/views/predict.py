@@ -110,7 +110,7 @@ def predict(request):
                 'file_path_1mm': file_path_1mm,
                 'lesion_network_filepath': f"network_maps_output/{file_id}/input_mask_Precom_T.nii.gz",
                 'user': request.user if request.user.is_authenticated else None,
-                'page_name': 'predict'
+                'page_name': 'Predict'
             }
         )
 
@@ -198,4 +198,5 @@ def prediction_results(request, file_id):
     context['title'] = "Prediction Results"
     context['initial_coord'] = initial_coord
     context['similar_case_studies'] = similar_case_studies
+    context['page_name'] = 'Predict'
     return render(request, 'lesion_bank/prediction_results.html', context)

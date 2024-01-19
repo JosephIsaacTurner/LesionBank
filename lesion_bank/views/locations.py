@@ -20,6 +20,7 @@ def run_raw_sql(query):
 def locations_landing(request):
     context = {}
     context['title'] = "Locations"
+    context['page_name'] = 'Locations'
     return render(request, 'lesion_bank/locations_landing.html', context)
 
 def locations_view(request, voxel_id):
