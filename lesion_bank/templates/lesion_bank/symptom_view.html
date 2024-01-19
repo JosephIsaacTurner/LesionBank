@@ -237,16 +237,17 @@
         }
     }
     function loadFirstOverlay(){
+        console.log("loading first overlay");
         setTimeout(() => {
             let element = document.getElementById("toggle1");
             let link = element.getAttribute('url')
             newNewToggle(link, element);
-        }, 5);
+        }, 10);
         setTimeout(() => {
             element = document.getElementById("toggle2");
             link = element.getAttribute('url')
             newNewToggle(link, element);
-        }, 400);
+        }, 500);
     }
     var params = {};
     params["images"] = [
