@@ -58,7 +58,7 @@ def index_new_view(request):
     }
 
     # Now render it with the context
-    return render(request, 'lesion_bank/index_new.html', context)
+    return render(request, 'lesion_bank/index.html', context)
 
 def faq(request):
     return render(request, 'lesion_bank/faq.html',{'title':'FAQ'})
