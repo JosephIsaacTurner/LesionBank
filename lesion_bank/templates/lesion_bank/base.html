@@ -113,22 +113,22 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
                 <li class="nav-item">
-                    <a class="nav-link {% if page_name == 'Case Studies' %}active{% endif %}" href="#">Case Studies</a>
+                    <a class="nav-link {% if page_name == 'Case Studies' %}active{% endif %}" href="{% url 'cases' %}">Case Studies</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if page_name == 'Symptoms' %}active{% endif %}" href="#">Symptoms</a>
+                    <a class="nav-link {% if page_name == 'Symptoms' %}active{% endif %}" href="{% url 'symptoms' %}">Symptoms</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if page_name == 'Locations' %}active{% endif %}" href="#">Locations</a>
+                    <a class="nav-link {% if page_name == 'Locations' %}active{% endif %}" href="{% url 'locations_landing' %}">Locations</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if page_name == 'Predict' %}active{% endif %}" href="#">Predict</a>
+                    <a class="nav-link {% if page_name == 'Predict' %}active{% endif %}" href="{% url 'predict' %}">Predict</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if page_name == 'About' %}active{% endif %}" href="#">About</a>
+                    <a class="nav-link {% if page_name == 'About' %}active{% endif %}" href="{% url 'about' %}">About</a> <!-- Assuming there is a 'about' url pattern -->
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if page_name == 'FAQ' %}active{% endif %}" href="#">FAQ</a>
+                    <a class="nav-link {% if page_name == 'FAQ' %}active{% endif %}" href="{% url 'faq' %}">FAQ</a>
                 </li>
             </ul>            
         </div>
