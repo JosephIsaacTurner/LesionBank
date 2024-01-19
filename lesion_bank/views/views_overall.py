@@ -29,7 +29,7 @@ def index_new_view(request):
 
     if not random_symptom:
         # Handle the case where no symptoms are found
-        return render(request, 'lesion_bank/index_new.html', {'error': 'No symptoms found'})
+        return render(request, 'lesion_bank/index.html', {'error': 'No symptoms found'})
 
     # Get all lesions with that symptom
     lesions = LesionMetadata.objects.filter(symptoms__symptom=random_symptom.symptom)
