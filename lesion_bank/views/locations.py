@@ -96,4 +96,5 @@ def locations_view(request, voxel_id):
     context['network_results'] = network_results
     context['coord'] = voxel_id
     context['title'] = voxel_id.replace('_',', ')
+    context['page_name'] = 'Locations'
     return render(request, 'lesion_bank/locations_view.html', context)

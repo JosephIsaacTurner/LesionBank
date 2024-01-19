@@ -38,7 +38,6 @@ def index_new_view(request):
     lesion_metadata = []
     for lesion in lesions:
         lesion_dict = {
-            'title': 'LesionBank',
             'lesion_id': lesion.lesion_id,
             'lesion_mask': getattr(lesion, 'tracing_file_name', None),
             'lesion_network_map': getattr(lesion, 'network_file_name', None),
@@ -50,6 +49,8 @@ def index_new_view(request):
         lesion_metadata.append(lesion_dict)
 
     context = {
+        'title': 'LesionBank',
+        'page_name': 'Home',
         'symptom': random_symptom.symptom,
         'case_studies': lesion_metadata,
         'case_count': len(lesion_metadata),
