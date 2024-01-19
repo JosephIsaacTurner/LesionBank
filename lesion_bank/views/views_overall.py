@@ -38,6 +38,7 @@ def index_new_view(request):
     lesion_metadata = []
     for lesion in lesions:
         lesion_dict = {
+            'title': 'LesionBank',
             'lesion_id': lesion.lesion_id,
             'lesion_mask': getattr(lesion, 'tracing_file_name', None),
             'lesion_network_map': getattr(lesion, 'network_file_name', None),
