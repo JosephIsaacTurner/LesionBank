@@ -58,21 +58,21 @@ class UploadImageForm(forms.ModelForm):
         return file_path
     
 class PracticeImageForm(forms.ModelForm):
-    file_path = forms.FileField(label='', widget=forms.FileInput(attrs={'class': 'form-control'}))
-    true_file_path = forms.FileField(label='', widget=forms.FileInput(attrs={'class': 'form-control'}))
+    file_name = forms.FileField(label='', widget=forms.FileInput(attrs={'class': 'form-control'}))
+    true_file_name = forms.FileField(label='', widget=forms.FileInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = PracticeImages
-        fields = ['file_path', 'true_file_path']
+        fields = ['file_name', 'true_file_name']
 
     def clean_file_path(self):
-        file_path = self.cleaned_data.get('file_path')
+        file_path = self.cleaned_data.get('file_name')
         if not str(file_path).endswith('.gz'):
             raise forms.ValidationError('Uploaded file is not a .gz file.')
         return file_path
 
     def clean_true_file_path(self):
-        true_file_path = self.cleaned_data.get('true_file_path')
+        true_file_path = self.cleaned_data.get('true_file_name')
         if not str(true_file_path).endswith('.gz'):
             raise forms.ValidationError('Uploaded file is not a .gz file.')
         return true_file_path
