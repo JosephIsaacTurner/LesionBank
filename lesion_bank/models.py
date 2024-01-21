@@ -123,8 +123,8 @@ class PracticeImages(models.Model):
     upload_id = models.IntegerField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    file_name = models.FileField(upload_to='practice_masks')
-    true_file_name = models.FileField(upload_to='practice_masks')
+    file_name = models.FileField(upload_to='practice_masks', blank=True, null=True)
+    true_file_name = models.FileField(upload_to='practice_masks', blank=True, null=True)
     file_size = models.IntegerField()
 
     class Meta:
