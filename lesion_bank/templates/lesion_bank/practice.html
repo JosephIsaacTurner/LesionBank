@@ -19,15 +19,15 @@
 
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.file_path.errors }}
-    <label for="{{ form.file_path.id_for_label }}" class="form-label">Practice lesion mask:</label>
+    {{ form.file_name.errors }}
+    <label for="{{ form.file_name.id_for_label }}" class="form-label">Practice lesion mask:</label>
     <div class="input-group mb-3">
-        {{ form.file_path }}
+        {{ form.file_name }}
     </div>
-    {{ form.true_file_path.errors }}
-    <label for="{{ form.true_file_path.id_for_label }}" class="form-label">Validated lesion mask:</label>
+    {{ form.true_file_name.errors }}
+    <label for="{{ form.true_file_name.id_for_label }}" class="form-label">Validated lesion mask:</label>
     <div class="input-group mb-3">
-        {{ form.true_file_path }}
+        {{ form.true_file_name }}
     </div>
     <button class="btn btn-outline-secondary" type="submit">Upload</button>
 </form>
