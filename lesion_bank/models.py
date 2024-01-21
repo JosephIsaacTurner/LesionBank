@@ -122,8 +122,8 @@ class PracticeImages(models.Model):
     upload_id = models.IntegerField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    file_path = models.FileField(upload_to=PathAndRename('uploads/upload_data'))
-    true_file_path = models.FileField(upload_to=PathAndRename('uploads/upload_data'))
+    file_path = models.FileField(upload_to=PathAndRename('practice_masks'))
+    true_file_path = models.FileField(upload_to=PathAndRename('practice_masks'))
     file_size = models.IntegerField()
 
     class Meta:
