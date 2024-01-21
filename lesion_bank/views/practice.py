@@ -23,8 +23,8 @@ def practice_view(request):
             uploaded_image.user = request.user if request.user.is_authenticated else None
             uploaded_image.save()
             # Call your function to populate UploadedImageVoxels for both files
-            npToSql_uploads(niftiTo2d(uploaded_image.file_path.path), uploaded_image.upload_id, PracticeImageVoxels)
-            npToSql_uploads(niftiTo2d(uploaded_image.true_file_path.path), uploaded_image.upload_id, TrueImageVoxels)
+            npToSql_uploads(niftiTo2d(uploaded_image.file_name.path), uploaded_image.upload_id, PracticeImageVoxels)
+            npToSql_uploads(niftiTo2d(uploaded_image.true_file_name.path), uploaded_image.upload_id, TrueImageVoxels)
             # redirect or render a success message
             return redirect('practice_view_compare', upload_id=uploaded_image.upload_id)
     else:
@@ -37,8 +37,8 @@ def practice_view_compare(request, upload_id):
     practice_image = PracticeImages.objects.get(upload_id=upload_id)
     
     # Get the file paths
-    file_path = practice_image.file_path
-    true_file_path = practice_image.true_file_path
+    file_path = practice_image.file_name
+    true_file_path = practice_image.true_file_name
 
     query = """
     WITH 
