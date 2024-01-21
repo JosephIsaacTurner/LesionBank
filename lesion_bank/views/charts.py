@@ -163,7 +163,7 @@ def testPlot(rows, column_names):
 
 def queryToChart_improved(query, params, title="", field="symptom"):
     from . import genericFunctions
-    results, column_names = genericFunctions.fetch_results_and_column_names(query, params)
+    results, column_names = genericFunctions.execute_query(query, params)
 
     # Convert query result to a list of dictionaries
     json_data = []
@@ -176,7 +176,7 @@ def queryToChart_improved(query, params, title="", field="symptom"):
 
 def queryToChart(query, title="", field="symptom"):
     from . import genericFunctions
-    results, column_names = genericFunctions.fetch_results_and_column_names(query)
+    results, column_names = genericFunctions.execute_query(query)
 
     # Convert query result to a list of dictionaries
     json_data = []

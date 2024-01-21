@@ -5,6 +5,7 @@ import os
 import uuid
 from django.utils.deconstruct import deconstructible
 from django.core.files.base import ContentFile
+from django.conf import settings
 
 @deconstructible
 class PathAndRename(object):
@@ -135,6 +136,9 @@ class PracticeImages(models.Model):
 
     def __str__(self):
         return str(self.file_path)
+    
+    def s3_path(self):
+        return self.file_path.name
 
 class PracticeImageVoxels(models.Model):
     upload = models.ForeignKey(PracticeImages, on_delete=models.CASCADE, db_column='upload_id', null=True)
