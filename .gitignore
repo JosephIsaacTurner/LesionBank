@@ -41,5 +41,5 @@ lesion_bank/templates/lesion_bank/node_modules
 lesion_bank/templates/lesion_bank/public
 lesion_bank/templates/lesion_bank/src
 
-
-
+lesion_bank/migrations/
+lesion_bank/migrations
