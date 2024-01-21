@@ -131,14 +131,14 @@ class PracticeImages(models.Model):
         db_table = "practice_images"
 
     def save(self, *args, **kwargs):
-        self.file_size = self.file_path.size
+        self.file_size = self.file_name.size
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return str(self.file_path)
+        return str(self.file_name)
     
     def s3_path(self):
-        return self.file_path.name
+        return self.file_name.name
 
 class PracticeImageVoxels(models.Model):
     upload = models.ForeignKey(PracticeImages, on_delete=models.CASCADE, db_column='upload_id', null=True)
