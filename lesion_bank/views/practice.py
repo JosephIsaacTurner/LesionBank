@@ -4,7 +4,8 @@ from lesion_bank.forms import PracticeImageForm
 from lesion_bank.array_functions import npToSql_uploads, niftiTo2d, reshapeTo3d
 from django.shortcuts import render
 from django.shortcuts import redirect
-from lesion_bank.views import genericFunctions
+# from lesion_bank.views import genericFunctions
+from lesion_bank.utils.sql_utils import SQLUtils
 from django.shortcuts import get_object_or_404
 import numpy as np
 import nibabel as nib
@@ -84,7 +85,7 @@ def practice_view_compare(request, upload_id):
         practice_voxel_counts
     """
     params = {'upload_id':int(upload_id)}
-    column_names, rows = genericFunctions.execute_query(query, params)
+    column_names, rows = SQLUtils.execute_query(query, params)
     result = rows[0]
     stats = dict(zip(column_names, result))
 
