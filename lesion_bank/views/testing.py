@@ -12,6 +12,6 @@ def test_view(request):
     info_messages.append(f"df_xyz_html: {df_xyz.to_html()}")
     info_messages.append(f"df_voxel_id_html: {df_voxel_id.to_html()}")
     return render(request, 'lesion_bank/debugging.html', {
-                        'error_message': error_message,
+                        'error_message': error_messages,
                         'info_messages': info_messages
                     })
