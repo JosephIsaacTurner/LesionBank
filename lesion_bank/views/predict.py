@@ -19,41 +19,35 @@ private_symptoms = settings.PRIVATE_SYMPTOMS
 def predict(request):
     if request.method == 'POST':
         nifti_handler = NiftiHandler()
-        # Find resolution of mask from form data (can be either 1mm or 2mm)
-        mask_resolution = request.POST.get('selectedMask', '2mm') # Default to 2mm if not specified
 
-        # Get the logged points from the form data (these are the voxels that the user selected in the mask)        
+        # Get resolution and logged points from form data
+        mask_resolution = request.POST.get('selectedMask', '2mm')  # Default to 2mm
         logged_points = json.loads(request.POST.get('loggedPoints', '[]'))
-        logged_points = np.array(logged_points)
+        logged_points_array = np.array(logged_points)
 
-        # Generate file_id and filename from UNIX timestamp
-        file_id = str(int(time.time()))  # Get 10-digit UNIX timestamp
-        full_file_path = f"mask_input/{file_id}/{mask_resolution}/input_mask.nii.gz"
+        # Generate file_id and base file path
+        file_id = str(int(time.time()))  # UNIX timestamp
+        base_file_path = f"mask_input/{file_id}"
 
+        # Function to handle Nifti file creation and S3 upload
+        def create_and_upload_nifti(resolution, subfolder=''):
+            file_path = f"{base_file_path}/{subfolder}input_mask.nii.gz"
+            nifti_handler.populate_from_2d_array(logged_points_array, resolution)
+            nifti_handler.save_to_s3(file_path, resolution)
+            return file_path
+
+        # Create Nifti file and upload to S3
+        file_path_2mm = create_and_upload_nifti('2mm', '2mm/')
+        file_path_1mm = ''
         if mask_resolution == '1mm':
-            file_path_1mm = full_file_path
+            file_path_1mm = create_and_upload_nifti('1mm')
 
-            nifti_handler.populate_from_2d_array(logged_points, mask_resolution)
-            nifti_handler.save_to_s3(full_file_path, mask_resolution)
-
-            filename_2mm = f"2mm/input_mask.nii.gz" # Create filename in separate folder for each resolution
-            full_2mm_file_path = os.path.join(f"mask_input/{file_id}/", filename_2mm) # Include file_id as parent directory for mask
-
-            nifti_handler.populate_from_2d_array(logged_points, '2mm')
-            nifti_handler.save_to_s3(full_2mm_file_path, '2mm')
-        
-        # If mask resolution is 2mm:
-        if mask_resolution == '2mm':
-            file_path_1mm = ''
-            # First, make the .nifti file in 2mm resolution
-            nifti_handler.populate_from_2d_array(logged_points)
-            nifti_handler.save_to_s3(full_file_path, mask_resolution)
-        
+        # Create or update database record
         image_id, created = GeneratedImages.objects.get_or_create(
             file_id=file_id,
             defaults={
-                'mask_filepath': f"mask_input/{file_id}/{mask_resolution}/input_mask.nii.gz",
-                'file_path_2mm': f"mask_input/{file_id}/2mm/input_mask.nii.gz",
+                'mask_filepath': f"{base_file_path}/{mask_resolution}/input_mask.nii.gz",
+                'file_path_2mm': file_path_2mm,
                 'file_path_1mm': file_path_1mm,
                 'lesion_network_filepath': f"network_maps_output/{file_id}/input_mask_Precom_T.nii.gz",
                 'user': request.user if request.user.is_authenticated else None,
@@ -61,12 +55,16 @@ def predict(request):
             }
         )
 
-        # Save the logged points to the database
+        # Save logged points to database
         nifti_handler.df_voxel_id_to_sql("file", image_id, PredictionVoxels)
 
-        compute_network_map_async.delay(f"s3://lesionbucket/uploads/mask_input/{file_id}/2mm", f"s3://lesionbucket/uploads/network_maps_output/{file_id}")
-        
+        # Asynchronous task call
+        compute_network_map_async.delay(f"s3://lesionbucket/uploads/{file_path_2mm}",
+                                        f"s3://lesionbucket/uploads/network_maps_output/{file_id}")
+
+        # Redirect to results
         return redirect('prediction_results', file_id=file_id)
+
     else:
         context = {}
         context["title"] = "Predict"
