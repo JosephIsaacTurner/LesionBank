@@ -93,25 +93,37 @@ class NiftiHandler(SQLUtils):
         
         return nii_img
 
-    def reshape_to_3d(self, nd_array):
+    def reshape_to_3d(self, nd_array, resolution='2mm'):
         """Reshapes a 2d array with 4 columns: x, y, z, value to a 3d array in voxel space"""
         worldspace_coords = nd_array[:, :3].astype(float)  # Extract the first three values as coordinates
-        inverseMatrix = np.linalg.inv(self.two_mm_affine)
-        three_d_array = np.zeros((91,109,91), dtype=float)
+
+        if resolution == '2mm':
+            affine_matrix = self.two_mm_affine
+            three_d_array_shape = (91, 109, 91)
+        elif resolution == '1mm':
+            affine_matrix = self.one_mm_affine
+            three_d_array_shape = (182, 218, 182)
+        else:
+            raise ValueError("Unsupported resolution. Expected '1mm' or '2mm'.")
+
+        three_d_array = np.zeros(three_d_array_shape, dtype=float)
         worldspace_coords = np.hstack((worldspace_coords, np.ones((len(nd_array), 1))))
+        inverseMatrix = np.linalg.inv(affine_matrix)
         voxel_coords = np.dot(worldspace_coords, inverseMatrix.T)
         voxel_coords = voxel_coords[:, :3]  # Extract only the transformed coordinates
-        voxel_coords = voxel_coords.astype(int)
+        voxel_coords = np.clip(voxel_coords, a_min=0, a_max=np.array(three_d_array_shape) - 1).astype(int)  # Clip to prevent out-of-bounds indexing
         three_d_array[voxel_coords[:, 0], voxel_coords[:, 1], voxel_coords[:, 2]] = nd_array[:, 3]
+
         return three_d_array
-    
+
     def get_nifti_from_s3(self, s3_path):
         """Gets a NIfTI object from a file path in s3 storage, relative to the bucket root"""
         return self.storage.get_file_from_cloud(s3_path)
     
-    def save_to_s3(self, filename, file_content=None):
+    def save_to_s3(self, filename, file_content=None, resolution='2mm'):
         if file_content is None:
             file_content = self.data
+            file_content = self.to_nifti_obj(file_content, resolution)
         file_content = self.storage.compress_nii_image(file_content)
         self.storage.save(filename, file_content)
         return filename
@@ -211,11 +223,30 @@ class NiftiHandler(SQLUtils):
         else:
             raise ValueError("Unknown resolution.")
 
-    def to_nifti_obj(self, data=None):
+    def resample_to_1mm(self, nd_array=None):
+        """Resamples a 3D array from 2mm to 1mm resolution. The nd_array is 3d array in voxel space"""
+        if nd_array is None:
+            nd_array = self.data
+        if self.resolution == '1mm':
+            print("This array is already in 1mm resolution.")
+            return nd_array
+        elif self.resolution == '2mm':
+            # Calculate the resampling factor
+            resample_factor = np.array(self.two_mm_affine[:3, :3]) / np.array(self.one_mm_affine[:3, :3])
+            # Resample the array
+            resampled_nd_array = zoom(nd_array, resample_factor, order=1)
+            return resampled_nd_array
+        else:
+            raise ValueError("Unknown resolution.")
+
+    def to_nifti_obj(self, data=None, resolution='2mm'):
         """Converts a 3D array in voxel space to a NIfTI object"""
         if data is None:
             data = self.data
-        return nib.Nifti1Image(data, self.two_mm_affine)
+        if resolution == '2mm':
+            return nib.Nifti1Image(data, self.two_mm_affine)
+        elif resolution == '1mm':
+            return nib.Nifti1Image(data, self.one_mm_affine)
 
     def nifti_file_to_sql_wrapper(self, s3_path):
         """Wrapper function to convert a NIfTI file to SQL"""
@@ -233,7 +264,7 @@ class NiftiHandler(SQLUtils):
         self.save_to_s3(filename)
         return filename
     
-    def populate_from_2d_array(self, data):
-        nd_array = self.reshape_to_3d(data)
-        nifti_obj = self.to_nifti_obj(nd_array)
+    def populate_from_2d_array(self, data, resolution='2mm'):
+        nd_array = self.reshape_to_3d(data, resolution)
+        nifti_obj = self.to_nifti_obj(nd_array, resolution)
         self.populate_data_from_nifti(nifti_obj)
