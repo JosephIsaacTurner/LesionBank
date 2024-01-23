@@ -223,7 +223,9 @@ class NiftiHandler(SQLUtils):
             return nd_array
         elif self.resolution == '1mm':
             # Calculate the resampling factor
-            resample_factor = np.array(self.one_mm_affine[:3, :3]) / np.array(self.two_mm_affine[:3, :3])
+            resample_factor = np.diag(self.one_mm_affine)[:3] / np.diag(self.two_mm_affine)[:3]
+            # Ensure resample_factor is an array of floats
+            resample_factor = np.array(resample_factor, dtype=float)
             # Resample the array
             resampled_nd_array = zoom(nd_array, resample_factor, order=1)  # order=1 for linear interpolation
             self.data = resampled_nd_array
@@ -232,6 +234,7 @@ class NiftiHandler(SQLUtils):
             return resampled_nd_array
         else:
             raise ValueError("Unknown resolution.")
+
 
     def resample_to_1mm(self, nd_array=None):
         """Resamples a 3D array from 2mm to 1mm resolution. The nd_array is 3d array in voxel space"""
