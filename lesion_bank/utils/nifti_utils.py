@@ -120,7 +120,7 @@ class NiftiHandler(SQLUtils):
         """Gets a NIfTI object from a file path in s3 storage, relative to the bucket root"""
         return self.storage.get_file_from_cloud(s3_path)
     
-    def save_to_s3(self, filename, file_content=None, resolution='2mm'):
+    def save_to_s3(self, filename, resolution='2mm', file_content=None):
         if file_content is None:
             file_content = self.data
             file_content = self.to_nifti_obj(file_content, resolution)
