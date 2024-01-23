@@ -14,39 +14,21 @@ from lesion_bank.tasks import compute_network_map_async
 import requests
 from lesion_bank.utils.nifti_utils import NiftiHandler
 
-CustomStorage = import_string(settings.DEFAULT_FILE_STORAGE)
 
 private_symptoms = settings.PRIVATE_SYMPTOMS
-storage = CustomStorage()
 
-def save_to_cloud(nii_img, path, bucketName=settings.AWS_STORAGE_BUCKET_NAME):
-    # The save method from CustomStorage is used to handle both the compression and the uploading process
-    compressed_img = storage.compress_nii_image(nii_img)
-    return storage.save(name=path, content=compressed_img, bucket_name=bucketName)
-
-def save_local(nii_img, path):
-    # This function remains unchanged as it is specific to local saving and not present in CustomStorage
-    nib.save(nii_img, path)
-    return path
-
-def save_image(nii_img, path, bucketName=settings.AWS_STORAGE_BUCKET_NAME):
-    if settings.USE_S3:
-        return save_to_cloud(nii_img, path, bucketName)
-    else:
-        return save_local(nii_img, path)
-
-def run_raw_sql(query, single_value=False):
-    with connection.cursor() as cursor:
-        cursor.execute(query)
-        if single_value:
-            # If we expect a single value, fetch and return that directly
-            return cursor.fetchone()[0]
-        # Fetch the column names from the cursor description
-        column_names = [col[0] for col in cursor.description]
-        return [
-            dict(zip(column_names, row))
-            for row in cursor.fetchall()
-        ]
+# def run_raw_sql(query, single_value=False):
+#     with connection.cursor() as cursor:
+#         cursor.execute(query)
+#         if single_value:
+#             # If we expect a single value, fetch and return that directly
+#             return cursor.fetchone()[0]
+#         # Fetch the column names from the cursor description
+#         column_names = [col[0] for col in cursor.description]
+#         return [
+#             dict(zip(column_names, row))
+#             for row in cursor.fetchall()
+#         ]
 
 def predict(request):
     if request.method == 'POST':
@@ -64,34 +46,12 @@ def predict(request):
 
         if mask_resolution == '1mm':
             file_path_1mm = full_file_path
-            # First, make the .nifti file in 1mm resolution
-            # affine= np.array([
-            #     [-1.,0.,0.,90.],
-            #     [0.,1.,0.,-126.],
-            #     [0.,0.,1.,-72.],
-            #     [0.,0.,0.,1.]
-            # ])
-            # shape=(182,218,182) # 1mm resolution shape
 
             nifti_handler.populate_from_2d_array(logged_points, mask_resolution)
             nifti_handler.save_to_s3(full_file_path, mask_resolution)
 
-            # nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
-            # filepath_1mm = os.path.join("prediction_traces/",filename) # Standardize filepath
-            # save_image(nii_img, full_file_path)
-
-            # Even though the selected mask is 1mm, we still need to save the 2mm version for lesion network mapping
-            # affine = np.array([
-            #     [-2., 0., 0., 90.],
-            #     [0., 2., 0., -126.],
-            #     [0., 0., 2., -72.],
-            #     [0., 0., 0., 1.]
-            # ])
-            # shape=(91,109,91) # 2mm resolution shape
-            # nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
             filename_2mm = f"2mm/input_mask.nii.gz" # Create filename in separate folder for each resolution
             full_2mm_file_path = os.path.join(f"mask_input/{file_id}/", filename_2mm) # Include file_id as parent directory for mask
-            # save_image(nii_img, full_2mm_file_path)
 
             nifti_handler.populate_from_2d_array(logged_points, '2mm')
             nifti_handler.save_to_s3(full_2mm_file_path, '2mm')
@@ -141,6 +101,7 @@ def prediction_results(request, file_id):
     if response.status_code == 404:
         return render(request, 'lesion_bank/loading.html', {'file_id': file_id, 'url_to_check': url_to_check})
     
+    nift_handler = NiftiHandler()
     prediction_query = f"""
         WITH join_table AS (
             SELECT prediction_voxels.voxel_id, symptom, percent_overlap, sensitivity_parametric_path
@@ -167,11 +128,11 @@ def prediction_results(request, file_id):
     if not request.user.is_authenticated:
         prediction_query += f""" WHERE symptom NOT IN ({', '.join(map(lambda x: f"'{x}'", private_symptoms))})"""
     prediction_query += " GROUP BY symptom, sensitivity_parametric_path ORDER BY AVG(percent_overlap) DESC"
-    prediction_results = run_raw_sql(prediction_query)
+    prediction_results = nift_handler.run_raw_sql(prediction_query)
     initial_coord_query = f"""
         select voxel_id from prediction_voxels where file_id = '{file_id}' limit 1
         """
-    initial_coord = run_raw_sql(initial_coord_query, single_value=True)
+    initial_coord = nift_handler.run_raw_sql(initial_coord_query, single_value=True)
     similar_case_studies_query = f"""
     select * from (
         select round(avg(cast(network_voxels.value as numeric)),2) as value, network_voxels.lesion_id, symptom
@@ -192,7 +153,7 @@ def prediction_results(request, file_id):
     if not request.user.is_authenticated:
         similar_case_studies_query += f""" AND symptom NOT IN ({', '.join(map(lambda x: f"'{x}'", private_symptoms))})"""
     similar_case_studies_query += """ order by value desc """
-    similar_case_studies = run_raw_sql(similar_case_studies_query)
+    similar_case_studies = nift_handler.run_raw_sql(similar_case_studies_query)
     context = {}
     context['file_path'] = image.mask_filepath
     context['network_path'] = image.lesion_network_filepath #f"https://lesionbucket.nyc3.digitaloceanspaces.com/uploads/network_maps_output/{file_id}/{file_id}_2mm_trace_Precom_T.nii.gz"
