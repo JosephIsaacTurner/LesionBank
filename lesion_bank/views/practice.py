@@ -74,8 +74,8 @@ def practice_view_compare(request, upload_id):
     practice_image = PracticeImages.objects.get(upload_id=upload_id)
     
     # Get the file paths
-    file_path = practice_image.file_name
-    true_file_path = practice_image.true_file_name
+    file_path = practice_image.file_name.name
+    true_file_path = practice_image.true_file_name.name
 
     query = """
     WITH 
