@@ -46,9 +46,10 @@ def practice_view(request):
 
                     npToSql_uploads(niftiTo2d(file_path), uploaded_image.upload_id, PracticeImageVoxels)
                     npToSql_uploads(niftiTo2d(true_file_path), uploaded_image.upload_id, TrueImageVoxels)
+                
                 except Exception as e:
                     error_message = f"Error during file processing: {str(e)}"
-                    return render(request, 'debugging.html', {
+                    return render(request, 'lesion_bank/debugging.html', {
                         'error_message': error_message,
                         'info_messages': info_messages
                     })
