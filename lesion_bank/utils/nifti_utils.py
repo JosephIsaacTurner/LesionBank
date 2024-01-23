@@ -210,7 +210,13 @@ class NiftiHandler(SQLUtils):
             return resampled_nd_array
         else:
             raise ValueError("Unknown resolution.")
-        
+
+    def to_nifti_obj(self, data=None):
+        """Converts a 3D array in voxel space to a NIfTI object"""
+        if data == None:
+            data = self.data
+        return nib.Nifti1Image(data, self.two_mm_affine)
+
     def nifti_file_to_sql_wrapper(self, s3_path):
         """Wrapper function to convert a NIfTI file to SQL"""
         self.populate_data_from_s3(s3_path)
@@ -226,3 +232,8 @@ class NiftiHandler(SQLUtils):
         self.populate_data_from_db(id_name, id, model)
         self.save_to_s3(filename)
         return filename
+    
+    def populate_from_2d_array(self, data):
+        nd_array = self.reshape_to_3d(data)
+        nifti_obj = self.to_nifti_obj(nd_array)
+        self.populate_data_from_nifti(nifti_obj)

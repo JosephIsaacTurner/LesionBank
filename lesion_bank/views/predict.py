@@ -12,6 +12,7 @@ from django.utils.module_loading import import_string
 from django.conf import settings
 from lesion_bank.tasks import compute_network_map_async
 import requests
+from lesion_bank.utils.nifti_utils import NiftiHandler
 
 CustomStorage = import_string(settings.DEFAULT_FILE_STORAGE)
 
@@ -47,9 +48,9 @@ def run_raw_sql(query, single_value=False):
             for row in cursor.fetchall()
         ]
 
-
 def predict(request):
     if request.method == 'POST':
+        nifti_handler = NiftiHandler()
         # Find resolution of mask from form data (can be either 1mm or 2mm)
         mask_resolution = request.POST.get('selectedMask', '2mm') # Default to 2mm if not specified
 
@@ -99,6 +100,7 @@ def predict(request):
                 [0., 0., 0., 1.]
             ])
             shape=(91,109,91)
+            nifti_handler.populate_from_2d_array(logged_points)
             nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
             save_image(nii_img, full_file_path)
         
