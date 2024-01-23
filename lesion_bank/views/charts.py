@@ -161,30 +161,30 @@ def testPlot(rows, column_names):
     # Convert the list of dictionaries to JSON
     return genericHistPlot(results, "symptom")
 
-def queryToChart_improved(query, params, title="", field="symptom"):
-    from . import genericFunctions
-    results, column_names = genericFunctions.execute_query(query, params)
+# def queryToChart_improved(query, params, title="", field="symptom"):
+#     from . import genericFunctions
+#     results, column_names = genericFunctions.execute_query(query, params)
 
-    # Convert query result to a list of dictionaries
-    json_data = []
-    for row in results:
-        result = dict(zip(column_names, row))
-        json_data.append(result)
+#     # Convert query result to a list of dictionaries
+#     json_data = []
+#     for row in results:
+#         result = dict(zip(column_names, row))
+#         json_data.append(result)
 
-    return genericBarChart(json_data, field, title)
+#     return genericBarChart(json_data, field, title)
 
 
-def queryToChart(query, title="", field="symptom"):
-    from . import genericFunctions
-    results, column_names = genericFunctions.execute_query(query)
+# def queryToChart(query, title="", field="symptom"):
+#     from . import genericFunctions
+#     results, column_names = genericFunctions.execute_query(query)
 
-    # Convert query result to a list of dictionaries
-    json_data = []
-    for row in results:
-        result = dict(zip(column_names, row))
-        json_data.append(result)
+#     # Convert query result to a list of dictionaries
+#     json_data = []
+#     for row in results:
+#         result = dict(zip(column_names, row))
+#         json_data.append(result)
 
-    return genericBarChart(json_data, field, title)
+#     return genericBarChart(json_data, field, title)
 
 from django.db import connection
 from decimal import Decimal
