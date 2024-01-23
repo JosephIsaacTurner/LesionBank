@@ -129,8 +129,8 @@ def practice_view_compare(request, upload_id):
 
     
     return render(request, 'lesion_bank/practice_compare.html', {'stats': stats,
-                                                                 'file_path': file_path,
-                                                                 'true_file_path': true_file_path})
+                                                                 'file_name': file_path,
+                                                                 'true_file_name': true_file_path})
 
 def trace_view(request, file_id):
     image = get_object_or_404(GeneratedImages, file_id=file_id)
