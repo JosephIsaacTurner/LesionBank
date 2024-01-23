@@ -2,8 +2,7 @@ from django.utils import timezone
 from lesion_bank.models import PracticeImages, PracticeImageVoxels, TrueImageVoxels, GeneratedImages
 from lesion_bank.forms import PracticeImageForm
 from lesion_bank.array_functions import npToSql_uploads, niftiTo2d, reshapeTo3d
-from django.shortcuts import render
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
 # from lesion_bank.views import genericFunctions
 from lesion_bank.utils.sql_utils import SQLUtils
 from django.shortcuts import get_object_or_404
@@ -14,23 +13,57 @@ import time
 import json
 
 # @login_required  # remove this line if you want to allow unauthenticated users to access the view
+
 def practice_view(request):
-    if request.method == 'POST':
-        form = PracticeImageForm(request.POST, request.FILES)
-        if form.is_valid():
-            uploaded_image = form.save(commit=False)
-            uploaded_image.upload_id = int(timezone.now().timestamp())
-            uploaded_image.user = request.user if request.user.is_authenticated else None
-            uploaded_image.save()
-            # Call your function to populate UploadedImageVoxels for both files
-            npToSql_uploads(niftiTo2d(uploaded_image.file_name.path), uploaded_image.upload_id, PracticeImageVoxels)
-            npToSql_uploads(niftiTo2d(uploaded_image.true_file_name.path), uploaded_image.upload_id, TrueImageVoxels)
-            # redirect or render a success message
-            return redirect('practice_view_compare', upload_id=uploaded_image.upload_id)
-    else:
-        form = PracticeImageForm()
-            
-    return render(request, 'lesion_bank/practice.html', {'form': form})
+    info_messages = []
+    error_message = None
+
+    try:
+        if request.method == 'POST':
+            form = PracticeImageForm(request.POST, request.FILES)
+            info_messages.append(f"Form received: {form.is_valid()}")
+
+            if form.is_valid():
+                uploaded_image = form.save(commit=False)
+                uploaded_image.upload_id = int(timezone.now().timestamp())
+                uploaded_image.user = request.user if request.user.is_authenticated else None
+
+                info_messages.append(f"Upload ID: {uploaded_image.upload_id}")
+                info_messages.append(f"User: {uploaded_image.user}")
+
+                uploaded_image.save()
+                info_messages.append("Image saved successfully.")
+
+                # Add file related info
+                info_messages.append(f"File name: {uploaded_image.file_name.name}")
+                info_messages.append(f"True file name: {uploaded_image.true_file_name.name}")
+
+                try:
+                    file_path = uploaded_image.file_name.path
+                    true_file_path = uploaded_image.true_file_name.path
+                    info_messages.append(f"File path: {file_path}")
+                    info_messages.append(f"True file path: {true_file_path}")
+
+                    npToSql_uploads(niftiTo2d(file_path), uploaded_image.upload_id, PracticeImageVoxels)
+                    npToSql_uploads(niftiTo2d(true_file_path), uploaded_image.upload_id, TrueImageVoxels)
+                except Exception as e:
+                    error_message = f"Error during file processing: {str(e)}"
+                    return render(request, 'debugging.html', {
+                        'error_message': error_message,
+                        'info_messages': info_messages
+                    })
+
+                return redirect('practice_view_compare', upload_id=uploaded_image.upload_id)
+        else:
+            form = PracticeImageForm()
+
+    except Exception as e:
+        error_message = f"Error in view: {str(e)}"
+
+    return render(request, 'lesion_bank/debugging.html', {
+        'error_message': error_message,
+        'info_messages': info_messages
+    })
 
 def practice_view_compare(request, upload_id):
     # Fetch the PracticeImages record with the specified upload_id

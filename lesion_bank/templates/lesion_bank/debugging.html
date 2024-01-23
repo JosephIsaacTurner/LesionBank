@@ -1,0 +1,42 @@
+{% extends "lesion_bank/base.html" %}
+{% block style %}
+<style>
+    .container {
+        width: 80%;
+        margin: 0 auto;
+        padding-top: 50px;
+    }
+    .error-message {
+        color: red;
+    }
+    .info-message {
+        color: blue;
+    }
+    pre {
+        background-color: #f4f4f4;
+        padding: 10px;
+        border: 1px solid #ddd;
+    }
+</style>
+{% endblock %}
+{% block content %}
+
+<h1>Debugging Information</h1>
+        
+{% if error_message %}
+    <div class="error-message">
+        <h2>Error Message:</h2>
+        <pre>{{ error_message }}</pre>
+    </div>
+{% endif %}
+
+{% if info_messages %}
+    <div class="info-message">
+        <h2>Info Messages:</h2>
+        {% for message in info_messages %}
+            <pre>{{ message }}</pre>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% endblock %}
