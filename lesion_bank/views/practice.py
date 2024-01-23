@@ -1,7 +1,7 @@
 from django.utils import timezone
 from lesion_bank.models import PracticeImages, PracticeImageVoxels, TrueImageVoxels, GeneratedImages
 from lesion_bank.forms import PracticeImageForm
-from lesion_bank.array_functions import npToSql_uploads, niftiTo2d, reshapeTo3d, getNiftiFromCloud, niftiObjTo2d, npToSql
+from lesion_bank.array_functions import npToSql_uploads, niftiTo2d, reshapeTo3d, getNiftiFromCloud, niftiObjTo2d, npToSql, numpyToSql
 from django.shortcuts import render, redirect
 # from lesion_bank.views import genericFunctions
 from lesion_bank.utils.sql_utils import SQLUtils
@@ -43,11 +43,11 @@ def practice_view(request):
                     true_file_path = uploaded_image.true_file_name.name
                     info_messages.append(f"File path: {file_path}")
                     info_messages.append(f"True file path: {true_file_path}")
-                    npToSql_uploads(niftiObjTo2d(getNiftiFromCloud(file_path)), uploaded_image.upload_id, PracticeImageVoxels)
+                    numpyToSql(niftiObjTo2d(getNiftiFromCloud(file_path)), 'upload_id', uploaded_image.upload_id, PracticeImageVoxels)
                     info_messages.append(f"File {file_path} processed successfully.")
-                    npToSql_uploads(niftiObjTo2d(getNiftiFromCloud(true_file_path)), uploaded_image.upload_id, PracticeImageVoxels)
+                    numpyToSql(niftiObjTo2d(getNiftiFromCloud(true_file_path)), 'upload_id', uploaded_image.upload_id, TrueImageVoxels)
                     info_messages.append(f"File {true_file_path} processed successfully.")
-
+                    
                 except Exception as e:
                     error_message = f"Error during file processing: {str(e)}"
                     return render(request, 'lesion_bank/debugging.html', {
