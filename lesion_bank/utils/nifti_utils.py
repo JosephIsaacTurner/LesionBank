@@ -33,6 +33,7 @@ class NiftiHandler(SQLUtils):
         self.df_xyz = None # A dataframe with columns 'x', 'y', 'z', and 'value' (world space)
         self.df_voxel_id = None # A dataframe with columns 'Voxel ID' and 'value' (world space)
         self.id = None # String id of the object in the database, or the object we will insert into the database.
+        self.type = None # Either 'mask' or 'continuous'
         self.storage = CustomStorage()
         super().__init__()
 
