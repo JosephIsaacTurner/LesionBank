@@ -40,7 +40,7 @@ def predict(request):
         file_path_2mm = create_and_upload_nifti('2mm', '2mm/')
         file_path_1mm = ''
         if mask_resolution == '1mm':
-            file_path_1mm = create_and_upload_nifti('1mm')
+            file_path_1mm = create_and_upload_nifti('1mm', '1mm/')
 
         # Create or update database record
         image_id, created = GeneratedImages.objects.get_or_create(

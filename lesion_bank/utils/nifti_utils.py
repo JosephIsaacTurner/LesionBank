@@ -215,7 +215,8 @@ class NiftiHandler(SQLUtils):
             print(f"all {len(data_to_insert)} records successfully inserted.")
 
     def resample_to_2mm(self, nd_array=None):
-        """Resamples a 3D array from 1mm to 2mm resolution. The nd_array is 3d array in voxel space"""
+        """Resamples a 3D mask array from 1mm to 2mm resolution. The nd_array is 3d array in voxel space.
+        Ensures that all non-zero values in the resampled array are set to 1."""
         if nd_array is None:
             nd_array = self.data
         if self.resolution == '2mm':
@@ -228,12 +229,17 @@ class NiftiHandler(SQLUtils):
             resample_factor = np.array(resample_factor, dtype=float)
             # Resample the array
             resampled_nd_array = zoom(nd_array, resample_factor, order=1)  # order=1 for linear interpolation
+
+            # Post-process to ensure binary values (0 or 1)
+            resampled_nd_array[resampled_nd_array != 0] = 1
+
             self.data = resampled_nd_array
             self.resolution = '2mm'
             self.shape = resampled_nd_array.shape
             return resampled_nd_array
         else:
             raise ValueError("Unknown resolution.")
+
 
 
     def resample_to_1mm(self, nd_array=None):
