@@ -7,3 +7,4 @@ from lesion_bank.views.practice import *
 from lesion_bank.views.predict import *
 from lesion_bank.views.cases import *
 from lesion_bank.views.locations import *
+from lesion_bank.views.testing import *

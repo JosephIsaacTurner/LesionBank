@@ -41,5 +41,5 @@ urlpatterns = [
     path('api-docs/', views.api_docs, name='api-docs'),
 
     ## Misc pages
-    # path('testing/', your_view.function, name='test'),
+    path('testing/', views.test_view, name='test'),
 ]
