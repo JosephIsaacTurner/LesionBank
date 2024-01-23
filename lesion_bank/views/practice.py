@@ -42,7 +42,7 @@ def practice_view(request):
                     file_path = uploaded_image.file_name.path
                     true_file_path = uploaded_image.true_file_name.path
                     info_messages.append(f"File path: {file_path}")
-                    info_messages.append(f"True file path: {true_file_path}")
+                    info_messages.append(f"(joseph updated it) True file path: {true_file_path}")
                     npToSql(niftiObjTo2d(getNiftiFromCloud(file_path)), uploaded_image.upload_id, PracticeImageVoxels)
                     info_messages.append(f"File {file_path} processed successfully.")
                     npToSql(niftiObjTo2d(getNiftiFromCloud(true_file_path)), uploaded_image.upload_id, PracticeImageVoxels)
