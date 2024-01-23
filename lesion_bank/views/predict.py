@@ -49,7 +49,7 @@ def predict(request):
             nifti_handler.populate_from_2d_array(logged_points)
             nifti_handler.save_to_s3(full_file_path, mask_resolution)
         
-        image, created = GeneratedImages.objects.get_or_create(
+        image_id, created = GeneratedImages.objects.get_or_create(
             file_id=file_id,
             defaults={
                 'mask_filepath': f"mask_input/{file_id}/{mask_resolution}/input_mask.nii.gz",
@@ -61,14 +61,9 @@ def predict(request):
             }
         )
 
-        # Next, convert the original world space voxel data to 2mm resolution:
-        # Find the odd values in the first 3 columns: they will have modulo 2 equals to 1.
-        # nifti_handler.nd_array_to_pandas()
-        nifti_handler.df_voxel_id_to_sql("file", image, PredictionVoxels)
-        # odd_indices = logged_points[:, :3] % 2 == 1
-        # logged_points[:, :3][odd_indices] += 1
-        # numpyToSql(logged_points, "file", image, PredictionVoxels)  # pass image instance instead of file_id
-        
+        # Save the logged points to the database
+        nifti_handler.df_voxel_id_to_sql("file", image_id, PredictionVoxels)
+
         compute_network_map_async.delay(f"s3://lesionbucket/uploads/mask_input/{file_id}/2mm", f"s3://lesionbucket/uploads/network_maps_output/{file_id}")
         
         return redirect('prediction_results', file_id=file_id)

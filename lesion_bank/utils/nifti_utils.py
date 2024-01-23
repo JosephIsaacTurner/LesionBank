@@ -92,6 +92,12 @@ class NiftiHandler(SQLUtils):
         self.populate_data_from_nifti(nii_img)
         
         return nii_img
+    
+    def populate_from_2d_array(self, data, resolution='2mm'):
+        """Populates the NiftiHandler object from a 2D array with 4 columns: x, y, z, value"""
+        nd_array = self.reshape_to_3d(data, resolution)
+        nifti_obj = self.to_nifti_obj(nd_array, resolution)
+        self.populate_data_from_nifti(nifti_obj)
 
     def reshape_to_3d(self, nd_array, resolution='2mm'):
         """Reshapes a 2d array with 4 columns: x, y, z, value to a 3d array in voxel space"""
@@ -177,6 +183,7 @@ class NiftiHandler(SQLUtils):
         # Here's my own implementation, do you think it will work?
         if df is None:
             if self.df_voxel_id is None:
+                self.resample_to_2mm()
                 self.reshape_to_2d()
                 self.drop_zero_values()
                 self.nd_array_to_pandas()
@@ -219,6 +226,9 @@ class NiftiHandler(SQLUtils):
             resample_factor = np.array(self.one_mm_affine[:3, :3]) / np.array(self.two_mm_affine[:3, :3])
             # Resample the array
             resampled_nd_array = zoom(nd_array, resample_factor, order=1)  # order=1 for linear interpolation
+            self.data = resampled_nd_array
+            self.resolution = '2mm'
+            self.shape = resampled_nd_array.shape
             return resampled_nd_array
         else:
             raise ValueError("Unknown resolution.")
@@ -263,8 +273,4 @@ class NiftiHandler(SQLUtils):
         self.populate_data_from_db(id_name, id, model)
         self.save_to_s3(filename)
         return filename
-    
-    def populate_from_2d_array(self, data, resolution='2mm'):
-        nd_array = self.reshape_to_3d(data, resolution)
-        nifti_obj = self.to_nifti_obj(nd_array, resolution)
-        self.populate_data_from_nifti(nifti_obj)
+
