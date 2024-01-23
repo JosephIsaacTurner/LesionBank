@@ -14,21 +14,7 @@ from lesion_bank.tasks import compute_network_map_async
 import requests
 from lesion_bank.utils.nifti_utils import NiftiHandler
 
-
 private_symptoms = settings.PRIVATE_SYMPTOMS
-
-# def run_raw_sql(query, single_value=False):
-#     with connection.cursor() as cursor:
-#         cursor.execute(query)
-#         if single_value:
-#             # If we expect a single value, fetch and return that directly
-#             return cursor.fetchone()[0]
-#         # Fetch the column names from the cursor description
-#         column_names = [col[0] for col in cursor.description]
-#         return [
-#             dict(zip(column_names, row))
-#             for row in cursor.fetchall()
-#         ]
 
 def predict(request):
     if request.method == 'POST':
@@ -77,10 +63,12 @@ def predict(request):
 
         # Next, convert the original world space voxel data to 2mm resolution:
         # Find the odd values in the first 3 columns: they will have modulo 2 equals to 1.
-        odd_indices = logged_points[:, :3] % 2 == 1
-        logged_points[:, :3][odd_indices] += 1
-        numpyToSql(logged_points, "file", image, PredictionVoxels)  # pass image instance instead of file_id
-
+        # nifti_handler.nd_array_to_pandas()
+        nifti_handler.df_voxel_id_to_sql("file", image, PredictionVoxels)
+        # odd_indices = logged_points[:, :3] % 2 == 1
+        # logged_points[:, :3][odd_indices] += 1
+        # numpyToSql(logged_points, "file", image, PredictionVoxels)  # pass image instance instead of file_id
+        
         compute_network_map_async.delay(f"s3://lesionbucket/uploads/mask_input/{file_id}/2mm", f"s3://lesionbucket/uploads/network_maps_output/{file_id}")
         
         return redirect('prediction_results', file_id=file_id)
@@ -101,7 +89,7 @@ def prediction_results(request, file_id):
     if response.status_code == 404:
         return render(request, 'lesion_bank/loading.html', {'file_id': file_id, 'url_to_check': url_to_check})
     
-    nift_handler = NiftiHandler()
+    nifti_handler = NiftiHandler()
     prediction_query = f"""
         WITH join_table AS (
             SELECT prediction_voxels.voxel_id, symptom, percent_overlap, sensitivity_parametric_path
@@ -128,11 +116,11 @@ def prediction_results(request, file_id):
     if not request.user.is_authenticated:
         prediction_query += f""" WHERE symptom NOT IN ({', '.join(map(lambda x: f"'{x}'", private_symptoms))})"""
     prediction_query += " GROUP BY symptom, sensitivity_parametric_path ORDER BY AVG(percent_overlap) DESC"
-    prediction_results = nift_handler.run_raw_sql(prediction_query)
+    prediction_results = nifti_handler.run_raw_sql(prediction_query)
     initial_coord_query = f"""
         select voxel_id from prediction_voxels where file_id = '{file_id}' limit 1
         """
-    initial_coord = nift_handler.run_raw_sql(initial_coord_query, single_value=True)
+    initial_coord = nifti_handler.run_raw_sql(initial_coord_query, single_value=True)
     similar_case_studies_query = f"""
     select * from (
         select round(avg(cast(network_voxels.value as numeric)),2) as value, network_voxels.lesion_id, symptom
@@ -153,10 +141,10 @@ def prediction_results(request, file_id):
     if not request.user.is_authenticated:
         similar_case_studies_query += f""" AND symptom NOT IN ({', '.join(map(lambda x: f"'{x}'", private_symptoms))})"""
     similar_case_studies_query += """ order by value desc """
-    similar_case_studies = nift_handler.run_raw_sql(similar_case_studies_query)
+    similar_case_studies = nifti_handler.run_raw_sql(similar_case_studies_query)
     context = {}
     context['file_path'] = image.mask_filepath
-    context['network_path'] = image.lesion_network_filepath #f"https://lesionbucket.nyc3.digitaloceanspaces.com/uploads/network_maps_output/{file_id}/{file_id}_2mm_trace_Precom_T.nii.gz"
+    context['network_path'] = image.lesion_network_filepath
     context['prediction_results'] = prediction_results
     context['title'] = "Prediction Results"
     context['initial_coord'] = initial_coord
