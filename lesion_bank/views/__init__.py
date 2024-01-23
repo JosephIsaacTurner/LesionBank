@@ -1,7 +1,6 @@
 from lesion_bank.views.views_overall import *
 from lesion_bank.views.symptoms import *
 from lesion_bank.views.import_data import *
-from lesion_bank.views.genericFunctions import *
 from lesion_bank.views.charts import *
 from lesion_bank.views.api import *
 from lesion_bank.views.practice import *

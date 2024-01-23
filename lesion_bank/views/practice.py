@@ -3,7 +3,6 @@ from lesion_bank.models import PracticeImages, PracticeImageVoxels, TrueImageVox
 from lesion_bank.forms import PracticeImageForm
 from lesion_bank.array_functions import npToSql_uploads, niftiTo2d, reshapeTo3d, getNiftiFromCloud, niftiObjTo2d, npToSql, numpyToSql
 from django.shortcuts import render, redirect
-# from lesion_bank.views import genericFunctions
 from lesion_bank.utils.sql_utils import SQLUtils
 from django.shortcuts import get_object_or_404
 import numpy as np
