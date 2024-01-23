@@ -1,4 +1,5 @@
 from django.db import connection
+connection = connection
 
 class SQLUtils:
 
