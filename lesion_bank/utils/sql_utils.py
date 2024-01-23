@@ -1,9 +1,8 @@
 from django.db import connection
-connection = connection
 
 class SQLUtils:
 
-    def __init__(self, connection=connection):
+    def __init__(self):
         self.connection = connection
 
     def execute_query(self, statement, params=None):

@@ -47,7 +47,7 @@ def practice_view(request):
                     info_messages.append(f"File {file_path} processed successfully.")
                     numpyToSql(niftiObjTo2d(getNiftiFromCloud(true_file_path)), 'upload_id', uploaded_image.upload_id, TrueImageVoxels)
                     info_messages.append(f"File {true_file_path} processed successfully.")
-                    
+
                 except Exception as e:
                     error_message = f"Error during file processing: {str(e)}"
                     return render(request, 'lesion_bank/debugging.html', {
@@ -122,7 +122,8 @@ def practice_view_compare(request, upload_id):
         practice_voxel_counts
     """
     params = {'upload_id':int(upload_id)}
-    column_names, rows = SQLUtils.execute_query(query, params)
+    sql_util = SQLUtils()
+    column_names, rows = sql_util.execute_query(query, params)
     result = rows[0]
     stats = dict(zip(column_names, result))
 
