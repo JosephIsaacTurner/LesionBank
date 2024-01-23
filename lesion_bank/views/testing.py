@@ -12,8 +12,9 @@ def test_view(request):
     df_voxel_id = df_voxel_id.iloc[:10]
     error_messages = []
     info_messages = []
-    info_messages.append(f"df_xyz_html: {df_xyz.to_html()}")
-    info_messages.append(f"df_voxel_id_html: {df_voxel_id.to_html()}")
+    raw_html = []
+    info_messages.append(f"df_xyz_html: {df_xyz.to_html(index=False)}")
+    info_messages.append(f"df_voxel_id_html: {df_voxel_id.to_html(index=False)}")
     return render(request, 'lesion_bank/debugging.html', {
                         'error_message': error_messages,
                         'info_messages': info_messages
