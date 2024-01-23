@@ -42,7 +42,7 @@
 {% if raw_html %}
     <div class="raw-html">
         <h2>Raw HTML:</h2>
-        {% for message in raw_html %}
+        {% for message|safe in raw_html %}
         {{ message }}
         {% endfor %}
     </div>
