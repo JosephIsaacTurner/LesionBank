@@ -65,45 +65,43 @@ def predict(request):
         if mask_resolution == '1mm':
             file_path_1mm = full_file_path
             # First, make the .nifti file in 1mm resolution
-            affine= np.array([
-                [-1.,0.,0.,90.],
-                [0.,1.,0.,-126.],
-                [0.,0.,1.,-72.],
-                [0.,0.,0.,1.]
-            ])
-            shape=(182,218,182) # 1mm resolution shape
-            nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
+            # affine= np.array([
+            #     [-1.,0.,0.,90.],
+            #     [0.,1.,0.,-126.],
+            #     [0.,0.,1.,-72.],
+            #     [0.,0.,0.,1.]
+            # ])
+            # shape=(182,218,182) # 1mm resolution shape
+
+            nifti_handler.populate_from_2d_array(logged_points, mask_resolution)
+            nifti_handler.save_to_s3(full_file_path, mask_resolution)
+
+            # nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
             # filepath_1mm = os.path.join("prediction_traces/",filename) # Standardize filepath
-            save_image(nii_img, full_file_path)
+            # save_image(nii_img, full_file_path)
 
             # Even though the selected mask is 1mm, we still need to save the 2mm version for lesion network mapping
-            affine = np.array([
-                [-2., 0., 0., 90.],
-                [0., 2., 0., -126.],
-                [0., 0., 2., -72.],
-                [0., 0., 0., 1.]
-            ])
-            shape=(91,109,91) # 2mm resolution shape
-            nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
+            # affine = np.array([
+            #     [-2., 0., 0., 90.],
+            #     [0., 2., 0., -126.],
+            #     [0., 0., 2., -72.],
+            #     [0., 0., 0., 1.]
+            # ])
+            # shape=(91,109,91) # 2mm resolution shape
+            # nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
             filename_2mm = f"2mm/input_mask.nii.gz" # Create filename in separate folder for each resolution
             full_2mm_file_path = os.path.join(f"mask_input/{file_id}/", filename_2mm) # Include file_id as parent directory for mask
-            save_image(nii_img, full_2mm_file_path)
+            # save_image(nii_img, full_2mm_file_path)
+
+            nifti_handler.populate_from_2d_array(logged_points, '2mm')
+            nifti_handler.save_to_s3(full_2mm_file_path, '2mm')
         
         # If mask resolution is 2mm:
         if mask_resolution == '2mm':
             file_path_1mm = ''
             # First, make the .nifti file in 2mm resolution
-            affine = np.array([
-                [-2., 0., 0., 90.],
-                [0., 2., 0., -126.],
-                [0., 0., 2., -72.],
-                [0., 0., 0., 1.]
-            ])
-            shape=(91,109,91)
             nifti_handler.populate_from_2d_array(logged_points)
-            nifti_handler.save_to_s3(full_file_path)
-            # nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
-            # save_image(nii_img, full_file_path)
+            nifti_handler.save_to_s3(full_file_path, mask_resolution)
         
         image, created = GeneratedImages.objects.get_or_create(
             file_id=file_id,
