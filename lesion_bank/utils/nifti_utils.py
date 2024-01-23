@@ -213,7 +213,7 @@ class NiftiHandler(SQLUtils):
 
     def to_nifti_obj(self, data=None):
         """Converts a 3D array in voxel space to a NIfTI object"""
-        if data == None:
+        if data is None:
             data = self.data
         return nib.Nifti1Image(data, self.two_mm_affine)
 
