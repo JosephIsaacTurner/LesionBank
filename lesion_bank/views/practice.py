@@ -57,6 +57,8 @@ def practice_view(request):
         else:
             form = PracticeImageForm()
 
+        return render(request, 'lesion_bank/practice.html', {'form': form})
+
     except Exception as e:
         error_message = f"Error in view: {str(e)}"
 
