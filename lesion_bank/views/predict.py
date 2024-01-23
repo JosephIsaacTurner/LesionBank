@@ -101,8 +101,9 @@ def predict(request):
             ])
             shape=(91,109,91)
             nifti_handler.populate_from_2d_array(logged_points)
-            nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
-            save_image(nii_img, full_file_path)
+            nifti_handler.save_to_s3(full_file_path)
+            # nii_img = nib.Nifti1Image(reshapeTo3d(logged_points, affine,shape), affine)
+            # save_image(nii_img, full_file_path)
         
         image, created = GeneratedImages.objects.get_or_create(
             file_id=file_id,
