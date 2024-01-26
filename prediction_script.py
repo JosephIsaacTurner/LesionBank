@@ -590,84 +590,107 @@ class ImageComparison:
             print(f"An error occurred: {e}")
 
     def correlate_with_symptoms(self, image, data_to_compare):
-        if type(data_to_compare) == list:
-            df = pd.DataFrame(data_to_compare)
-        elif type(data_to_compare) == pd.DataFrame:
-            df = data_to_compare
-        else:
+        """
+        Correlates a given image with a set of data and performs statistical analysis 
+        to find significant differences in correlations across symptoms.
+
+        Parameters:
+        image (str or NiftiImage): The image or path to the image to be correlated.
+        data_to_compare (list or pd.DataFrame): Data containing symptoms and paths 
+                                                to images for comparison.
+
+        Returns:
+        pd.DataFrame: A summary DataFrame with symptoms ranked by mean correlation 
+                    and statistical analysis results.
+        """
+        # DataFrame creation from input data
+        df = pd.DataFrame(data_to_compare) if isinstance(data_to_compare, list) else data_to_compare
+
+        # Validate DataFrame
+        if not isinstance(df, pd.DataFrame):
             raise ValueError("Data must be a list of dictionaries or a pandas DataFrame.")
-        
+
         original_image = NiftiHandler(image)
         original_image.normalize_to_quantile()
 
-        # Initialize an empty DataFrame to store correlations, with NaNs
-        # df['images'] = df['path'].apply(lambda x: NiftiHandler(x))
-        df['images'] = df['path']
+        # Calculate correlations and z-values
+        df['correlation'] = df['path'].apply(lambda x: self.correlate_images(original_image, NiftiHandler(x)))
+        df['z_value'] = np.arctanh(df['correlation'])
 
-        df['correlation'] = df['images'].apply(lambda x: self.correlate_images(original_image, x))
-        df['z_value'] = df['correlation'].apply(lambda x: np.arctanh(x))
-        
-        # Perform ANOVA
+        # Perform ANOVA and Tukey's HSD test if significant
+        summary_df = self.perform_statistical_analysis(df)
+
+        return summary_df
+
+    def perform_statistical_analysis(self, df):
+        """
+        Performs statistical analysis (ANOVA and Tukey's HSD test) on the given DataFrame.
+
+        Parameters:
+        df (pd.DataFrame): DataFrame containing symptom, correlation, and z_value data.
+
+        Returns:
+        pd.DataFrame: Summary DataFrame after statistical analysis.
+        """
         anova_results = ols('z_value ~ C(symptom)', data=df).fit()
         anova_table = sm.stats.anova_lm(anova_results, typ=2)
 
-        # Check if the overall model is significant
-        if anova_table['PR(>F)'].iloc[0] < 0.05:
-            # If significant, perform Tukey's HSD test
-            tukey_results = pairwise_tukeyhsd(df['z_value'], df['symptom'])
-
-        else:
+        if anova_table['PR(>F)'].iloc[0] >= 0.05:
             print("No significant differences found among symptom correlations.")
-            summary_df = df.groupby('symptom')['correlation'].mean()
-            summary_df = summary_df.sort_values(ascending=False)
-            return summary_df
+            return df.groupby('symptom')['correlation'].mean().sort_values(ascending=False)
 
-        # Calculate mean correlation for each symptom
+        tukey_results = pairwise_tukeyhsd(df['z_value'], df['symptom'])
+        return self.process_tukey_results(df, tukey_results)
+
+    def process_tukey_results(self, df, tukey_results):
+        """
+        Processes Tukey's HSD test results and creates a summary DataFrame.
+
+        Parameters:
+        df (pd.DataFrame): Original DataFrame used for Tukey's test.
+        tukey_results (TukeyHSDResults): Results from Tukey's HSD test.
+
+        Returns:
+        pd.DataFrame: Processed summary DataFrame with detailed statistical analysis.
+        """
         mean_corr = df.groupby('symptom')['correlation'].mean()
-
-        # Convert Tukey's test results to a DataFrame
         tukey_df = pd.DataFrame(data=tukey_results._results_table.data[1:], columns=tukey_results._results_table.data[0])
 
         rows = []
-
-        # Process each symptom
         for symptom in df['symptom'].unique():
-            # Filter Tukey's results for the current symptom
-            symptom_pairs = tukey_df[(tukey_df['group1'] == symptom) | (tukey_df['group2'] == symptom)]
-
-            # Calculate mean p-value across all comparisons for this symptom
-            mean_p_value = symptom_pairs['p-adj'].mean()
-
-            # Identify symptoms with significant differences
-            significant_symptoms = symptom_pairs[symptom_pairs['reject'] == True]
-            significant_symptoms_list = significant_symptoms['group1'].tolist() + significant_symptoms['group2'].tolist()
-            significant_symptoms_list = list(set(significant_symptoms_list) - {symptom})
-
-            # Calculate proportion of significant comparisons
-            prop_significant = len(significant_symptoms) / len(symptom_pairs) * 100
-
-            symptom_data = {
-                "symptom": symptom,
-                "mean_correlation(r)": mean_corr[symptom],
-                "mean_p_value_of_symptom_comparisons": mean_p_value,
-                "symptoms_with_significant_differences": significant_symptoms_list,
-                "percentage_of_comparisons_that_are_significant": prop_significant
-            }
-
-            # Add the dictionary to the list
+            symptom_data = self.calculate_symptom_statistics(symptom, tukey_df, mean_corr)
             rows.append(symptom_data)
 
-        
-        # Create the summary DataFrame from the list of rows
-        summary_df = pd.DataFrame(rows)
+        return pd.DataFrame(rows).sort_values(by="mean_correlation(r)", ascending=False)
 
-        # Sort the DataFrame by mean correlation
-        summary_df = summary_df.sort_values(by="mean_correlation(r)", ascending=False)
+    def calculate_symptom_statistics(self, symptom, tukey_df, mean_corr):
+        """
+        Calculates statistical measures for a given symptom based on Tukey's results.
 
-        # Display the summary DataFrame
-        # print(summary_df)
-     
-        return summary_df
+        Parameters:
+        symptom (str): The symptom to calculate statistics for.
+        tukey_df (pd.DataFrame): DataFrame with Tukey's test results.
+        mean_corr (pd.Series): Series with mean correlations for each symptom.
+
+        Returns:
+        dict: A dictionary with calculated statistical measures for the symptom.
+        """
+        symptom_pairs = tukey_df[(tukey_df['group1'] == symptom) | (tukey_df['group2'] == symptom)]
+        mean_p_value = symptom_pairs['p-adj'].mean()
+
+        significant_symptoms = symptom_pairs[symptom_pairs['reject'] == True]
+        significant_symptoms_list = list(set(significant_symptoms['group1'].tolist() + 
+                                            significant_symptoms['group2'].tolist()) - {symptom})
+        prop_significant = len(significant_symptoms) / len(symptom_pairs) * 100
+
+        return {
+            "symptom": symptom,
+            "mean_correlation(r)": mean_corr[symptom],
+            "mean_p_value_of_symptom_comparisons": mean_p_value,
+            "symptoms_with_significant_differences": significant_symptoms_list,
+            "percentage_of_comparisons_that_are_significant": prop_significant
+        }
+
 
 class GroupAnalysis:
 
