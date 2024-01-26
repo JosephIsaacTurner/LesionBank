@@ -765,8 +765,7 @@ randomized AS (
     AND symptom IN (SELECT symptom FROM symptom_count_table)
 )
 SELECT symptom, path 
-FROM randomized
-WHERE rn <= 7;
+FROM randomized;
 """
 
 data_dict = SQLUtils().run_raw_sql(query)
