@@ -762,7 +762,6 @@ randomized AS (
 )
 SELECT symptom, path 
 FROM randomized
-WHERE rn <= 7;
 """
 
 data_dict = SQLUtils().run_raw_sql(query)
