@@ -6,6 +6,7 @@ import nibabel as nib
 import numpy as np
 from datetime import datetime
 from io import BytesIO
+from scipy import stats
 from scipy.ndimage import zoom
 from .sql_utils import SQLUtils
 from django_project.custom_storage import CustomStorage
@@ -34,6 +35,7 @@ class NiftiHandler(SQLUtils):
         self.df_voxel_id = None # A dataframe with columns 'Voxel ID' and 'value' (world space)
         self.id = None # String id of the object in the database, or the object we will insert into the database.
         self.type = None # Either 'mask' or 'continuous'
+        self.is_quantile_normalized = False
         self.storage = CustomStorage()
         super().__init__()
 
@@ -127,6 +129,7 @@ class NiftiHandler(SQLUtils):
         return self.storage.get_file_from_cloud(s3_path)
     
     def save_to_s3(self, filename, resolution='2mm', file_content=None):
+        """Saves a NIfTI object to s3 storage, relative to the bucket root"""
         if file_content is None:
             file_content = self.data
             file_content = self.to_nifti_obj(file_content, resolution)
@@ -183,7 +186,7 @@ class NiftiHandler(SQLUtils):
         # Here's my own implementation, do you think it will work?
         if df is None:
             if self.df_voxel_id is None:
-                self.resample_to_2mm()
+                self.resample()
                 self.reshape_to_2d()
                 self.drop_zero_values()
                 self.nd_array_to_pandas()
@@ -214,49 +217,66 @@ class NiftiHandler(SQLUtils):
                 print(f"{i} of {len(data_to_insert)} records inserted...")
             print(f"all {len(data_to_insert)} records successfully inserted.")
 
-    def resample_to_2mm(self, nd_array=None):
-        """Resamples a 3D mask array from 1mm to 2mm resolution. The nd_array is 3d array in voxel space.
-        Ensures that all non-zero values in the resampled array are set to 1."""
+    def resample(self, target_resolution="2mm", nd_array=None):
+        """Resamples a 3D mask array to the specified resolution.
+        The nd_array is a 3D array in voxel space. This function supports resampling
+        from 1mm to 2mm and from 2mm to 1mm resolutions. It ensures that all non-zero
+        values in the resampled array are set to 1.
+
+        Args:
+            target_resolution (str): The target resolution, either '1mm' or '2mm'.
+            nd_array (numpy.ndarray, optional): The array to resample. If None, uses the instance's data.
+
+        Returns:
+            numpy.ndarray: The resampled array.
+        """
+        if target_resolution not in ['1mm', '2mm']:
+            raise ValueError("Target resolution must be '1mm' or '2mm'.")
+
         if nd_array is None:
             nd_array = self.data
-        if self.resolution == '2mm':
-            print("This array is already in 2mm resolution.")
+
+        if self.resolution == target_resolution:
+            print(f"This array is already in {target_resolution} resolution.")
             return nd_array
-        elif self.resolution == '1mm':
-            # Calculate the resampling factor
+
+        valid_transitions = [('1mm', '2mm'), ('2mm', '1mm')]
+        if (self.resolution, target_resolution) not in valid_transitions:
+            raise ValueError(f"Cannot resample from {self.resolution} to {target_resolution}.")
+
+        # Determine resampling factor based on the desired transition
+        if target_resolution == '2mm':
             resample_factor = np.diag(self.one_mm_affine)[:3] / np.diag(self.two_mm_affine)[:3]
-            # Ensure resample_factor is an array of floats
-            resample_factor = np.array(resample_factor, dtype=float)
-            # Resample the array
-            resampled_nd_array = zoom(nd_array, resample_factor, order=1)  # order=1 for linear interpolation
+        else:  # Resampling from 2mm to 1mm
+            resample_factor = np.diag(self.two_mm_affine)[:3] / np.diag(self.one_mm_affine)[:3]
 
-            # Post-process to ensure binary values (0 or 1)
-            resampled_nd_array[resampled_nd_array != 0] = 1
+        # Ensure resample_factor is an array of floats
+        resample_factor = np.array(resample_factor, dtype=float)
 
-            self.data = resampled_nd_array
-            self.resolution = '2mm'
-            self.shape = resampled_nd_array.shape
-            return resampled_nd_array
-        else:
-            raise ValueError("Unknown resolution.")
+        # Resample the array
+        resampled_nd_array = zoom(nd_array, resample_factor, order=1)  # order=1 for linear interpolation
 
+        # Post-process to ensure binary values (0 or 1)
+        resampled_nd_array[resampled_nd_array != 0] = 1
 
+        # Update instance attributes
+        self.data = resampled_nd_array
+        self.resolution = target_resolution
+        self.shape = resampled_nd_array.shape
 
-    def resample_to_1mm(self, nd_array=None):
-        """Resamples a 3D array from 2mm to 1mm resolution. The nd_array is 3d array in voxel space"""
+        return resampled_nd_array
+    
+    def normalize_to_quantile(self, nd_array=None):
+        """Converts an n-dimensional array to quantile scores."""
         if nd_array is None:
             nd_array = self.data
-        if self.resolution == '1mm':
-            print("This array is already in 1mm resolution.")
-            return nd_array
-        elif self.resolution == '2mm':
-            # Calculate the resampling factor
-            resample_factor = np.array(self.two_mm_affine[:3, :3]) / np.array(self.one_mm_affine[:3, :3])
-            # Resample the array
-            resampled_nd_array = zoom(nd_array, resample_factor, order=1)
-            return resampled_nd_array
-        else:
-            raise ValueError("Unknown resolution.")
+        data_flat = nd_array.flatten()
+        data_ranked = stats.rankdata(data_flat)
+        data_quantile_scores = data_ranked / len(data_ranked)
+        data_quantile_scores = data_quantile_scores.reshape(nd_array.shape)
+        self.is_quantile_normalized = True
+        self.data = data_quantile_scores
+        return data_quantile_scores
 
     def to_nifti_obj(self, data=None, resolution='2mm'):
         """Converts a 3D array in voxel space to a NIfTI object"""
@@ -282,4 +302,97 @@ class NiftiHandler(SQLUtils):
         self.populate_data_from_db(id_name, id, model)
         self.save_to_s3(filename)
         return filename
+    
+class ImageComparison:
+    """A class for comparing two NIfTI images. Can compute Pearson correlation and Dice coefficient."""
+    def __init__(self):
+        pass
 
+    def correlate_images(self, image1, image2):
+        """Computes the Pearson correlation between two NIfTI images."""
+        # Check if both images are instances of NiftiHandler
+        if not isinstance(image1, NiftiHandler) or not isinstance(image2, NiftiHandler):
+            raise TypeError("Both images must be instances of NiftiHandler.")
+        # Check if resolutions match, if not, resample
+        if image1.resolution != image2.resolution:
+            image1.resample()
+            image2.resample()
+        # Ensure shapes are the same
+        if image1.data.shape != image2.data.shape:
+            raise ValueError("The images must have the same shape.")
+        # Check if types match (mask or continuous)
+        if image1.type != image2.type:
+            raise ValueError("Both images must be of the same type (mask or continuous).")
+        # Ensure both images are quantile normalized
+        if not image1.is_quantile_normalized:
+            image1.normalize_to_quantile()
+        if not image2.is_quantile_normalized:
+            image2.normalize_to_quantile()
+        # Flatten the 3D arrays to 1D to compute correlation
+        flattened_data1 = image1.data.ravel()
+        flattened_data2 = image2.data.ravel()
+        
+        # Compute Pearson correlation
+        correlation, _ = stats.pearsonr(flattened_data1, flattened_data2)
+        
+        return correlation
+
+    def dice_coefficient(self, image1, image2):
+        """
+        Computes the Dice coefficient between two NIfTI images.
+
+        Parameters:
+        image1 (NiftiHandler): The first NIfTI image.
+        image2 (NiftiHandler): The second NIfTI image.
+
+        Returns:
+        float: The Dice coefficient between the two images.
+        """
+        try:
+            # Check if both images are instances of NiftiHandler
+            if not isinstance(image1, NiftiHandler) or not isinstance(image2, NiftiHandler):
+                raise TypeError("Both images must be instances of NiftiHandler.")
+            # Check if resolutions match, if not, resample
+            if image1.resolution != image2.resolution:
+                image1.resample()
+                image2.resample()
+            # Ensure shapes are the same
+            if image1.data.shape != image2.data.shape:
+                raise ValueError("The images must have the same shape.")
+            # Check if types match (mask or continuous)
+            if image1.type != 'mask' or image1.type != image2.type:
+                raise ValueError("Both images must be of the type mask")
+            
+            intersection = np.logical_and(image1.data, image2.data)
+            dice_coefficient = 2 * np.sum(intersection) / (np.sum(image1.data) + np.sum(image2.data))
+            return dice_coefficient
+        
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+class GroupAnalysis:
+
+    def __init__(self, filepath_list):
+        self.filepath_list = filepath_list
+
+    def get_nifti_from_s3(self, s3_path):
+        """Gets a NIfTI object from a file path in s3 storage, relative to the bucket root"""
+        return self.storage.get_file_from_cloud(s3_path)
+    
+    def save_to_s3(self, filename, resolution='2mm', file_content=None):
+        """Saves a NIfTI object to s3 storage, relative to the bucket root"""
+        if file_content is None:
+            file_content = self.data
+            file_content = self.to_nifti_obj(file_content, resolution)
+        file_content = self.storage.compress_nii_image(file_content)
+        self.storage.save(filename, file_content)
+        return filename
+
+    def sensitivity_analysis(self):
+        pass
+
+    def specificity_analysis(self):
+        pass
+
+    def cross_correlation_analysis(self):
+        pass

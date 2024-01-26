@@ -18,3 +18,5 @@ pillow
 celery
 redis
 -e ./pfc-toolkit
+statsmodels
+python-dotenv
