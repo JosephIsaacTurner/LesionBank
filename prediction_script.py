@@ -517,8 +517,11 @@ class ImageComparison:
     def correlate_images(self, image1, image2):
         """Computes the Pearson correlation between two NIfTI images."""
         # Check if both images are instances of NiftiHandler
-        if not isinstance(image1, NiftiHandler) or not isinstance(image2, NiftiHandler):
-            raise TypeError("Both images must be instances of NiftiHandler.")
+        if not isinstance(image1, NiftiHandler):
+            image1 = NiftiHandler(image1)
+            
+        if not isinstance(image2, NiftiHandler):
+            image2 = NiftiHandler(image2)
         # Check if resolutions match, if not, resample
         if image1.resolution != image2.resolution:
             image1.resample()
@@ -598,7 +601,8 @@ class ImageComparison:
         original_image.normalize_to_quantile()
 
         # Initialize an empty DataFrame to store correlations, with NaNs
-        df['images'] = df['path'].apply(lambda x: NiftiHandler(x))
+        # df['images'] = df['path'].apply(lambda x: NiftiHandler(x))
+        df['images'] = df['path']
 
         df['correlation'] = df['images'].apply(lambda x: self.correlate_images(original_image, x))
         df['z_value'] = df['correlation'].apply(lambda x: np.arctanh(x))
@@ -762,6 +766,7 @@ randomized AS (
 )
 SELECT symptom, path 
 FROM randomized
+WHERE rn <= 7;
 """
 
 data_dict = SQLUtils().run_raw_sql(query)
